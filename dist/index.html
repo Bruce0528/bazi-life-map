@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#111a27">
+  <title>時序命盤｜八字人生洞察</title>
+  <meta name="description" content="輸入生辰資料，閱讀五行結構、優勢、風險與人生機會。">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111a27'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%23d6aa57' stroke-width='3'/%3E%3Cpath d='M32 12v40M12 32h40' stroke='%23b74332' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='5' fill='%23d6aa57'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="時序命盤首頁"><span class="seal">命</span><span>時序命盤</span></a>
+    <span class="meta-note">傳統文化觀點 · 自我反思工具</span>
+  </header>
+
+  <main id="top">
+    <section class="workbench" aria-labelledby="page-title">
+      <div class="intro">
+        <p class="eyebrow">FOUR PILLARS · LIFE MAP</p>
+        <h1 id="page-title">從出生時刻，<br><em>看見你的生命結構。</em></h1>
+        <p>這不是對未來的宣判，而是一張用來理解性格傾向、人生節奏與選擇策略的地圖。</p>
+        <div class="promise-row">
+          <span>01 命盤結構</span><span>02 十年大運</span><span>03 六大面向</span>
+        </div>
+      </div>
+
+      <form class="birth-card" id="birth-form">
+        <div class="card-heading">
+          <div><span class="step">01 / 資料</span><h2>輸入生辰</h2></div>
+          <span class="privacy">● 僅於此裝置運算</span>
+        </div>
+        <label>姓名／稱呼 <span>選填</span><input id="name" autocomplete="name" placeholder="例：陳小安"></label>
+        <div class="field-grid">
+          <label>出生日期<input id="birth-date" type="date" required value="1992-08-18"></label>
+          <label>出生時間<input id="birth-time" type="time" required value="09:30"></label>
+        </div>
+        <div class="field-grid">
+          <label>性別<select id="gender"><option value="female">女</option><option value="male">男</option><option value="other">其他／不指定</option></select></label>
+          <label>出生地<select id="place"><option value="taipei">台北（UTC+8）</option><option value="taichung">台中（UTC+8）</option><option value="kaohsiung">高雄（UTC+8）</option><option value="hongkong">香港（UTC+8）</option><option value="other">其他 UTC+8 地區</option></select></label>
+        </div>
+        <button type="submit"><span>生成我的命盤分析</span><span aria-hidden="true">→</span></button>
+        <p class="form-note">※ 本工具提供文化與娛樂性參考，不取代醫療、心理、法律或財務建議。</p>
+      </form>
+    </section>
+
+    <section class="preview-strip" aria-label="分析內容預覽">
+      <div class="pillar-mini"><b>年柱</b><strong>壬申</strong><span>水 · 金</span></div>
+      <div class="pillar-mini active"><b>日主</b><strong>乙木</strong><span>柔韌 · 生長</span></div>
+      <div class="teaser"><span>五行強度視覺化</span><div class="mini-bars"><i style="--h:72%"></i><i style="--h:46%"></i><i style="--h:80%"></i><i style="--h:58%"></i><i style="--h:34%"></i></div></div>
+      <div class="teaser text"><span>一份完整報告</span><b>優勢 · 事業 · 關係 · 大運</b></div>
+    </section>
+
+    <section class="report" id="report" hidden aria-live="polite">
+      <div class="report-head">
+        <button class="back-button" id="back-button" type="button">← 重新輸入</button>
+        <div class="report-title">
+          <p class="eyebrow">命盤結果 · PERSONAL READING</p>
+          <h2><span id="report-name">你的</span>生命結構</h2>
+          <p id="birth-summary"></p>
+        </div>
+        <div class="day-master-badge"><span>日主</span><strong id="day-master">乙木</strong><small id="day-trait">陰木 · 柔韌生長</small></div>
+      </div>
+      <div class="pillars" id="pillars"></div>
+      <div class="dashboard-grid">
+        <article class="panel elements-panel">
+          <div class="panel-title"><span>01</span><div><small>ELEMENT BALANCE</small><h3>五行能量</h3></div></div>
+          <div class="element-chart" id="element-chart"></div>
+          <p class="panel-insight" id="element-insight"></p>
+        </article>
+        <article class="panel signature-panel">
+          <div class="panel-title"><span>02</span><div><small>CORE SIGNATURE</small><h3>核心特質</h3></div></div>
+          <blockquote id="core-quote"></blockquote>
+          <div class="tags" id="core-tags"></div>
+          <div class="duo-list"><div><h4>天賦優勢</h4><ul id="strength-list"></ul></div><div><h4>盲點提醒</h4><ul id="weakness-list"></ul></div></div>
+        </article>
+      </div>
+      <nav class="report-tabs" aria-label="命理分析分類">
+        <button class="active" data-tab="life">人生機會</button><button data-tab="career">事業財運</button><button data-tab="relations">人際愛情</button><button data-tab="health">健康節律</button><button data-tab="risk">風險提醒</button>
+      </nav>
+      <div class="tab-panels">
+        <article class="tab-panel active" data-panel="life"><div class="analysis-copy"><span class="chapter">第一章</span><h3>機會往哪裡開花</h3><p id="life-copy"></p></div><div class="advice-cards" id="life-cards"></div></article>
+        <article class="tab-panel" data-panel="career"><div class="analysis-copy"><span class="chapter">第二章</span><h3>把天賦放在對的位置</h3><p id="career-copy"></p></div><div class="advice-cards" id="career-cards"></div></article>
+        <article class="tab-panel" data-panel="relations"><div class="analysis-copy"><span class="chapter">第三章</span><h3>關係裡的你</h3><p id="relations-copy"></p></div><div class="advice-cards" id="relations-cards"></div></article>
+        <article class="tab-panel" data-panel="health"><div class="analysis-copy"><span class="chapter">第四章</span><h3>讓能量好好流動</h3><p id="health-copy"></p><p class="health-note">本段僅是生活節律反思，不是醫療判斷；如有不適請諮詢專業醫療人員。</p></div><div class="advice-cards" id="health-cards"></div></article>
+        <article class="tab-panel" data-panel="risk"><div class="analysis-copy"><span class="chapter">第五章</span><h3>早一步看見風險</h3><p id="risk-copy"></p></div><div class="advice-cards" id="risk-cards"></div></article>
+      </div>
+      <section class="luck-section">
+        <div class="section-heading"><div><p class="eyebrow">DECADE CYCLES</p><h3>十年大運</h3></div><p>每十年是一種主題，不是好壞分數。順著時勢調整，才是閱讀大運的意義。</p></div>
+        <div class="timeline" id="luck-timeline"></div>
+      </section>
+      <section class="benefactor-section">
+        <div><span class="chapter">貴人線索</span><h3 id="benefactor-title"></h3><p id="benefactor-copy"></p></div>
+        <div class="benefactor-compass" id="benefactor-compass"></div>
+      </section>
+      <section class="divination-section" id="divination">
+        <div class="divination-intro">
+          <p class="eyebrow">CURRENT SITUATION · 情境推演</p>
+          <h3>近期事件算卦</h3>
+          <p>寫下你最近正在面對的事情。系統會以此刻、事件內容與你的命盤特質，整理最有利的發展條件、可採取的行動與需要避開的風險。</p>
+        </div>
+        <form class="divination-form" id="divination-form">
+          <label>事件類型<select id="event-type"><option value="career">事業／工作</option><option value="money">金錢／投資</option><option value="love">愛情／關係</option><option value="decision">重大選擇</option><option value="other">其他</option></select></label>
+          <label>最近遇到的事情<textarea id="event-text" rows="4" minlength="8" maxlength="500" required placeholder="例：公司提出新的職務機會，但需要換到陌生團隊，我擔心發展性與適應問題……"></textarea></label>
+          <label>希望觀察的時間<select id="event-horizon"><option value="30">未來 30 天</option><option value="90">未來 3 個月</option><option value="365">未來 1 年</option></select></label>
+          <button type="submit"><span>結合命盤推演方向</span><span aria-hidden="true">→</span></button>
+        </form>
+        <div class="oracle-result" id="oracle-result" hidden>
+          <div class="hexagram"><small>本次卦象</small><strong id="hexagram-name"></strong><div class="hexagram-lines" id="hexagram-lines"></div><span id="hexagram-keyword"></span></div>
+          <div class="oracle-copy">
+            <span class="chapter">情境解讀</span><h3 id="oracle-title"></h3><p id="oracle-summary"></p>
+            <div class="oracle-columns">
+              <div><h4>最有利的發展</h4><ul id="oracle-advantage"></ul></div>
+              <div><h4>建議採取</h4><ul id="oracle-actions"></ul></div>
+              <div><h4>避免風險</h4><ul id="oracle-risks"></ul></div>
+            </div>
+            <p class="oracle-note">卦象是用來換角度思考的提示，不是事件結果的保證；重大醫療、法律與財務決策請尋求合格專業意見。</p>
+          </div>
+        </div>
+      </section>
+      <footer class="report-footer"><span>時序命盤</span><p>把命盤當成鏡子，別把它當成答案。真正改變人生的，仍是你的選擇與行動。</p></footer>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
