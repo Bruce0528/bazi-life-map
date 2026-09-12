@@ -377,9 +377,18 @@ function renderLifeGame(reading){
  if(!stations||!stations.length){section.hidden=true;return}
  section.hidden=false;
  lifeGameState={reading:reading,stations:stations,step:0,choices:[]};
- fill('#lifegame-board',stations.map(function(s,i){return'<span class="lg-dot" data-i="'+i+'" title="'+lifeGameMascots[i].name+'">'+lifeGameMascots[i].svg+'</span>'}).join(''));
+ document.querySelector('#lifegame-start').hidden=false;
+ document.querySelector('#lifegame-play').hidden=true;
+}
+function startLifeGame(){
+ if(!lifeGameState)return;
+ lifeGameState.step=0;lifeGameState.choices=[];
+ fill('#lifegame-board',lifeGameState.stations.map(function(s,i){return'<span class="lg-dot" data-i="'+i+'" title="'+lifeGameMascots[i].name+'">'+lifeGameMascots[i].svg+'</span>'}).join(''));
  document.querySelector('#lifegame-result').hidden=true;
+ document.querySelector('#lifegame-start').hidden=true;
+ document.querySelector('#lifegame-play').hidden=false;
  renderLifeGameStage();
+ document.querySelector('#lifegame-play').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function renderLifeGameStage(){
  const st=lifeGameState,station=st.stations[st.step],pair=lifeGameChoices[station.god];
@@ -408,5 +417,6 @@ function finishLifeGame(){
  const recap=lifeGameMascots.map(function(m){return'<span class="lg-mascot lg-mascot--sm" title="'+m.name+'">'+m.svg+'</span>'}).join('');
  fill('#lifegame-result','<div class="lg-recap">'+recap+'</div><p>'+summarizeLifeGame(boldCount,steadyCount,st.reading)+'</p><button type="button" id="lifegame-restart">重新玩一次</button>');
  document.querySelector('#lifegame-result').hidden=false;
- document.querySelector('#lifegame-restart').addEventListener('click',function(){renderLifeGame(st.reading)});
+ document.querySelector('#lifegame-restart').addEventListener('click',startLifeGame);
 }
+document.querySelector('#lifegame-start').addEventListener('click',startLifeGame);

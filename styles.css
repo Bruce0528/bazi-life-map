@@ -70,6 +70,15 @@
 
 /* 人生模擬小遊戲：8 站對應 8 步大運 */
 .lifegame-section{max-width:1400px;margin:42px auto 0;padding:50px 0;border-top:1px solid #bcb7ab}
+.lg-start{width:100%;display:flex;align-items:center;gap:20px;border:2px solid var(--red);background:#fdf6ec;padding:24px 28px;margin-top:30px;cursor:pointer;text-align:left;transition:transform .15s,box-shadow .15s}
+.lg-start:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(183,67,50,.16)}
+.lg-start-icon{font-size:2.4rem;flex:none}
+.lg-start-text{flex:1}
+.lg-start-text b{display:block;font:600 1.25rem var(--serif);color:var(--ink)}
+.lg-start-text small{display:block;color:#8a7548;font-size:.8rem;margin-top:4px}
+.lg-start>span:last-child{font-size:1.6rem;color:var(--red);flex:none}
+.lg-play{margin-top:30px}
+@media(max-width:560px){.lg-start{padding:18px}.lg-start-icon{font-size:1.8rem}}
 .lg-board{display:flex;flex-wrap:wrap;gap:10px;margin:30px 0}
 .lg-dot{width:40px;height:40px;border-radius:50%;background:#e7e2d7;border:2px solid #c9c4b8;display:flex;align-items:center;justify-content:center;opacity:.4;transition:opacity .2s,border-color .2s}
 .lg-dot svg{width:26px;height:26px}
