@@ -8,6 +8,7 @@
   --line: #d9e7d4;
   --serif: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
   --daisy-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23fffefa' stroke='%23e5e9db' stroke-width='1'%3E%3Cellipse cx='50' cy='28' rx='11' ry='25'/%3E%3Cellipse cx='50' cy='28' rx='11' ry='25' transform='rotate(45 50 50)'/%3E%3Cellipse cx='50' cy='28' rx='11' ry='25' transform='rotate(90 50 50)'/%3E%3Cellipse cx='50' cy='28' rx='11' ry='25' transform='rotate(135 50 50)'/%3E%3Cellipse cx='50' cy='28' rx='11' ry='25' transform='rotate(180 50 50)'/%3E%3Cellipse cx='50' cy='28' rx='11' ry='25' transform='rotate(225 50 50)'/%3E%3Cellipse cx='50' cy='28' rx='11' ry='25' transform='rotate(270 50 50)'/%3E%3Cellipse cx='50' cy='28' rx='11' ry='25' transform='rotate(315 50 50)'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='19' fill='%23f2c544' stroke='%23dfad32' stroke-width='2'/%3E%3C/svg%3E");
+  --daisy-badge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cg fill='%23fffefa' stroke='%23719a74' stroke-width='2.5'%3E%3Cellipse cx='32' cy='17' rx='7' ry='13'/%3E%3Cellipse cx='32' cy='17' rx='7' ry='13' transform='rotate(45 32 32)'/%3E%3Cellipse cx='32' cy='17' rx='7' ry='13' transform='rotate(90 32 32)'/%3E%3Cellipse cx='32' cy='17' rx='7' ry='13' transform='rotate(135 32 32)'/%3E%3Cellipse cx='32' cy='17' rx='7' ry='13' transform='rotate(180 32 32)'/%3E%3Cellipse cx='32' cy='17' rx='7' ry='13' transform='rotate(225 32 32)'/%3E%3Cellipse cx='32' cy='17' rx='7' ry='13' transform='rotate(270 32 32)'/%3E%3Cellipse cx='32' cy='17' rx='7' ry='13' transform='rotate(315 32 32)'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='10' fill='%23f2c544' stroke='%23dca92e' stroke-width='2'/%3E%3C/svg%3E");
 }
 
 html { background: #f7faf2; }
@@ -31,11 +32,14 @@ body { background: #f7faf2; color: var(--ink); }
 .intro>p:not(.eyebrow) { color: #526b5a; font-size: 1.05rem; }
 .promise-row { gap: 10px; margin-top: 30px; }
 .promise-row span { border: 1px solid #bed3b7; background: rgba(255,255,255,.62); color: #466d50; border-radius: 999px; padding: 8px 14px; font-weight: 700; }
-.promise-row span::before { content: "✿"; color: #e2b33b; margin-right: 8px; }
+.promise-row span::before { content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 8px; vertical-align: -4px; background: var(--daisy-badge) center/contain no-repeat; }
 
 .birth-card { background: #fffefa; border: 1px solid #e3ecd9; border-radius: 24px; box-shadow: 0 20px 55px rgba(69,104,64,.13); }
 .birth-card:before { border-color: #e7edde; border-radius: 16px; }
 .corner-cloud { width: 45px; height: 45px; background-image: var(--daisy-art); opacity: .67; }
+.birth-card .corner-cloud--tl,.dashboard-grid .corner-cloud--tl,.benefactor-section .corner-cloud--tl { display: none; }
+.birth-card .step { display: inline-flex; align-items: center; gap: 8px; letter-spacing: .18em; }
+.birth-card .step::before { content: ""; display: inline-block; width: 24px; height: 24px; flex: none; background: var(--daisy-badge) center/contain no-repeat; }
 .benefactor-section .corner-cloud { opacity: .58; }
 .card-heading h2 { color: #284c3b; font-weight: 800; }
 .privacy { color: #4b8058; }
@@ -107,6 +111,7 @@ body { background: #f7faf2; color: var(--ink); }
 .dashboard-grid { background: #fffefa; border-color: #d8e5d3; border-radius: 18px; overflow: hidden; }
 .panel+.panel { border-color: #d8e5d3; }
 .panel-title>span { border-color: #b7d3b2; color: #5e895f; }
+.panel-title::before { content: ""; width: 24px; height: 24px; flex: none; margin-top: 7px; background: var(--daisy-badge) center/contain no-repeat; }
 .panel-title small { color: #6f956e; }
 .signature-panel blockquote { color: #345641; border-color: #e5c45e; }
 .tags span,.structure-chip { border-color: #d6e4d1; background: #f5f9f0; }
