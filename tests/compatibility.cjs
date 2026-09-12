@@ -14,10 +14,10 @@ for (const id of ['compatibility-form', 'compatibility-result', 'compatibility-s
 }
 elements.set('.top-links a[href="#compatibility"]', { addEventListener() {} });
 const document = {
-  querySelector(selector) { return elements.get(selector) || { addEventListener() {} }; },
+  querySelector(selector) { return selector === '#paywall' ? null : elements.get(selector) || { addEventListener() {} }; },
   querySelectorAll() { return []; },
 };
-const context = vm.createContext({ Solar, document, window: { scrollTo() {} }, console, setTimeout, Date });
+const context = vm.createContext({ Solar, document, window: { scrollTo() {} }, location: { href: 'http://localhost/' }, URL, console, setTimeout, Date });
 for (const file of ['app.js', 'compatibility.js']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../dist', file), 'utf8'), context);
 const html = fs.readFileSync(path.join(__dirname, '../dist/index.html'), 'utf8');
 assert.doesNotMatch(html, /id="(?:male|female)-time"/);
