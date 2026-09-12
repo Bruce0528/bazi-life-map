@@ -32,6 +32,7 @@ const first = vm.runInContext('generateCompatibility()', context);
 assert.ok(first.score >= 0 && first.score <= 100);
 assert.equal(first.scoreParts.reduce((n, part) => n + part.value, 0), first.score);
 assert.match(elements.get('#compatibility-summary').innerHTML, /三柱互動參考分/);
+assert.equal((elements.get('#compatibility-summary').innerHTML.match(/<svg /g) || []).length, 5);
 assert.equal(first.malePillars.length, 3);
 assert.equal(first.femalePillars.length, 3);
 assert.doesNotMatch(elements.get('#compatibility-summary').innerHTML, /時柱<\/small>/);
