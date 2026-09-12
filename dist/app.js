@@ -11,47 +11,8 @@ const profiles={
  水:{trait:'流動與洞察',quote:'你擅長讀懂情勢與人心，流動是天賦，清楚的方向會讓它成為力量。',tags:['觀察力','適應力','溝通智慧'],strengths:['能掌握言語之外的訊號','跨領域學習與轉換速度快','懂得繞道找到可行解法'],weaknesses:['資訊過多時容易過度思考','環境波動會影響內在穩定','必須練習明確的界線']}
 };
 function mod(n,m){return((n%m)+m)%m}
-function getPillars(date,time){
- const a=date.split('-').map(Number),y=a[0],m=a[1],d=a[2],hour=Number(time.split(':')[0]);
- const ys=mod(y-4,10),yb=mod(y-4,12),first=[2,4,6,8,0][ys%5],off=mod(m-2,12);
- const ms=mod(first+off,10),mb=mod(m,12),jdn=Math.floor(Date.UTC(y,m-1,d)/86400000+2440587.5),cycle=mod(jdn+49,60);
- const ds=cycle%10,db=cycle%12,hb=mod(Math.floor((hour+1)/2),12),hs=mod(ds*2+hb,10);
- return[{label:'年柱',s:ys,b:yb},{label:'月柱',s:ms,b:mb},{label:'日柱',s:ds,b:db},{label:'時柱',s:hs,b:hb}];
-}
 function advice(label,title,text){return '<div class="advice-card"><small>'+label+'</small><h4>'+title+'</h4><ul><li>'+text+'</li></ul></div>'}
 function fill(id,value){document.querySelector(id).innerHTML=value}
-function buildReading(input){
- const ps=getPillars(input.date,input.time),counts={木:0,火:0,土:0,金:0,水:0};
- ps.forEach(function(p){counts[stemEls[p.s]]++;counts[branchEls[p.b]]++});
- const master=stemEls[ps[2].s],profile=profiles[master],yinYang=ps[2].s%2===0?'陽':'陰';
- const sorted=Object.entries(counts).sort(function(a,b){return b[1]-a[1]}),strong=sorted[0][0],weak=sorted[sorted.length-1][0],max=Math.max.apply(null,Object.values(counts));
- fill('#report-name',input.name?input.name+'的':'你的');
- fill('#birth-summary',input.date.replaceAll('-','.')+' · '+input.time+' · '+document.querySelector('#place').selectedOptions[0].textContent);
- fill('#day-master',stems[ps[2].s]+master);fill('#day-trait',yinYang+master+' · '+profile.trait);
- fill('#pillars',ps.map(function(p){return '<div class="pillar"><small>'+p.label+'</small><b>'+stems[p.s]+branches[p.b]+'</b><span>'+stemEls[p.s]+' · '+branchEls[p.b]+'</span></div>'}).join(''));
- fill('#element-chart',Object.entries(counts).map(function(x){return '<div class="element-bar" style="--value:'+(18+x[1]/max*72)+'%;--color:'+colors[x[0]]+'"><i></i><b>'+x[1]+'</b><span>'+x[0]+'</span></div>'}).join(''));
- fill('#element-insight','命盤中'+strong+'的訊號最明顯，代表你很容易動用「'+profiles[strong].trait+'」。'+weak+'相對較少，可透過日常習慣刻意補足，不代表缺陷。');
- fill('#core-quote',profile.quote);fill('#core-tags',profile.tags.map(function(x){return '<span>'+x+'</span>'}).join(''));
- fill('#strength-list',profile.strengths.map(function(x){return '<li>'+x+'</li>'}).join(''));fill('#weakness-list',profile.weaknesses.map(function(x){return '<li>'+x+'</li>'}).join(''));
- fill('#life-copy','你的機會常來自「'+profiles[strong].trait+'」的場景：當環境正在轉型、整合或需要新方向時，你的優勢容易被看見。與其等待完美時機，更適合先建立一個可測試的小舞台，讓能力持續被驗證。');
- fill('#life-cards',advice('機會點','跨界整合','把你已知的事帶到一個新場域，往往比從零競爭更有優勢。')+advice('行動鍵','小步公開','以作品、提案或持續輸出累積能見度。')+advice('補強點','練習'+profiles[weak].trait,'不必強迫自己變成另一種人，只要建立一個小習慣。')+advice('關鍵詞','選擇積累','找能留下長期資產的機會，不只看眼前熱度。'));
- fill('#career-copy','你適合在需要'+profile.trait+'的位置上發揮。職位名稱不是重點，關鍵是能否擁有清楚的成果責任、適度自主性與可持續累積的專業籌碼。財務上適合以紀律取代情緒，重視現金流與風險邊界。');
- fill('#career-cards',advice('工作型態','專案與主導權','能清楚看到成果的工作，會比無限待命更適合你。')+advice('決策法','設定停損點','重要決策前先寫下上限、下限與回顧日期。')+advice('財務節奏','自動化累積','用固定比例儲蓄取代即興的緊繃與放鬆。')+advice('成長策略','建立可攜專長','選一項能跨公司、跨產業使用的核心能力。'));
- fill('#relations-copy','關係裡的你重視真實與可持續性。你可能會用解決問題表達關心，但對方有時更需要先被理解。愛情不必靠猜測：把需求說清楚、把邊界做溫柔，親密感反而會更安定。');
- fill('#relations-cards',advice('人際優勢','值得信賴','你容易成為別人願意倚靠與請教的對象。')+advice('關係練習','先共感再建議','問「你想要我聽，還是一起想辦法？」。')+advice('愛情線索','穩定回應','比起強烈戀愛感，說到做到更能累積安全感。')+advice('邊界提醒','不代替成長','支持對方，但不接管對方應負的責任。'));
- fill('#health-copy','從五行的隱喻來看，'+strong+'較旺時，容易把精力集中在一個方向；'+weak+'較少時，則提醒你留意生活的平衡感。真正有幫助的不是對號入座，而是穩定睡眠、規律活動與對壓力有意識的恢復。');
- fill('#health-cards',advice('每日','固定關機時間','睡前保留一段不解決問題的空白。')+advice('每週','有氧與伸展','選擇可長期維持的活動，不追求短期過量。')+advice('壓力高時','減少決策數','把重要事收斂到三件，先恢復再擴張。')+advice('專業協助','以感受為準','若身心不適持續，及早尋求專業協助。'));
- fill('#risk-copy','你的風險多半不是能力不足，而是把優勢使用過量。當'+profiles[strong].trait+'變成唯一反應，就容易忽略情勢已經改變。在高壓、高金額或重大承諾前，刻意加入第二意見與24小時緩衝。');
- fill('#risk-cards',advice('避免','情緒性承諾','熱情、罪惡感或焦慮升高時，不立即答應。')+advice('避免','單一資訊來源','重要決策至少核對兩種獨立觀點。')+advice('防護','事前清單','先寫下成功標準、最大成本與退出條件。')+advice('防護','找能反對你的人','真正的貴人不只支持，也能說出你沒看見的部分。'));
- buildLuck(ps,input.date,input.gender,strong,weak);buildBenefactor(weak);
- return{pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[ps[2].s]+master,strongElement:strong,balancingElement:weak};
-}
-function buildLuck(ps,date,gender,strong,weak){
- const birthYear=Number(date.slice(0,4)),age=new Date().getFullYear()-birthYear,yang=ps[0].s%2===0,forward=(gender==='male')===yang;
- const themes={木:'學習、擴展與新起點',火:'表現、能見度與影響力',土:'積累、責任與穩定基礎',金:'選擇、專業化與取捨',水:'流動、轉型與視野'};let html='';
- for(let i=0;i<8;i++){const start=7+i*10,end=start+9,off=(i+1)*(forward?1:-1),s=mod(ps[1].s+off,10),b=mod(ps[1].b+off,12),el=stemEls[s],current=age>=start&&age<=end;html+='<div class="cycle '+(current?'current':'')+'"><small>'+(birthYear+start)+'—'+(birthYear+end)+'</small><b>'+stems[s]+branches[b]+'</b><span>'+start+'—'+end+' 歲'+(current?' · 當前':'')+'</span><p>'+themes[el]+'。'+(el===strong?'來得自然，記得留意過度使力。':el===weak?'是補齊格局、擴展能力的十年。':'用穩定節奏換取長期成果。')+'</p></div>'}
- fill('#luck-timeline',html);
-}
 function buildBenefactor(weak){
  const people={木:'願意鼓勵你嘗試、幫你開枝散葉的人',火:'能讓你被看見、帶來行動熱度的人',土:'務實可靠、會幫你把想法落地的人',金:'標準清楚、願意給你直接回饋的人',水:'資訊靈通、能為你打開新視野的人'};
  const dirs={木:['東方','教育／創意'],火:['南方','傳播／品牌'],土:['中央','營運／實務'],金:['西方','金融／專業'],水:['北方','科技／流通']};
@@ -82,16 +43,27 @@ const eventGuidance={
  other:{title:'先定義真正要解的問題',adv:['能增加資訊與回饋的下一步','成本小但學習價值高的嘗試','讓你更接近關鍵人物或資源的行動'],act:['用一句話重寫問題','區分可控制與不可控制項目','在七天內完成一個最小行動'],risk:['同時處理太多層次的問題','期待一次行動解決所有不確定','只在腦中推演而缺少真實回饋']}
 };
 function list(items){return items.map(function(x){return '<li>'+x+'</li>'}).join('')}
+function listPlus(items,extra){return list(items)+'<li class="chart-linked">'+extra+'</li>'}
 function hashText(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+const categoryFrame={career:'這次的工作機會',money:'這次的金錢決定',love:'這段感情裡的選擇',decision:'這個重大選擇',other:'眼前這件事'};
+function personalizedGuidance(type,reading){
+ const dom=reading.dominantTenGod,label=groupData[dom].label,domRisk=groupData[dom].risk,bal=reading.balancingElement,frame=categoryFrame[type]||categoryFrame.other;
+ const strengthTip=reading.dayStrength==='身偏強'?'你的命盤偏「身強」，容易靠自己硬推到底，這次可以主動找一位敢說出不同意見的人一起確認判斷。':reading.dayStrength==='身偏弱'?'你的命盤偏「身弱」，比起單打獨鬥，借助夥伴、平台或導師的資源，這次會比獨自扛下更穩。':'你的命盤五行中和，不必套用單一策略，依現場狀況彈性調整反而對你更有利。';
+ return{
+  adv:'你的命盤以「'+dom+'（'+label+'）」為主要動能，'+frame+'如果剛好用得上這項能力，會比一般情況更順手、更省力。',
+  act:strengthTip,
+  risk:frame+'最大的風險，其實和你命盤「'+dom+'」使用過量的傾向重疊：'+domRisk+'。行動前，刻意加入一個「'+bal+'」型檢核——'+balancePractice[bal]
+ };
+}
 function analyzeSituation(text,type,horizon){
  if(!currentReading)throw new Error('請先生成命盤');
- const seed=hashText(text+type+horizon+currentReading.dayMaster+new Date().toISOString().slice(0,10)),hex=gua[seed%gua.length],guide=eventGuidance[type]||eventGuidance.other;
+ const seed=hashText(text+type+horizon+currentReading.dayMaster+new Date().toISOString().slice(0,10)),hex=gua[seed%gua.length],guide=eventGuidance[type]||eventGuidance.other,personal=personalizedGuidance(type,currentReading);
  fill('#hexagram-name',hex.name);fill('#hexagram-keyword',hex.key);
  fill('#hexagram-lines',hex.lines.slice().reverse().map(function(v){return v?'<div class="gua-line yang"></div>':'<div class="gua-line"><i></i><i></i></div>'}).join(''));
  fill('#oracle-title',guide.title);fill('#oracle-summary',hex.summary+' 你的命盤以「'+currentReading.strongElement+'」為主要動能，這次若能同時加入「'+currentReading.balancingElement+'」的'+profiles[currentReading.balancingElement].trait+'，會比只靠原本習慣更有利。');
- fill('#oracle-advantage',list(guide.adv));fill('#oracle-actions',list(guide.act));fill('#oracle-risks',list(guide.risk));
+ fill('#oracle-advantage',listPlus(guide.adv,personal.adv));fill('#oracle-actions',listPlus(guide.act,personal.act));fill('#oracle-risks',listPlus(guide.risk,personal.risk));
  document.querySelector('#oracle-result').hidden=false;document.querySelector('#oracle-result').scrollIntoView({behavior:'smooth',block:'start'});
- return{hexagram:hex.name,keyword:hex.key,mostFavorable:guide.adv,recommendedActions:guide.act,risksToAvoid:guide.risk};
+ return{hexagram:hex.name,keyword:hex.key,mostFavorable:guide.adv.concat([personal.adv]),recommendedActions:guide.act.concat([personal.act]),risksToAvoid:guide.risk.concat([personal.risk])};
 }
 document.querySelector('#divination-form').addEventListener('submit',function(event){event.preventDefault();const text=document.querySelector('#event-text').value.trim();if(text.length<8)return;analyzeSituation(text,document.querySelector('#event-type').value,document.querySelector('#event-horizon').value)});
 function registerWebMCP(){const context=document.modelContext;if(!context||!context.registerTool)return;try{Promise.resolve(context.registerTool({name:'generate_bazi_reading',title:'生成八字命盤分析',description:'使用生辰資料產生並顯示五行、特質、人生面向與十年大運的文化參考報告。',inputSchema:{type:'object',properties:{name:{type:'string'},birthDate:{type:'string',pattern:'^\\d{4}-\\d{2}-\\d{2}$'},birthTime:{type:'string',pattern:'^\\d{2}:\\d{2}$'},gender:{type:'string',enum:['female','male','other']}},required:['birthDate','birthTime','gender'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute:function(input){if(!/^\d{4}-\d{2}-\d{2}$/.test(input.birthDate)||!/^\d{2}:\d{2}$/.test(input.birthTime))throw new Error('生日或時間格式不正確');document.querySelector('#name').value=input.name||'';document.querySelector('#birth-date').value=input.birthDate;document.querySelector('#birth-time').value=input.birthTime;document.querySelector('#gender').value=input.gender;return showReport({name:input.name||'',date:input.birthDate,time:input.birthTime,gender:input.gender})}})).catch(function(){})}catch(e){}}
@@ -122,6 +94,28 @@ const groupData={
  '財星':{label:'資源／成果',talents:['對市場需求、成本與交換價值敏感','能把人力與資源轉成具體成果','適合商務、營運、客戶與資產管理'],risk:'過度追逐可量化成果，容易壓縮恢復空間'},
  '官殺':{label:'責任／決策',talents:['在規範與壓力中建立秩序','願意對成果負責並作困難決定','適合管理、法遵、專案治理與高標準場域'],risk:'把外部標準內化過度，容易長期緊繃'},
  '印星':{label:'學習／洞察',talents:['快速建立知識架構並追溯根因','能從經驗與專業系統取得支援','適合研究、教育、策略與知識密集工作'],risk:'準備與推演過多時，行動速度會下降'}
+};
+const balancePractice={木:'定期接觸新領域、新方法，保持成長感。',火:'主動分享進度與成果，讓熱度被更多人看見。',土:'把想法排進行事曆，變成具體、可檢核的產出。',金:'替重要決定設立清楚的標準與截止日。',水:'固定留時間吸收不同來源的資訊與觀點。'};
+const financeByGod={
+ 比劫:'比起精算報表，你更習慣憑感覺與行動力累積資源；建議設一個自動化的強制儲蓄機制，避免衝動消費侵蝕本金。',
+ 食傷:'收入常跟著作品、專案或創意輸出波動；建議準備至少半年的生活緩衝金，讓你等待下一個機會時不必倉促妥協。',
+ 財星:'你對數字與交換價值敏感，理財紀律通常不是問題；真正的風險是把太多精力放在賺錢，忽略對長期關係與健康的投資。',
+ 官殺:'穩定與制度感是你的財務優勢，適合長期、規則明確的累積方式；避免只因責任感就承擔超出能力的財務壓力或保證。',
+ 印星:'你習慣先研究透徹再行動，理財上不容易衝動；但也別因為想得太周全而一直觀望，分批進場比完全不進場更有累積效果。'
+};
+const relationsByGod={
+ 比劫:{copy:'在關係裡，你重視「對等」勝過「浪漫」：比起被追求，你更想被當成勢均力敵的夥伴。伴侶若也能有自己的重心與空間，這段關係反而走得更穩。',cards:[['相處優勢','平等對待','不會用情緒勒索或道德綁架控制對方，也讓人感覺被尊重。'],['常見摩擦','較量心','意見不合時，先分清楚你們是在討論事情，還是在爭輸贏。'],['愛情訊號','各自留白','感情穩定不代表要隨時黏在一起，保有各自生活反而更持久。'],['邊界提醒','少比較','避免拿伴侶和別人比較來激勵對方，這容易被解讀成不被珍惜。']]},
+ 食傷:{copy:'你習慣用表達與行動證明在乎：一句「我幫你想了辦法」，往往比甜言蜜語更接近你的愛。但關係裡有時對方要的不是解法，而是先被聽懂。',cards:[['相處優勢','坦率真誠','你不太演，對方通常能感覺到你的情緒是真的。'],['常見摩擦','說得比聽得多','先問「你想要我聽，還是一起想辦法？」，再決定要不要給建議。'],['愛情訊號','用行動示愛','記得對方說過的小事、幫忙處理實際問題，比說「我愛你」更有份量。'],['邊界提醒','拿捏分寸','熱度上來時容易把話說得太滿，重要承諾先放一晚再說出口。']]},
+ 財星:{copy:'你的愛常展現在「務實照顧」上：記得對方的行程、幫忙處理雜事、把生活打理好。你不太擅長說甜言蜜語，但對方過得好不好，你其實都放在心上。',cards:[['相處優勢','務實付出','你會把承諾落實成具體行動，而不只是說說而已。'],['常見摩擦','以成果衡量感情','關係不是專案，不需要每次付出都要看見對等回報。'],['愛情訊號','安全感來自穩定','比起浪漫驚喜，你更容易靠「說到做到」讓人安心。'],['邊界提醒','留時間給關係','別把所有精力都給了工作與目標，記得排時間單獨相處。']]},
+ 官殺:{copy:'你對關係有一份責任感：一旦認定，就會認真扛起承諾與角色。但也容易不自覺把「標準」帶進感情，讓親密關係變得像在被檢視。',cards:[['相處優勢','值得託付','你說到的事會盡力做到，是能被長期依靠的人。'],['常見摩擦','標準內化過高','試著把「應該」換成「我們可以怎麼調整」。'],['愛情訊號','用行動守護','保護與承擔是你的表達方式，記得偶爾也說出口。'],['邊界提醒','放下評分心態','親密關係不是考核，允許彼此都有不完美的狀態。']]},
+ 印星:{copy:'你需要精神上的共鳴：能聊得深、能被理解，比表面的浪漫更讓你有安全感。但想得太多、太早在腦中預演結局，有時反而讓你卻步。',cards:[['相處優勢','深度陪伴','你願意花時間真正了解對方，而不只是停留在表面。'],['常見摩擦','想太多','有疑慮時，直接問對方，比自己在腦中演練十種劇本更有效。'],['愛情訊號','需要被理解','比起解決問題，你更希望對方先聽懂你在意什麼。'],['邊界提醒','練習先行動','等到「想清楚」才願意投入，容易錯過關係自然發展的時機。']]}
+};
+const healthByGod={
+ 比劫:{copy:'你的體力與行動力通常不差，容易靠「衝一波」撐過高壓期，但長期下來恢復速度會跟不上消耗速度。規律運動能幫你釋放好勝心帶來的緊繃，而不是把它憋在心裡。',cards:[['每日','固定活動時段','把運動排進行事曆，而不是等有空才做。'],['每週','有對手的運動','球類、競速類活動能健康地釋放好勝心。'],['壓力訊號','煩躁易怒','出現這個訊號時，先離開現場動一動，再回來討論。'],['專業協助','別硬撐','若持續失眠或情緒起伏大，及早尋求專業協助。']]},
+ 食傷:{copy:'靈感來的時候，你容易忽略時間、熬夜把想法做完，長期會打亂作息節奏。你的身體需要的不是完全停下創造力，而是替它加上一個固定的收尾時間。',cards:[['每日','設定收工時間','靈感再多，也給自己一個上限時間收尾。'],['每週','安排無輸出日','留一天完全不追進度，讓神經系統真正休息。'],['壓力訊號','坐不住、易分心','代表能量需要出口，先安排一次短暫的身體活動。'],['專業協助','留意睡眠品質','長期日夜顛倒建議諮詢專業評估作息調整方式。']]},
+ 財星:{copy:'你容易用「有沒有成果」衡量今天過得好不好，休息時反而會有罪惡感。但身體不會分辨忙碌是不是有意義，它只認得有沒有恢復。刻意把休息也排進計畫裡，才不會被無限延後。',cards:[['每日','把休息排進行程','像排會議一樣，把休息時段寫進行事曆。'],['每週','離開螢幕的活動','散步、烹飪等不產出數字的活動能平衡追求成果的慣性。'],['壓力訊號','身體先於情緒發出警訊','肩頸緊繃、腸胃不適常是過勞的早期訊號。'],['專業協助','定期健康檢查','把健康也當成一項需要維護的長期資產。']]},
+ 官殺:{copy:'責任感讓你習慣把壓力留給自己扛，久了容易長期處在「隨時備戰」的緊繃狀態。你需要的不是逼自己更有紀律，而是刻意練習「放下也沒關係」。',cards:[['每日','刻意的放鬆練習','深呼吸、伸展或短暫冥想，打斷長期緊繃的慣性。'],['每週','不被打擾的休假時段','關掉通知，練習真正離線的休息。'],['壓力訊號','肩頸僵硬、淺眠','是身體在提醒你已經超載一段時間了。'],['專業協助','別把撐住當唯一選項','長期壓力累積建議尋求專業紓壓或心理支持。']]},
+ 印星:{copy:'你的大腦很少真正關機，睡前容易還在反覆推演白天的事。真正影響睡眠品質的，往往不是想得不夠周全，而是想得太多。',cards:[['每日','睡前書寫清單','把腦中盤旋的念頭寫下來，而不是留在腦中運轉。'],['每週','安排單純的體力活動','走路、家務等不需要思考的活動能讓大腦真正休息。'],['壓力訊號','入睡困難、多夢','代表白天累積的思緒還沒被安放。'],['專業協助','持續失眠及早求助','超過兩週的睡眠困擾建議諮詢專業協助。']]}
 };
 function solarMonthInfo(y,m,d){
  const cut=[0,6,4,6,5,6,6,7,8,8,8,7,7],branchBefore=[0,0,1,2,3,4,5,6,7,8,9,10,11];
@@ -194,6 +188,14 @@ function buildReading(input){
  fill('#life-copy','你的機會不是泛泛的「多嘗試」，而是把「'+sp.skills[0]+'」用在需要'+groupData[chart.dominant].label+'的情境。'+chart.strength+'意味著你'+(chart.strength==='身偏強'?'可以主動創造局面，但要用'+chart.balance+'來疏通過度集中':'更適合借助平台、導師與既有資源起步，再逐步取得主導權')+'。');
  fill('#career-copy','職涯上最能形成差異化的組合是「'+sp.skills[0]+' × '+groupData[chart.dominant].talents[0]+'」。比起只看產業名稱，更應檢查工作是否讓你運用這兩項能力；若長期只要求你做'+profiles[chart.balance].trait+'之外的單一反應，容易感到耗損。');
  fill('#risk-copy','這張命盤的風險不是固定缺點，而是「'+chart.dominant+'」被使用過量。具體表現為：'+groupData[chart.dominant].risk+'。再加上'+sp.risks[0]+'，重要選擇前應刻意加入一個'+chart.balance+'型檢核步驟。');
+ fill('#life-cards',advice('機會點','放大'+groupData[chart.dominant].label,groupData[chart.dominant].talents[2])+advice('行動鍵','善用你的主力','把「'+sp.skills[0]+'」直接用在目前最需要突破的場景，而不是等準備更周全。')+advice('補強點','練習'+profiles[chart.balance].trait,balancePractice[chart.balance])+advice('關鍵詞','參考命局動力',chart.interactions[0]));
+ fill('#career-cards',advice('工作型態',sp.skills[0],'找一個能持續運用「'+sp.skills[0]+'」的位置，比職稱名稱更重要。')+advice('決策法',chart.strength==='身偏強'?'設定停損點':'借力而為',chart.strength==='身偏強'?'重要決策前先寫下上限、下限與回顧日期，避免只靠一股衝勁硬推到底。':'重要決策前先寫下上限、下限與回顧日期，同時主動尋求導師、平台或夥伴支持再出手。')+advice('財務節奏','量身理財策略',financeByGod[chart.dominant])+advice('成長策略','建立可攜專長','把「'+sp.skills[1]+'」練成一項能跨公司、跨產業使用的核心能力，而不只依附單一職位。'));
+ const rel=relationsByGod[chart.dominant],hea=healthByGod[chart.dominant],spouseLine=chart.interactions.find(function(x){return x.indexOf('自我／伴侶模式')>-1});
+ fill('#relations-copy',rel.copy+(spouseLine?' 從命盤來看，'+spouseLine+'，這類變動很可能會直接反映在感情或伴侶關係裡。':''));
+ fill('#relations-cards',rel.cards.map(function(c){return advice(c[0],c[1],c[2])}).join(''));
+ fill('#health-copy',hea.copy);
+ fill('#health-cards',hea.cards.map(function(c){return advice(c[0],c[1],c[2])}).join(''));
+ fill('#risk-cards',advice('體質傾向','慣性風險',sp.risks[0])+advice('思考盲點','視角風險',sp.risks[1])+advice('本階段風險',chart.dominant+'過量',groupData[chart.dominant].risk)+advice('防護機制','事前清單','重大決定前先寫下成功標準、最大成本與退出條件，並找一位敢對你說不同意見的人。'));
  buildLuck(ps,input.date,input.time,input.gender,chart);buildBenefactor(chart.balance);
  return{pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant};
 }
