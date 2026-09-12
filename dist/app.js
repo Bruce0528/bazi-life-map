@@ -3,6 +3,13 @@ const branches=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌
 const stemEls=['木','木','火','火','土','土','金','金','水','水'];
 const branchEls=['水','土','木','木','土','火','火','土','金','金','土','水'];
 const colors={木:'#4f8062',火:'#b74332',土:'#b59658',金:'#8a9195',水:'#315f77'};
+const elementIcons={
+ 木:'<svg viewBox="0 0 32 32"><path d="M16 27V15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M16 17c0-6 5-9 10-9-1 6-4 9-10 9Z" fill="currentColor"/><path d="M16 20c0-5-5-8-10-8 1 5 4 8 10 8Z" fill="currentColor"/></svg>',
+ 火:'<svg viewBox="0 0 32 32"><path d="M16 4c3 5-2 6-2 10a4 4 0 0 0 8 0c0-2-1-3-1-3 2 2 3 5 3 8a8 8 0 1 1-16 0c0-6 4-9 8-15Z" fill="currentColor"/></svg>',
+ 土:'<svg viewBox="0 0 32 32"><path d="M4 24 12 12l5 6 3-4 8 10Z" fill="currentColor"/><circle cx="9" cy="20" r="1.6" fill="currentColor" opacity=".5"/></svg>',
+ 金:'<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="11" fill="none" stroke="currentColor" stroke-width="2.6"/><rect x="11.5" y="11.5" width="9" height="9" rx="1.5" fill="currentColor"/></svg>',
+ 水:'<svg viewBox="0 0 32 32"><path d="M16 4c5 7 9 12 9 17a9 9 0 1 1-18 0c0-5 4-10 9-17Z" fill="currentColor"/><path d="M11 21a5 5 0 0 0 5 5" stroke="#f1eee6" stroke-width="1.6" stroke-linecap="round" opacity=".6" fill="none"/></svg>'
+};
 const profiles={
  木:{trait:'伸展與創造',quote:'你擅長讓事物長出新的可能，但成長也需要適時修枝。',tags:['成長型思維','理想感','同理心'],strengths:['把零散線索發展成完整方案','重視長期價值與關係經營','遇到變化時仍能找到出口'],weaknesses:['選擇過多時容易分散','為了和諧而延後表態','心軟時會接下不屬於自己的責任']},
  火:{trait:'熱度與影響',quote:'你擅長點亮氣氛與方向，當熱情有了節奏，影響力就能持續。',tags:['行動感','感受敏銳','表達力'],strengths:['能快速集結團隊注意力','對機會與氣氛非常敏銳','適合成為發起者與鼓舞者'],weaknesses:['起伏過快容易耗能','急於推進時會忽略細節','過度在意即時回饋']},
@@ -17,7 +24,7 @@ function buildBenefactor(weak){
  const people={木:'願意鼓勵你嘗試、幫你開枝散葉的人',火:'能讓你被看見、帶來行動熱度的人',土:'務實可靠、會幫你把想法落地的人',金:'標準清楚、願意給你直接回饋的人',水:'資訊靈通、能為你打開新視野的人'};
  const dirs={木:['東方','教育／創意'],火:['南方','傳播／品牌'],土:['中央','營運／實務'],金:['西方','金融／專業'],水:['北方','科技／流通']};
  fill('#benefactor-title','尋找帶著「'+weak+'」特質的人');fill('#benefactor-copy','你的貴人不一定有特定身分，更像是'+people[weak]+'。與其等待被發現，不如主動進入這種人容易出現的場域。');
- const data=[['特質',profiles[weak].trait],['方位隱喻',dirs[weak][0]],['場域',dirs[weak][1]],['相處關鍵','主動請益']];
+ const data=[['特質','<span class="element-icon" style="color:'+colors[weak]+'">'+elementIcons[weak]+'</span>'+profiles[weak].trait],['方位隱喻',dirs[weak][0]],['場域',dirs[weak][1]],['相處關鍵','主動請益']];
  fill('#benefactor-compass',data.map(function(x){return '<div class="compass-item"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>'}).join(''));
 }
 let currentReading=null;
@@ -237,7 +244,7 @@ function buildReading(input){
  fill('#day-master',stems[day]+chart.master);fill('#day-trait',(day%2===0?'陽':'陰')+chart.master+' · '+sp.image.split(' · ')[1]);
  fill('#pillars',ps.map(function(p,i){const hidden=hiddenStems[p.b].map(function(h){return stems[h]}).join('、'),god=i===2?'日主':tenGod(day,p.s);return'<div class="pillar"><small>'+p.label+' · '+god+'</small><b>'+stems[p.s]+branches[p.b]+'</b><span>'+stemEls[p.s]+' · '+branchEls[p.b]+'</span><em>藏干 '+hidden+'</em></div>'}).join(''));
  fill('#calculation-note','排盤已依你填寫的出生地時間與正確的節氣日期換算，晚上 11 點後算隔天的子時。'+(ps.nearTerm?'你的出生時間剛好卡在節氣交替前後，如果對出生地或時間不太確定，建議再次確認，結果可能會受影響。':'')+' 以下的強弱判斷與文字說明，是本站設計的解讀方式，提供一個思考角度，不是絕對的命理定論。');
- fill('#element-chart',Object.entries(chart.counts).map(function(x){const value=Math.round(x[1]*10)/10;return'<div class="element-bar" style="--value:'+(18+x[1]/max*72)+'%;--color:'+colors[x[0]]+'"><i></i><b>'+value+'</b><span>'+x[0]+'</span></div>'}).join(''));
+ fill('#element-chart',Object.entries(chart.counts).map(function(x){const value=Math.round(x[1]*10)/10;return'<div class="element-bar" style="--value:'+(18+x[1]/max*72)+'%;--color:'+colors[x[0]]+'"><i></i><b>'+value+'</b><span><span class="element-icon" style="color:'+colors[x[0]]+'">'+elementIcons[x[0]]+'</span>'+x[0]+'</span></div>'}).join(''));
  fill('#element-insight','你出生在'+chart.season+'，五個元素裡「'+chart.strong+'」的力量最明顯，代表你很容易自然而然動用它。綜合季節與整張命盤來看，你的命盤屬於「'+chart.strength+'」（'+strengthShort[chart.strength]+'）。這不是「好」或「不好」的評分，比較像是體質：'+chart.balance+'（'+profiles[chart.balance].trait+'）目前比較少，是平常可以多留意、刻意補一點的方向，並不是缺陷。');
  fill('#core-quote',sp.core+' 你的命盤又以「'+chart.dominant+'（'+groupData[chart.dominant].label+'）」的力量最重，所以這項特質最常出現在'+groupData[chart.dominant].label+'相關的場合。');
  fill('#core-tags',[sp.image,chart.strength,chart.dominant+'主導'].map(function(x){return'<span>'+x+'</span>'}).join(''));

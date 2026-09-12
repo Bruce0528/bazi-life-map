@@ -28,6 +28,8 @@
       </div>
 
       <form class="birth-card" id="birth-form">
+        <span class="corner-cloud corner-cloud--tl" aria-hidden="true"></span>
+        <span class="corner-cloud corner-cloud--br" aria-hidden="true"></span>
         <div class="card-heading">
           <div><span class="step">01 / 資料</span><h2>輸入生辰</h2></div>
           <span class="privacy">● 僅於此裝置運算</span>
@@ -58,7 +60,7 @@
         <button class="back-button" id="back-button" type="button">← 重新輸入</button>
         <div class="report-title">
           <p class="eyebrow">命盤結果 · PERSONAL READING</p>
-          <h2><span id="report-name">你的</span>生命結構</h2>
+          <h2><span id="report-name">你的</span>生命結構<svg class="mascot-fox" viewBox="0 0 64 64" aria-hidden="true"><path d="M14 22 22 6 28 24Z" fill="#b74332"/><path d="M50 22 42 6 36 24Z" fill="#b74332"/><path d="M17 21 22 12 25 22Z" fill="#f1eee6"/><path d="M47 21 42 12 39 22Z" fill="#f1eee6"/><path d="M32 20c12 0 18 8 18 17 0 10-8 17-18 17S14 47 14 37c0-9 6-17 18-17Z" fill="#d6aa57"/><path d="M32 34c6 0 10 4 10 9 0 6-4 10-10 10s-10-4-10-10c0-5 4-9 10-9Z" fill="#f1eee6"/><circle cx="25" cy="35" r="2.6" fill="#101923"/><circle cx="39" cy="35" r="2.6" fill="#101923"/><circle cx="32" cy="44" r="1.8" fill="#101923"/><circle cx="19" cy="40" r="2.6" fill="#b74332" opacity=".35"/><circle cx="45" cy="40" r="2.6" fill="#b74332" opacity=".35"/></svg></h2>
           <p id="birth-summary"></p>
         </div>
         <div class="day-master-badge"><span>日主</span><strong id="day-master">乙木</strong><small id="day-trait">陰木 · 柔韌生長</small></div>
@@ -66,6 +68,8 @@
       <div class="pillars" id="pillars"></div>
       <p class="calculation-note" id="calculation-note"></p>
       <div class="dashboard-grid">
+        <span class="corner-cloud corner-cloud--tl" aria-hidden="true"></span>
+        <span class="corner-cloud corner-cloud--br" aria-hidden="true"></span>
         <article class="panel elements-panel">
           <div class="panel-title"><span>01</span><div><small>ELEMENT BALANCE</small><h3>五行能量</h3></div></div>
           <div class="element-chart" id="element-chart"></div>
@@ -102,13 +106,15 @@
         <div class="timeline" id="luck-timeline"></div>
       </section>
       <section class="benefactor-section">
+        <span class="corner-cloud corner-cloud--tl" aria-hidden="true"></span>
+        <span class="corner-cloud corner-cloud--br" aria-hidden="true"></span>
         <div><span class="chapter">貴人線索</span><h3 id="benefactor-title"></h3><p id="benefactor-copy"></p></div>
         <div class="benefactor-compass" id="benefactor-compass"></div>
       </section>
       <section class="divination-section" id="divination">
         <div class="divination-intro">
           <p class="eyebrow">CURRENT SITUATION · 情境推演</p>
-          <h3>近期事件算卦</h3>
+          <h3>近期事件算卦<svg class="mascot-fox mascot-fox--sm" viewBox="0 0 64 64" aria-hidden="true"><path d="M14 22 22 6 28 24Z" fill="#b74332"/><path d="M50 22 42 6 36 24Z" fill="#b74332"/><path d="M17 21 22 12 25 22Z" fill="#f1eee6"/><path d="M47 21 42 12 39 22Z" fill="#f1eee6"/><path d="M32 20c12 0 18 8 18 17 0 10-8 17-18 17S14 47 14 37c0-9 6-17 18-17Z" fill="#d6aa57"/><path d="M32 34c6 0 10 4 10 9 0 6-4 10-10 10s-10-4-10-10c0-5 4-9 10-9Z" fill="#f1eee6"/><circle cx="25" cy="35" r="2.6" fill="#101923"/><circle cx="39" cy="35" r="2.6" fill="#101923"/><circle cx="32" cy="44" r="1.8" fill="#101923"/><circle cx="19" cy="40" r="2.6" fill="#b74332" opacity=".35"/><circle cx="45" cy="40" r="2.6" fill="#b74332" opacity=".35"/></svg></h3>
           <p>寫下你最近正在面對的事情。系統會以此刻、事件內容與你的命盤特質，整理最有利的發展條件、可採取的行動與需要避開的風險。</p>
         </div>
         <form class="divination-form" id="divination-form">
