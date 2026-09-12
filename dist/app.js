@@ -105,7 +105,7 @@ function personalizedGuidance(type,reading,detected){
  return{
   adv:'你的命盤以「'+dom+'（'+label+'）」為主要動能，'+frame+'如果剛好用得上這項能力，會比一般情況更順手、更省力。',
   act:strengthTip,
-  risk:frame+'最大的風險，其實和你命盤「'+dom+'」使用過量的傾向重疊：'+domRisk+'。行動前，刻意加入一個「'+bal+'」型檢核——'+balancePractice[bal]
+  risk:frame+'最大的風險，其實和你命盤「'+dom+'（'+label+'）」用過頭的傾向重疊：'+domRisk+'。行動前，不妨刻意做一件「'+bal+'（'+profiles[bal].trait+'）」屬性的小事來提醒自己踩煞車，例如：'+balancePractice[bal]
  };
 }
 function analyzeSituation(text,type,horizon){
@@ -154,6 +154,7 @@ const groupData={
  '印星':{label:'學習／洞察',talents:['快速建立知識架構並追溯根因','能從經驗與專業系統取得支援','適合研究、教育、策略與知識密集工作'],risk:'準備與推演過多時，行動速度會下降'}
 };
 const balancePractice={木:'定期接觸新領域、新方法，保持成長感。',火:'主動分享進度與成果，讓熱度被更多人看見。',土:'把想法排進行事曆，變成具體、可檢核的產出。',金:'替重要決定設立清楚的標準與截止日。',水:'固定留時間吸收不同來源的資訊與觀點。'};
+const strengthShort={身偏強:'能量較足，習慣自己扛',身偏弱:'能量較收斂，適合借力',中和:'強弱平衡，彈性最大'};
 const luckThemeByGod={比劫:'自主權、同儕網絡與新團隊',食傷:'作品輸出、創新與個人品牌',財星:'客戶、商務與資源變現',官殺:'職位責任、制度與領導機會',印星:'進修、證照、導師與知識資產'};
 const luckActionByGod={比劫:'先界定權責，再擴大合作',食傷:'以可見作品持續驗證市場',財星:'用數字管理資源與報酬',官殺:'承擔前先確認授權和標準',印星:'把學習轉成可交付成果'};
 const luckWarningByGod={比劫:'避免因比較或義氣做決定',食傷:'避免表達過快而忽略規範',財星:'避免成果壓力侵蝕長期節奏',官殺:'避免把高壓視為唯一成長方式',印星:'避免準備太久卻沒有實際輸出'};
@@ -204,7 +205,7 @@ function tenGod(dayStem,otherStem){
  return samePolarity?'偏印':'正印';
 }
 function godGroup(name){if(['比肩','劫財'].includes(name))return'比劫';if(['食神','傷官'].includes(name))return'食傷';if(['偏財','正財'].includes(name))return'財星';if(['七殺','正官'].includes(name))return'官殺';return'印星'}
-function seasonName(b){if([2,3,4].includes(b))return'春木當令';if([5,6,7].includes(b))return'夏火當令';if([8,9,10].includes(b))return'秋金當令';return'冬水當令'}
+function seasonName(b){if([2,3,4].includes(b))return'春天（木氣當旺）';if([5,6,7].includes(b))return'夏天（火氣當旺）';if([8,9,10].includes(b))return'秋天（金氣當旺）';return'冬天（水氣當旺）'}
 function analyzeChart(ps){
  const counts={木:0,火:0,土:0,金:0,水:0},gods={比劫:0,食傷:0,財星:0,官殺:0,印星:0},day=ps[2].s,master=stemEls[day],monthB=ps[1].b;
  const seasonEl=[2,3,4].includes(monthB)?'木':[5,6,7].includes(monthB)?'火':[8,9,10].includes(monthB)?'金':'水';
@@ -235,20 +236,20 @@ function buildReading(input){
  fill('#report-name',input.name?input.name.replace(/[<>]/g,'')+'的':'你的');fill('#birth-summary',input.date.replaceAll('-','.')+' · '+input.time+' · '+document.querySelector('#place').selectedOptions[0].textContent);
  fill('#day-master',stems[day]+chart.master);fill('#day-trait',(day%2===0?'陽':'陰')+chart.master+' · '+sp.image.split(' · ')[1]);
  fill('#pillars',ps.map(function(p,i){const hidden=hiddenStems[p.b].map(function(h){return stems[h]}).join('、'),god=i===2?'日主':tenGod(day,p.s);return'<div class="pillar"><small>'+p.label+' · '+god+'</small><b>'+stems[p.s]+branches[p.b]+'</b><span>'+stemEls[p.s]+' · '+branchEls[p.b]+'</span><em>藏干 '+hidden+'</em></div>'}).join(''));
- fill('#calculation-note','以輸入地區的 UTC+8 民用時間、精確節氣與子時不換日流派排盤；'+(ps.nearTerm?'接近交節時刻，請核對出生地與時間。':'四柱已按節氣交接計算。')+' 年月日時由 lunar-javascript 1.7.7 換算；五行強弱與文字解讀為本站啟發式模型。');
+ fill('#calculation-note','排盤已依你填寫的出生地時間與正確的節氣日期換算，晚上 11 點後算隔天的子時。'+(ps.nearTerm?'你的出生時間剛好卡在節氣交替前後，如果對出生地或時間不太確定，建議再次確認，結果可能會受影響。':'')+' 以下的強弱判斷與文字說明，是本站設計的解讀方式，提供一個思考角度，不是絕對的命理定論。');
  fill('#element-chart',Object.entries(chart.counts).map(function(x){const value=Math.round(x[1]*10)/10;return'<div class="element-bar" style="--value:'+(18+x[1]/max*72)+'%;--color:'+colors[x[0]]+'"><i></i><b>'+value+'</b><span>'+x[0]+'</span></div>'}).join(''));
- fill('#element-insight',chart.season+'；按本站季節與藏干權重模型，'+chart.strong+'的相對分值最高。同類與印星支持分值占模型約 '+Math.round(chart.support*100)+'%，日主在 '+chart.roots+' 個地支有根，暫列「'+chart.strength+'」。這不是傳統定格、喜用神或客觀能量百分比；'+chart.balance+'僅是反思時可留意的平衡方向。');
- fill('#core-quote',sp.core+' 你的命局又以「'+chart.dominant+'」為主導，所以這項特質會更常透過'+groupData[chart.dominant].label+'表現出來。');
+ fill('#element-insight','你出生在'+chart.season+'，五個元素裡「'+chart.strong+'」的力量最明顯，代表你很容易自然而然動用它。綜合季節與整張命盤來看，你的命盤屬於「'+chart.strength+'」（'+strengthShort[chart.strength]+'）。這不是「好」或「不好」的評分，比較像是體質：'+chart.balance+'（'+profiles[chart.balance].trait+'）目前比較少，是平常可以多留意、刻意補一點的方向，並不是缺陷。');
+ fill('#core-quote',sp.core+' 你的命盤又以「'+chart.dominant+'（'+groupData[chart.dominant].label+'）」的力量最重，所以這項特質最常出現在'+groupData[chart.dominant].label+'相關的場合。');
  fill('#core-tags',[sp.image,chart.strength,chart.dominant+'主導'].map(function(x){return'<span>'+x+'</span>'}).join(''));
- fill('#structure-summary','<div class="structure-chip"><small>月令</small><b>'+chart.season+'</b></div><div class="structure-chip"><small>日主狀態</small><b>'+chart.strength+' · 根氣 '+chart.roots+'</b></div><div class="structure-chip"><small>主要動力</small><b>'+chart.dominant+' · '+groupData[chart.dominant].label+'</b></div>');
+ fill('#structure-summary','<div class="structure-chip"><small>出生季節</small><b>'+chart.season+'</b></div><div class="structure-chip"><small>先天強弱</small><b>'+chart.strength+'（'+strengthShort[chart.strength]+'）</b></div><div class="structure-chip"><small>性格主軸</small><b>'+chart.dominant+' · '+groupData[chart.dominant].label+'</b></div>');
  fill('#strength-list',refinedStrengths(sp,chart).map(function(x){return'<li>'+x+'</li>'}).join(''));fill('#weakness-list',refinedRisks(sp,chart).map(function(x){return'<li>'+x+'</li>'}).join(''));
  const godMax=Math.max.apply(null,Object.values(chart.gods));fill('#ten-god-chart',Object.entries(chart.gods).map(function(x){return'<div class="god-row"><span>'+x[0]+'</span><div class="god-track"><i style="--god:'+Math.round(x[1]/godMax*100)+'%"></i></div><b>'+x[1].toFixed(1)+'</b></div>'}).join(''));
- const evidence=['月令「'+branches[ps[1].b]+'」屬'+chart.season+'，是本模型的季節底色。','日主'+stems[day]+chart.master+'在四支取得 '+chart.roots+' 處根氣；印比加權占比約 '+Math.round(chart.support*100)+'%（模型指標）。','加權後'+chart.dominant+'分值最高，因此解讀偏向「'+groupData[chart.dominant].label+'」運作。'].concat(chart.interactions);
+ const evidence=['你的出生月份是「'+branches[ps[1].b]+'」月，屬於'+chart.season+'——這是判斷命盤強弱時的季節背景。','你的日主是'+stems[day]+chart.master+'，四個地支裡有 '+chart.roots+' 個能替它撐腰；同類和能生助它的力量，合計約占整體的 '+Math.round(chart.support*100)+'%，這是判斷「'+chart.strength+'」的主要依據。','把整張命盤都算進去之後，「'+chart.dominant+'（'+groupData[chart.dominant].label+'）」的份量最重，所以解讀會偏向這個方向。'].concat(chart.interactions);
  fill('#evidence-list',evidence.map(function(x){return'<li>'+x+'</li>'}).join(''));
- fill('#talent-list',refinedStrengths(sp,chart).concat(['最合適的補位能力：'+profiles[chart.balance].trait+'，用來平衡'+chart.dominant+'使用過量。']).map(function(x){return'<li>'+x+'</li>'}).join(''));
- fill('#life-copy','你的機會不是泛泛的「多嘗試」，而是把「'+sp.skills[0]+'」用在需要'+groupData[chart.dominant].label+'的情境。'+chart.strength+'意味著你'+(chart.strength==='身偏強'?'可以主動創造局面，但要用'+chart.balance+'來疏通過度集中':'更適合借助平台、導師與既有資源起步，再逐步取得主導權')+'。');
+ fill('#talent-list',refinedStrengths(sp,chart).concat(['最適合你補強的能力：'+profiles[chart.balance].trait+'，可以用來平衡「'+chart.dominant+'（'+groupData[chart.dominant].label+'）」用過頭的狀況。']).map(function(x){return'<li>'+x+'</li>'}).join(''));
+ fill('#life-copy','你的機會不是泛泛的「多嘗試」，而是把「'+sp.skills[0]+'」用在需要'+groupData[chart.dominant].label+'的情境。以「'+chart.strength+'」（'+strengthShort[chart.strength]+'）來說，你'+(chart.strength==='身偏強'?'可以主動創造局面，但也要刻意練一點「'+chart.balance+'（'+profiles[chart.balance].trait+'）」，來疏通過度集中的狀態':'更適合借助平台、導師與既有資源起步，再逐步取得主導權')+'。');
  fill('#career-copy','職涯上最能形成差異化的組合是「'+sp.skills[0]+' × '+groupData[chart.dominant].talents[0]+'」。比起只看產業名稱，更應檢查工作是否讓你運用這兩項能力；若長期只要求你做'+profiles[chart.balance].trait+'之外的單一反應，容易感到耗損。');
- fill('#risk-copy','這張命盤的風險不是固定缺點，而是「'+chart.dominant+'」被使用過量。具體表現為：'+groupData[chart.dominant].risk+'。再加上'+sp.risks[0]+'，重要選擇前應刻意加入一個'+chart.balance+'型檢核步驟。');
+ fill('#risk-copy','這張命盤的風險不是固定缺點，而是「'+chart.dominant+'（'+groupData[chart.dominant].label+'）」用過頭了。具體表現為：'+groupData[chart.dominant].risk+'。再加上'+sp.risks[0]+'，重要選擇前不妨刻意做一件「'+chart.balance+'（'+profiles[chart.balance].trait+'）」屬性的小事來提醒自己踩煞車，例如：'+balancePractice[chart.balance]);
  fill('#life-cards',advice('機會點','放大'+groupData[chart.dominant].label,groupData[chart.dominant].talents[2])+advice('行動鍵','善用你的主力','把「'+sp.skills[0]+'」直接用在目前最需要突破的場景，而不是等準備更周全。')+advice('補強點','練習'+profiles[chart.balance].trait,balancePractice[chart.balance])+advice('關鍵詞','參考命局動力',chart.interactions[0]));
  fill('#career-cards',advice('工作型態',sp.skills[0],'找一個能持續運用「'+sp.skills[0]+'」的位置，比職稱名稱更重要。')+advice('決策法',chart.strength==='身偏強'?'設定停損點':'借力而為',chart.strength==='身偏強'?'重要決策前先寫下上限、下限與回顧日期，避免只靠一股衝勁硬推到底。':'重要決策前先寫下上限、下限與回顧日期，同時主動尋求導師、平台或夥伴支持再出手。')+advice('財務節奏','量身理財策略',financeByGod[chart.dominant])+advice('成長策略','建立可攜專長','把「'+sp.skills[1]+'」練成一項能跨公司、跨產業使用的核心能力，而不只依附單一職位。'));
  const rel=relationsByGod[chart.dominant],hea=healthByGod[chart.dominant],spouseLine=chart.interactions.find(function(x){return x.indexOf('自我／伴侶模式')>-1});
@@ -256,7 +257,7 @@ function buildReading(input){
  fill('#relations-cards',rel.cards.map(function(c){return advice(c[0],c[1],c[2])}).join(''));
  fill('#health-copy',hea.copy);
  fill('#health-cards',hea.cards.map(function(c){return advice(c[0],c[1],c[2])}).join(''));
- fill('#risk-cards',advice('體質傾向','慣性風險',sp.risks[0])+advice('思考盲點','視角風險',sp.risks[1])+advice('本階段風險',chart.dominant+'過量',groupData[chart.dominant].risk)+advice('防護機制','事前清單','重大決定前先寫下成功標準、最大成本與退出條件，並找一位敢對你說不同意見的人。'));
+ fill('#risk-cards',advice('體質傾向','慣性風險',sp.risks[0])+advice('思考盲點','視角風險',sp.risks[1])+advice('本階段風險',chart.dominant+'（'+groupData[chart.dominant].label+'）用過頭',groupData[chart.dominant].risk)+advice('防護機制','事前清單','重大決定前先寫下成功標準、最大成本與退出條件，並找一位敢對你說不同意見的人。'));
  const currentCycle=buildLuck(ps,input.date,input.time,input.gender,chart);buildBenefactor(chart.balance);
  return{pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:currentCycle};
 }
@@ -276,11 +277,11 @@ function branchLink(branch,natal){
 function buildLuck(ps,date,time,gender,chart){
  const birthYear=Number(date.slice(0,4)),day=ps[2].s,yang=ps[0].s%2===0,forward=gender==='other'?true:(gender==='male')===yang,natal=ps.map(function(p){return p.b});
  const yun=ps.eight.getYun(gender==='other'?(yang?1:0):(gender==='male'?1:0),2),startSolar=yun.getStartSolar(),startDate=startSolar.toYmdHms(),startAge=(Date.UTC(startSolar.getYear(),startSolar.getMonth()-1,startSolar.getDay())-Date.UTC(birthYear,Number(date.slice(5,7))-1,Number(date.slice(8,10))))/31557600000;
- fill('#luck-start','約 '+startAge.toFixed(1)+' 歲起運（'+startDate.slice(0,16)+'） · '+(forward?'順排':'逆排')+(gender==='other'?' · 未指定性別時暫以順行示意，請勿視為個人定盤':'')+' · 實際結果仍受流派與出生地時差影響');
+ fill('#luck-start','約在 '+startAge.toFixed(1)+' 歲、'+startDate.slice(0,16)+' 前後，開始進入你的第一步十年大運'+(gender==='other'?'（未指定性別時，暫以較常見的方向示意，請勿當作精準定盤）':'')+'。實際起算時間仍會受流派與出生地時差影響，僅供參考。');
  let html='',currentCycle=null;
  const cycles=yun.getDaYun(9).slice(1);
  for(let i=0;i<cycles.length;i++){const cycle=cycles[i],gz=cycle.getGanZhi(),s=stems.indexOf(gz[0]),b=branches.indexOf(gz[1]),god=godGroup(tenGod(day,s)),link=branchLink(b,natal),current=new Date().getFullYear()>=cycle.getStartYear()&&new Date().getFullYear()<=cycle.getEndYear(),helpful=(chart.strength==='身偏弱'&&['比劫','印星'].includes(god))||(chart.strength==='身偏強'&&['食傷','財星','官殺'].includes(god)),tone=helpful?'順勢開展':god===chart.dominant?'主題加倍':'調整鍛鍊';
-  html+='<div class="cycle '+(current?'current':'')+'"><small>'+cycle.getStartYear()+'—'+cycle.getEndYear()+'</small><b>'+gz+'</b><span>'+cycle.getStartAge()+'—'+cycle.getEndAge()+' 虛歲'+(current?' · 當前':'')+'</span><div class="cycle-tone">'+tone+' · '+god+'</div><p>'+luckThemeByGod[god]+'成為主題；'+link+'。</p><ul><li>'+luckActionByGod[god]+'</li><li>'+luckWarningByGod[god]+'</li></ul><div class="cycle-link">'+tenGod(day,s)+'透干 · '+branches[b]+'支藏'+hiddenStems[b].map(function(h){return tenGod(day,h)}).join('／')+'</div></div>';
+  html+='<div class="cycle '+(current?'current':'')+'"><small>'+cycle.getStartYear()+'—'+cycle.getEndYear()+'</small><b>'+gz+'</b><span>'+cycle.getStartAge()+'—'+cycle.getEndAge()+' 虛歲'+(current?' · 當前':'')+'</span><div class="cycle-tone">'+tone+' · '+god+'</div><p>這十年主要圍繞著'+luckThemeByGod[god]+'；'+link+'。</p><ul><li>'+luckActionByGod[god]+'</li><li>'+luckWarningByGod[god]+'</li></ul></div>';
   if(current)currentCycle={ganzhi:gz,god:god,tone:tone,startYear:cycle.getStartYear(),endYear:cycle.getEndYear(),startAge:cycle.getStartAge(),endAge:cycle.getEndAge()};
  }
  fill('#luck-timeline',html);
