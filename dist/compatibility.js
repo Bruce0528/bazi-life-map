@@ -10,6 +10,11 @@ function compatibilityBranch(a,b){
  if(combine[a]===b)return{label:'六合',copy:'日支有傳統所說的「合」，象徵容易在日常安排上找到共同點；實際默契仍要靠相處驗證。',action:'挑一件兩人都想做的事共同排進行事曆，月底檢查是否都滿意。'};
  return{label:'無直接沖合',copy:'日支沒有直接六沖或六合；關係品質更值得從日常溝通與承諾是否一致觀察。',action:'每週花 15 分鐘各說一件感謝、一件想調整的事。'};
 }
+const compatibilityChoices={
+ money:{steady:'先存足緊急預備金',budget:'共同記帳與預算規劃',independent:'各自保有財務自主',growth:'定期投資長期成長',experience:'願為旅行與體驗花費',family:'優先承擔家庭支出',flexible:'保留彈性與生活品質'},
+ values:{steady:'規律作息與居家生活',flexible:'時間彈性與自由安排',growth:'事業成長與新挑戰',family:'家庭陪伴與照顧',social:'朋友社交與群體活動',travel:'旅行探索與新體驗',balance:'健康平衡與慢生活'},
+ love:{talk:'有事坦誠直接談',time:'固定相處與專心陪伴',space:'保有個人空間與界線',action:'用行動照顧與支持',commit:'穩定承諾與未來規劃',affection:'言語肯定與親密表達',growth:'彼此鼓勵一起成長'}
+};
 function compatibilityValueCard(title,man,woman,labels,question,action){
  const male=man?labels[man]:'尚未提供',female=woman?labels[woman]:'尚未提供';
  const reading=man&&woman?(man===woman?'你們填寫的偏好一致：'+male+'。這是目前提供的真實資訊，不是由命盤推定。':'你們填寫的偏好不同：男方偏「'+male+'」，女方偏「'+female+'」。差異可協商，不代表不合。'):'目前資料不足，無法僅憑八字判斷兩人真實的'+title+'。請面對面討論：'+question;
@@ -55,11 +60,11 @@ function generateCompatibility(){
  const cards=[
   compatibilityCard('性格互動','日主：'+man.day+' × '+woman.day,elementRead+' 男方較常透過'+groupData[man.chart.dominant].label+'表現，女方較常透過'+groupData[woman.chart.dominant].label+'表現。','各自寫下遇到壓力時最想被怎樣對待；用一次最近的事件核對是否符合，不直接把命盤描述當事實。'),
   compatibilityCard('相處模式','日支：'+branches[man.pillars[2].b]+' × '+branches[woman.pillars[2].b]+' · '+relation.label,relation.copy,relation.action),
-  compatibilityValueCard('金錢觀',man.money,woman.money,{steady:'先存足安全預備金',growth:'願意投入成長機會',flexible:'保留彈性與生活品質'},'每月必要支出與共同儲蓄各占多少？','先列共同固定支出、個人自由支出與儲蓄目標；各自寫一個可接受比例，再討論差距。'),
-  compatibilityValueCard('價值觀',man.values,woman.values,{steady:'穩定與長期規劃',growth:'探索與個人成長',family:'家庭與照顧責任'},'未來三年最想優先保護什麼？','各自排序工作、家庭、自由、成長四項；只討論排序差最多的前兩項。'),
-  compatibilityValueCard('感情觀',man.love,woman.love,{talk:'有事直接談',space:'需要獨處空間',action:'用行動表達在乎'},'爭執時想先說清楚，還是先暫停？','約定衝突後最長多久恢復對話，並說清楚什麼行為會讓各自感到被在乎。')
+  compatibilityValueCard('金錢觀',man.money,woman.money,compatibilityChoices.money,'共同支出、個人可自由運用的錢與儲蓄目標如何分配？','先列共同固定支出、個人自由支出與儲蓄目標；各自寫一個可接受比例，再討論差距。'),
+  compatibilityValueCard('生活型態',man.values,woman.values,compatibilityChoices.values,'平日作息、週末安排與家庭／社交時間怎麼分配？','各自排出理想的一週時間表，找出作息與獨處、社交需求落差最大的時段，先試行兩週。'),
+  compatibilityValueCard('感情期待',man.love,woman.love,compatibilityChoices.love,'什麼互動最能讓你感到被愛，吵架後又希望怎麼修復？','各自說明最需要的一種關心方式，約定衝突後何時恢復對話；不要用自己的偏好代替對方的需求。')
  ];
- fill('#compatibility-summary','<div class="compat-result-head"><span>雙人命盤 · 互動總覽</span><h3>'+compatibilityEscape(man.name)+' × '+compatibilityEscape(woman.name)+'</h3><p>總分是命盤線索的整理，不是關係成敗的判決；三觀以你們填寫的實際偏好為準。</p></div>'+compatibilityScoreMarkup(score)+'<div class="compat-chart-grid">'+compatibilityChartMarkup(man,'男方')+compatibilityChartMarkup(woman,'女方')+'</div><div class="compat-verdict"><div><small>性格契合點</small><p>'+compatibilityEscape(dynamic)+'</p></div><div><small>相處提醒 · '+compatibilityEscape(relation.label)+'</small><p>'+compatibilityEscape(branchNote)+'</p></div></div><p class="compat-evidence">判讀依據：'+compatibilityEscape(evidence)+'；日支 '+branches[man.pillars[2].b]+' × '+branches[woman.pillars[2].b]+'。</p>');
+ fill('#compatibility-summary','<div class="compat-result-head"><span>雙人命盤 · 互動總覽</span><h3>'+compatibilityEscape(man.name)+' × '+compatibilityEscape(woman.name)+'</h3><p>總分是命盤線索的整理，不是關係成敗的判決；金錢觀、生活型態與感情期待以你們填寫的實際偏好為準。</p></div>'+compatibilityScoreMarkup(score)+'<div class="compat-chart-grid">'+compatibilityChartMarkup(man,'男方')+compatibilityChartMarkup(woman,'女方')+'</div><div class="compat-verdict"><div><small>性格契合點</small><p>'+compatibilityEscape(dynamic)+'</p></div><div><small>相處提醒 · '+compatibilityEscape(relation.label)+'</small><p>'+compatibilityEscape(branchNote)+'</p></div></div><p class="compat-evidence">判讀依據：'+compatibilityEscape(evidence)+'；日支 '+branches[man.pillars[2].b]+' × '+branches[woman.pillars[2].b]+'。</p>');
  fill('#compatibility-cards',cards.join(''));
  document.querySelector('#compatibility-result').hidden=false;
  document.querySelector('#compatibility-result').scrollIntoView({behavior:'smooth',block:'start'});
