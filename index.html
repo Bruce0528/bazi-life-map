@@ -132,13 +132,18 @@
           <p>寫下你最近正在面對的事情。系統會以此刻、事件內容與你的命盤特質，整理最有利的發展條件、可採取的行動與需要避開的風險。</p>
           <p class="price-line"><strong>NT$99</strong>／解鎖 1 次推演</p>
         </div>
-        <form class="divination-form" id="divination-form">
-          <label>事件類型<select id="event-type"><option value="career">事業／工作</option><option value="money">金錢／投資</option><option value="love">愛情／關係</option><option value="decision">重大選擇</option><option value="other">其他</option></select></label>
-          <label>最近遇到的事情<textarea id="event-text" rows="4" minlength="8" maxlength="500" required placeholder="例：公司提出新的職務機會，但需要換到陌生團隊，我擔心發展性與適應問題……"></textarea></label>
-          <label>希望觀察的時間<select id="event-horizon"><option value="30">未來 30 天</option><option value="90">未來 3 個月</option><option value="365">未來 1 年</option></select></label>
-          <button type="submit" disabled><span>藍新金流尚未開通</span><span aria-hidden="true">鎖</span></button>
-          <p class="payment-note">藍新商店與安全付款後端尚待設定。目前不會收費，也不會產生推演結果。</p>
-        </form>
+        <div class="divination-action">
+          <div class="paywall" id="paywall">
+            <button type="button" id="unlock-button" disabled><span>藍新金流尚未開通</span><span aria-hidden="true">鎖</span></button>
+            <p class="payment-note" id="payment-note">藍新商店與安全付款後端尚待設定。目前不會收費，也不會產生推演結果。</p>
+          </div>
+          <form class="divination-form" id="divination-form" hidden>
+            <label>事件類型<select id="event-type"><option value="career">事業／工作</option><option value="money">金錢／投資</option><option value="love">愛情／關係</option><option value="decision">重大選擇</option><option value="other">其他</option></select></label>
+            <label>最近遇到的事情<textarea id="event-text" rows="4" minlength="8" maxlength="500" required placeholder="例：公司提出新的職務機會，但需要換到陌生團隊，我擔心發展性與適應問題……"></textarea></label>
+            <label>希望觀察的時間<select id="event-horizon"><option value="30">未來 30 天</option><option value="90">未來 3 個月</option><option value="365">未來 1 年</option></select></label>
+            <button type="submit"><span>結合命盤推演方向</span><span aria-hidden="true">→</span></button>
+          </form>
+        </div>
         <div class="oracle-result" id="oracle-result" hidden>
           <div class="hexagram"><small>本次卦象</small><strong id="hexagram-name"></strong><div class="hexagram-lines" id="hexagram-lines"></div><span id="hexagram-keyword"></span></div>
           <div class="oracle-copy">
@@ -211,6 +216,7 @@
     </footer>
   </main>
   <script src="lunar.js"></script>
+  <script src="config.js"></script>
   <script src="app.js"></script>
   <script src="compatibility.js"></script>
 </body>

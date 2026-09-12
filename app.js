@@ -130,7 +130,59 @@ function analyzeSituation(text,type,horizon){
  document.querySelector('#oracle-result').hidden=false;document.querySelector('#oracle-result').scrollIntoView({behavior:'smooth',block:'start'});
  return{hexagram:hex.name,keyword:hex.key,mostFavorable:guide.adv.concat([personal.adv]),recommendedActions:guide.act.concat([personal.act]),risksToAvoid:guide.risk.concat([personal.risk])};
 }
-document.querySelector('#divination-form').addEventListener('submit',function(event){event.preventDefault()});
+document.querySelector('#divination-form').addEventListener('submit',function(event){event.preventDefault();const text=document.querySelector('#event-text').value.trim();if(text.length<8)return;analyzeSituation(text,document.querySelector('#event-type').value,document.querySelector('#event-horizon').value)});
+
+/* 付款解鎖：呼叫 worker/ 後端（尚未部署前 PAYMENT_API_BASE 為空，維持暫停狀態，不會扣款也不會暴露繞過付款的路徑） */
+const PAYMENT_API_BASE=(window.PAYMENT_API_BASE||'').replace(/\/$/,'');
+function paymentReady(){return!!PAYMENT_API_BASE}
+function getDeviceToken(){return localStorage.getItem('bazi_device_token')||''}
+function setDeviceToken(t){localStorage.setItem('bazi_device_token',t)}
+function isDivinationUnlocked(){return localStorage.getItem('bazi_divination_unlocked')==='1'}
+function setDivinationUnlocked(){localStorage.setItem('bazi_divination_unlocked','1')}
+function renderDivinationGate(){
+ const paywall=document.querySelector('#paywall'),form=document.querySelector('#divination-form'),note=document.querySelector('#payment-note'),btn=document.querySelector('#unlock-button');
+ if(!paywall||!form)return;
+ if(isDivinationUnlocked()){paywall.hidden=true;form.hidden=false;return}
+ form.hidden=true;paywall.hidden=false;
+ if(!paymentReady()){btn.disabled=true;btn.firstElementChild.textContent='藍新金流尚未開通';note.textContent='藍新商店與安全付款後端尚待設定。目前不會收費，也不會產生推演結果。'}
+ else{btn.disabled=false;btn.firstElementChild.textContent='NT$99 解鎖並開始推演';note.textContent=''}
+}
+async function startCheckout(){
+ const btn=document.querySelector('#unlock-button'),note=document.querySelector('#payment-note'),original=btn.firstElementChild.textContent;
+ btn.disabled=true;btn.firstElementChild.textContent='正在建立訂單…';
+ try{
+  const orderRes=await fetch(PAYMENT_API_BASE+'/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({deviceToken:getDeviceToken()||undefined})});
+  if(!orderRes.ok)throw new Error('order');
+  const order=await orderRes.json();setDeviceToken(order.deviceToken);
+  const payRes=await fetch(PAYMENT_API_BASE+'/payments/newebpay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({orderId:order.orderId})});
+  if(!payRes.ok)throw new Error('payment');
+  const pay=await payRes.json(),form=document.createElement('form');
+  form.method='POST';form.action=pay.gatewayUrl;form.style.display='none';
+  Object.entries(pay.fields).forEach(function(entry){const i=document.createElement('input');i.type='hidden';i.name=entry[0];i.value=entry[1];form.appendChild(i)});
+  document.body.appendChild(form);form.submit();
+ }catch(e){
+  btn.disabled=false;btn.firstElementChild.textContent=original;
+  note.textContent='連線失敗，請稍後再試，或聯絡客服 a00168201@gmail.com。';
+ }
+}
+async function tryRedeemFromReturn(){
+ const url=new URL(location.href),payment=url.searchParams.get('payment');
+ if(!payment)return;
+ url.searchParams.delete('payment');url.searchParams.delete('orderId');
+ history.replaceState(null,'',url.pathname+url.search+url.hash);
+ const note=document.querySelector('#payment-note');
+ if(payment!=='paid'){if(note)note.textContent='付款未完成或已取消，請重新嘗試。';return}
+ const deviceToken=getDeviceToken();
+ if(!deviceToken)return;
+ try{
+  const res=await fetch(PAYMENT_API_BASE+'/premium/reading',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({deviceToken})}),data=await res.json();
+  if(data.ok){setDivinationUnlocked();renderDivinationGate();document.querySelector('#divination').scrollIntoView({behavior:'smooth'})}
+  else if(note)note.textContent='解鎖失敗，請聯絡客服協助處理。';
+ }catch(e){if(note)note.textContent='連線失敗，請稍後再試，或聯絡客服。'}
+}
+document.querySelector('#unlock-button').addEventListener('click',startCheckout);
+renderDivinationGate();
+tryRedeemFromReturn();
 function registerWebMCP(){const context=document.modelContext;if(!context||!context.registerTool)return;try{Promise.resolve(context.registerTool({name:'generate_bazi_reading',title:'生成八字命盤分析',description:'使用生辰資料產生並顯示五行、特質、人生面向與十年大運的文化參考報告。',inputSchema:{type:'object',properties:{name:{type:'string'},birthDate:{type:'string',pattern:'^\\d{4}-\\d{2}-\\d{2}$'},birthTime:{type:'string',pattern:'^\\d{2}:\\d{2}$'},gender:{type:'string',enum:['female','male','other']}},required:['birthDate','birthTime','gender'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute:function(input){if(!/^\d{4}-\d{2}-\d{2}$/.test(input.birthDate)||!/^\d{2}:\d{2}$/.test(input.birthTime))throw new Error('生日或時間格式不正確');document.querySelector('#name').value=input.name||'';document.querySelector('#birth-date').value=input.birthDate;document.querySelector('#birth-time').value=input.birthTime;document.querySelector('#gender').value=input.gender;return showReport({name:input.name||'',date:input.birthDate,time:input.birthTime,gender:input.gender})}})).catch(function(){})}catch(e){}}
 registerWebMCP();
 function registerDivinationWebMCP(){const context=document.modelContext;if(!context||!context.registerTool)return;try{Promise.resolve(context.registerTool({name:'analyze_current_situation',title:'近期事件算卦',description:'在已生成命盤後，根據近期事件提供有利發展、建設性行動與風險提醒。',inputSchema:{type:'object',properties:{situation:{type:'string',minLength:8,maxLength:500},category:{type:'string',enum:['career','money','love','decision','other']},horizonDays:{type:'string',enum:['30','90','365']}},required:['situation','category','horizonDays'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:true},execute:function(input){if(!currentReading)throw new Error('請先生成命盤');if(typeof input.situation!=='string'||input.situation.trim().length<8||input.situation.length>500)throw new Error('事件內容需為 8 至 500 個字');if(!eventGuidance[input.category]||!['30','90','365'].includes(input.horizonDays))throw new Error('事件分類或觀察時間不正確');document.querySelector('#event-text').value=input.situation;document.querySelector('#event-type').value=input.category;document.querySelector('#event-horizon').value=input.horizonDays;return analyzeSituation(input.situation,input.category,input.horizonDays)}})).catch(function(){})}catch(e){}}
