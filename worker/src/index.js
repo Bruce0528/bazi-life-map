@@ -270,6 +270,27 @@ async function handlePremiumReading(request, env) {
   return json({ ok: true }, env);
 }
 
+// Simple per-IP rate limit backed by KV. Not perfectly precise (KV is
+// eventually consistent, so a burst right at a window boundary could
+// slip through), but it is enough to stop naive scripted abuse of the
+// order/payment/unlock endpoints without needing a paid domain+WAF.
+async function isRateLimited(env, request, bucket, limit, windowSeconds) {
+  if (!env.RATE_LIMIT) return false; // fail open if KV isn't bound, rather than break the API
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const key = `${bucket}:${ip}`;
+  const current = await env.RATE_LIMIT.get(key);
+  const count = current ? parseInt(current, 10) : 0;
+  if (count >= limit) return true;
+  await env.RATE_LIMIT.put(key, String(count + 1), { expirationTtl: windowSeconds });
+  return false;
+}
+
+const RATE_LIMITS = {
+  '/orders': { limit: 10, windowSeconds: 60 },
+  '/payments/newebpay': { limit: 10, windowSeconds: 60 },
+  '/premium/reading': { limit: 20, windowSeconds: 60 },
+};
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -278,6 +299,12 @@ export default {
 
     if (method === 'OPTIONS') return new Response(null, { headers: corsHeaders(env) });
     if (pathname === '/health') return json({ ok: true }, env);
+
+    const limitRule = RATE_LIMITS[pathname];
+    if (limitRule && method === 'POST') {
+      const limited = await isRateLimited(env, request, pathname, limitRule.limit, limitRule.windowSeconds);
+      if (limited) return json({ error: 'too many requests, please try again shortly' }, env, 429);
+    }
 
     try {
       if (pathname === '/orders' && method === 'POST') return await handleCreateOrder(request, env);

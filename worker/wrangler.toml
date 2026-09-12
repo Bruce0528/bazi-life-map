@@ -18,7 +18,12 @@ AMOUNT_TWD = 99
 [[d1_databases]]
 binding = "DB"
 database_name = "bazi-orders"
-database_id = "<paste-the-database-id-from-wrangler-d1-create>"
+database_id = "0befbf68-899b-4ecf-ac53-577e43d30c70"
+
+# Used for simple per-IP rate limiting (see rateLimit() in src/index.js).
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "c91a1e0c27f845279e87d06e7df3cf39"
 
 # Secrets (never put real values in this file — set them with:
 #   wrangler secret put NEWEBPAY_MERCHANT_ID
