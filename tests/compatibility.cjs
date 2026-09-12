@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const { Solar } = require('../dist/lunar.js');
+const { BaziLifeGame } = require('../dist/life-game.js');
 
 const elements = new Map();
 const value = (id, text) => { elements.set('#' + id, { value: text, addEventListener() {} }); };
@@ -17,7 +18,7 @@ const document = {
   querySelector(selector) { return selector === '#paywall' ? null : elements.get(selector) || { addEventListener() {} }; },
   querySelectorAll() { return []; },
 };
-const context = vm.createContext({ Solar, document, window: { scrollTo() {} }, location: { href: 'http://localhost/' }, URL, console, setTimeout, Date });
+const context = vm.createContext({ Solar, BaziLifeGame, document, window: { scrollTo() {} }, location: { href: 'http://localhost/' }, URL, console, setTimeout, Date });
 for (const file of ['app.js', 'compatibility.js']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../dist', file), 'utf8'), context);
 const html = fs.readFileSync(path.join(__dirname, '../dist/index.html'), 'utf8');
 assert.doesNotMatch(html, /id="(?:male|female)-time"/);

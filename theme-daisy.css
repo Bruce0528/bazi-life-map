@@ -164,6 +164,39 @@ body { background: #f7faf2; color: var(--ink); }
 .lg-route { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px 20px; margin: 24px 0; padding: 0; list-style: none; }.lg-route li { border-top: 1px solid #cfe1c7; padding-top: 8px; line-height: 1.5; }.lg-route span { display: inline-block; min-width: 100px; color: #6c8d6e; font-size: .78rem; }
 .lg-result .lg-disclaimer { font: .8rem/1.6 var(--sans); color: #648268; }
 .lg-result button { background: #5f8d62; color: #fff; border-radius: 10px; }.lg-result button:hover { background: #4a7850; }
+.lg-rule { padding: 14px 18px; border: 1px solid #d9e8cf; border-radius: 12px; background: #f5faef; color: #42664b; font-size: .85rem; line-height: 1.65; }
+.lg-progress { display: flex; justify-content: space-between; gap: 12px; margin-top: 20px; color: #356146; font-size: .9rem; }
+.lg-progress b { font-size: 1.05rem; }
+.lg-board { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 8px; margin: 16px 0 20px; }
+.lg-space { min-height: 66px; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 8px 3px; border: 1px solid #d5e5cf; border-radius: 12px; background: #fbfdf7; color: #628266; position: relative; }
+.lg-space.is-current { border: 2px solid #e3b953; background: #fff8e3; box-shadow: 0 4px 14px rgba(184,147,57,.18); color: #3c6744; }
+.lg-space-icon { font-size: 1.2rem; }
+.lg-space small { font-size: .8rem; font-weight: 700; }
+.lg-space b { position: absolute; top: -11px; right: -5px; display: grid; place-items: center; width: 23px; height: 23px; border-radius: 50%; background: #e7b956; color: #294832; font-size: .7rem; box-shadow: 0 2px 6px #c4d6b9; }
+.lg-dice-panel,.lg-draw-head { display: flex; align-items: center; gap: 14px; border-top: 1px solid #d4e3cf; padding-top: 18px; }
+.lg-die { display: grid; place-items: center; flex: none; width: 64px; height: 64px; border-radius: 14px; background: #fffdf5; color: #557e55; font-size: 3.4rem; line-height: 1; box-shadow: 0 5px 13px rgba(64,107,67,.1); }
+.lg-dice-panel div,.lg-draw-head div { flex: 1; }
+.lg-dice-panel b,.lg-draw-head b { display: block; color: #31543f; font-size: 1.05rem; }
+.lg-dice-panel small,.lg-draw-head small { display: block; color: #6b846b; font-size: .78rem; line-height: 1.5; }
+.lg-dice-panel button,.lg-outcome button { border: 0; border-radius: 12px; padding: 14px 20px; background: #5b8b61; color: #fff; font: 700 .9rem var(--sans); cursor: pointer; }
+.lg-dice-panel button:hover,.lg-outcome button:hover { background: #426f4b; }
+.lg-card { margin-top: 18px; padding: clamp(19px,3vw,32px); border: 2px solid #e4d5a3; border-radius: 16px; background: #fffef7; box-shadow: 0 8px 22px rgba(91,120,82,.09); }
+.lg-card>small { color: #9b813e; font-weight: 700; letter-spacing: .09em; }
+.lg-card h4,.lg-outcome h4 { margin: 8px 0 10px; color: #2d523c; font: 800 clamp(1.35rem,3vw,1.85rem) var(--serif); }
+.lg-card p { color: #516c54; line-height: 1.7; }
+.lg-mission { display: grid; gap: 5px; margin: 18px 0; padding: 14px 16px; border-left: 4px solid #e2bb61; background: #f7f7e9; color: #31543f; }
+.lg-mission small { color: #688269; line-height: 1.5; }
+.lg-outcome { padding: 8px 0; color: #526f57; }
+.lg-outcome>span { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; background: #fff7db; color: #c89b36; font-size: 1.8rem; }
+.lg-outcome.is-success>span { background: #e0f1db; color: #5f965e; }
+.lg-outcome small { display: block; margin-top: 10px; color: #718c70; }
+.lg-outcome p { line-height: 1.7; }
+.lg-outcome button { margin-top: 12px; }
+.lg-result-rules { margin: 20px 0; padding: 13px 16px; border: 1px solid #c4dcbf; border-radius: 10px; background: #f8fcf5; font-size: .85rem; line-height: 1.6; }
+.lg-result h5 { margin: 25px 0 10px; font: 800 1.04rem var(--serif); }
+.lg-advice { margin: 0; padding-left: 24px; line-height: 1.7; }
+.lg-advice li { margin: 8px 0; }
+@media(max-width:650px){.lg-board { grid-template-columns: repeat(4,minmax(0,1fr)); }.lg-space { min-height: 56px; }.lg-space { flex-direction: column; gap: 1px; }.lg-space small { font-size: .68rem; }.lg-dice-panel { flex-wrap: wrap; }.lg-dice-panel button { width: 100%; }.lg-route { grid-template-columns: 1fr; }.lg-result-head { align-items: flex-start; }.lg-result-head .ip-art { width: 64px; }.lg-result-head>div:last-child { min-width: 0; }}
 .report-head { border-color: #d6e3d0; }
 .back-button { color: #577961; }
 .report-title h2 { color: #2b4c3b; font-weight: 800; }

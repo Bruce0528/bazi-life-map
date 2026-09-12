@@ -184,11 +184,13 @@
             <div class="ip-selected" id="ip-selected"></div>
             <div class="ip-gallery" id="ip-gallery" aria-label="選擇旅途夥伴"></div>
           </section>
-          <button type="button" class="lg-start" id="lifegame-start"><span class="lg-start-icon" aria-hidden="true">✿</span><span class="lg-start-text"><b>用選好的角色開始遊戲</b><small>八站十年大運 · 每站兩個有取捨的選擇</small></span><span aria-hidden="true">→</span></button>
+          <button type="button" class="lg-start" id="lifegame-start"><span class="lg-start-icon" aria-hidden="true">✿</span><span class="lg-start-text"><b>用選好的角色開始遊戲</b><small>擲骰、抽任務卡，八回合挑戰破圈</small></span><span aria-hidden="true">→</span></button>
         </div>
         <section class="lifegame-section" id="lifegame" hidden>
-          <div class="section-heading"><div><p class="eyebrow">PLAY IT OUT</p><h3>和你的夥伴走一遍人生大運</h3></div><p>以命盤的八步十年大運作為關卡背景，由你的角色陪你選擇。每一步會改變精力、資源、關係與自主；這是情境遊戲，不預測真實人生。</p></div>
+          <div class="section-heading"><div><p class="eyebrow">EIGHT ROUNDS · BREAK THE CIRCLE</p><h3>擲骰抽卡，挑戰破圈</h3></div><p>每回合擲骰前進、抽一張任務卡，再選擇行動。命盤大運只提供情境背景，遊戲結果不預測真實人生。</p></div>
           <div class="lg-play" id="lifegame-play" hidden>
+            <div class="lg-rule">破圈條件：8 回合至少完成 5 張任務，且精力、資源、關係、自主四項皆達 35。每張任務以「行動後對應數值＋骰點 × 3」對照卡片門檻。</div>
+            <div class="lg-progress" id="lifegame-progress" aria-live="polite"></div>
             <div class="lg-board" id="lifegame-board"></div>
             <div class="lg-stats" id="lifegame-stats" aria-live="polite"></div>
             <div class="lg-stage" id="lifegame-stage"></div>
@@ -250,6 +252,7 @@
   <script src="lunar.js"></script>
   <script src="config.js"></script>
   <script src="archetypes.js"></script>
+  <script src="life-game.js"></script>
   <script src="app.js"></script>
   <script src="compatibility.js"></script>
 </body>

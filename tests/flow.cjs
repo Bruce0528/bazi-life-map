@@ -12,6 +12,8 @@ assert.ok(choice > 0 && chart > choice && game > chart);
 assert.match(html.slice(choice, chart), /id="choose-chart"[\s\S]*id="choose-game"/);
 assert.doesNotMatch(html.slice(chart, game), /id="lifegame"|id="ip-gallery"/);
 assert.match(html.slice(game), /id="ip-gallery"[\s\S]*id="lifegame-start"[\s\S]*id="lifegame"/);
+assert.match(html, /<script src="life-game\.js"><\/script>\s*<script src="app\.js"><\/script>/);
+assert.match(html.slice(game), /id="lifegame-progress"[\s\S]*id="lifegame-board"/);
 assert.match(app, /openResultView\('choice'\)/);
 assert.match(app, /currentReading\.character=chosen/);
 assert.match(app, /document\.querySelector\('#game-picker'\)\.hidden=true/);
