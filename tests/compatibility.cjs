@@ -6,8 +6,8 @@ const { Solar } = require('../dist/lunar.js');
 
 const elements = new Map();
 const value = (id, text) => { elements.set('#' + id, { value: text, addEventListener() {} }); };
-value('male-name', '甲'); value('male-date', '1993-05-28'); value('male-time', '14:15');
-value('female-name', '乙'); value('female-date', '1993-05-29'); value('female-time', '14:15');
+value('male-name', '甲'); value('male-date', '1993-05-28');
+value('female-name', '乙'); value('female-date', '1993-05-29');
 for (const prefix of ['male', 'female']) for (const key of ['money', 'values', 'love']) value(prefix + '-' + key, '');
 for (const id of ['compatibility-form', 'compatibility-result', 'compatibility-summary', 'compatibility-cards', 'report']) {
   elements.set('#' + id, { hidden: true, innerHTML: '', addEventListener() {}, scrollIntoView() {} });
@@ -20,6 +20,7 @@ const document = {
 const context = vm.createContext({ Solar, document, window: { scrollTo() {} }, console, setTimeout, Date });
 for (const file of ['app.js', 'compatibility.js']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../dist', file), 'utf8'), context);
 const html = fs.readFileSync(path.join(__dirname, '../dist/index.html'), 'utf8');
+assert.doesNotMatch(html, /id="(?:male|female)-time"/);
 const choices = vm.runInContext('compatibilityChoices', context);
 for (const side of ['male', 'female']) for (const [category, labels] of Object.entries(choices)) {
   const select = html.match(new RegExp('<select id="' + side + '-' + category + '">([\\s\\S]*?)</select>'));
@@ -30,7 +31,10 @@ for (const side of ['male', 'female']) for (const [category, labels] of Object.e
 const first = vm.runInContext('generateCompatibility()', context);
 assert.ok(first.score >= 0 && first.score <= 100);
 assert.equal(first.scoreParts.reduce((n, part) => n + part.value, 0), first.score);
-assert.match(elements.get('#compatibility-summary').innerHTML, /命盤互動參考分/);
+assert.match(elements.get('#compatibility-summary').innerHTML, /三柱互動參考分/);
+assert.equal(first.malePillars.length, 3);
+assert.equal(first.femalePillars.length, 3);
+assert.doesNotMatch(elements.get('#compatibility-summary').innerHTML, /時柱<\/small>/);
 assert.match(elements.get('#compatibility-cards').innerHTML, /性格互動/);
 assert.match(elements.get('#compatibility-cards').innerHTML, /相處模式/);
 
@@ -47,4 +51,7 @@ const second = vm.runInContext('generateCompatibility()', context);
 assert.notDeepEqual(first.femalePillars, second.femalePillars);
 assert.notEqual(first.score, second.score);
 assert.equal(elements.get('#compatibility-result').hidden, false);
+value('male-date', '2024-02-04');
+vm.runInContext('generateCompatibility()', context);
+assert.match(elements.get('#compatibility-summary').innerHTML, /此日期的年月日柱可能因出生時刻而變動/);
 console.log('Compatibility scoring and rendering: OK', first.score, second.score);
