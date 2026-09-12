@@ -64,6 +64,7 @@
         <div class="day-master-badge"><span>日主</span><strong id="day-master">乙木</strong><small id="day-trait">陰木 · 柔韌生長</small></div>
       </div>
       <div class="pillars" id="pillars"></div>
+      <p class="calculation-note" id="calculation-note"></p>
       <div class="dashboard-grid">
         <article class="panel elements-panel">
           <div class="panel-title"><span>01</span><div><small>ELEMENT BALANCE</small><h3>五行能量</h3></div></div>
@@ -74,9 +75,18 @@
           <div class="panel-title"><span>02</span><div><small>CORE SIGNATURE</small><h3>核心特質</h3></div></div>
           <blockquote id="core-quote"></blockquote>
           <div class="tags" id="core-tags"></div>
+          <div class="structure-summary" id="structure-summary"></div>
           <div class="duo-list"><div><h4>天賦優勢</h4><ul id="strength-list"></ul></div><div><h4>盲點提醒</h4><ul id="weakness-list"></ul></div></div>
         </article>
       </div>
+      <section class="pattern-section">
+        <div class="section-heading"><div><p class="eyebrow">CHART DYNAMICS</p><h3>命局動力解碼</h3></div><p>不只看五行多少，也交叉判讀月令旺衰、地支藏干、十神配置，以及四柱之間的沖合。</p></div>
+        <div class="pattern-grid">
+          <article class="ten-god-panel"><h4>十神動力分布</h4><div id="ten-god-chart"></div></article>
+          <article class="evidence-panel"><h4>為什麼這樣判讀</h4><ul id="evidence-list"></ul></article>
+          <article class="talent-panel"><h4>你真正擅長的運作方式</h4><ul id="talent-list"></ul></article>
+        </div>
+      </section>
       <nav class="report-tabs" aria-label="命理分析分類">
         <button class="active" data-tab="life">人生機會</button><button data-tab="career">事業財運</button><button data-tab="relations">人際愛情</button><button data-tab="health">健康節律</button><button data-tab="risk">風險提醒</button>
       </nav>
@@ -88,7 +98,7 @@
         <article class="tab-panel" data-panel="risk"><div class="analysis-copy"><span class="chapter">第五章</span><h3>早一步看見風險</h3><p id="risk-copy"></p></div><div class="advice-cards" id="risk-cards"></div></article>
       </div>
       <section class="luck-section">
-        <div class="section-heading"><div><p class="eyebrow">DECADE CYCLES</p><h3>十年大運</h3></div><p>每十年是一種主題，不是好壞分數。順著時勢調整，才是閱讀大運的意義。</p></div>
+        <div class="section-heading"><div><p class="eyebrow">DECADE CYCLES</p><h3>十年大運</h3><small class="luck-start" id="luck-start"></small></div><p>每一步大運都會和原命盤產生不同十神與沖合。以下顯示的是各階段最容易被放大的能力、課題與行動策略。</p></div>
         <div class="timeline" id="luck-timeline"></div>
       </section>
       <section class="benefactor-section">
@@ -120,9 +130,10 @@
           </div>
         </div>
       </section>
-      <footer class="report-footer"><span>時序命盤</span><p>把命盤當成鏡子，別把它當成答案。真正改變人生的，仍是你的選擇與行動。</p></footer>
+      <footer class="report-footer"><span>時序命盤</span><p>把命盤當成鏡子，別把它當成答案。真正改變人生的，仍是你的選擇與行動。排盤使用 <a href="https://github.com/6tail/lunar-javascript" target="_blank" rel="noopener noreferrer">lunar-javascript</a>（MIT 授權）。</p></footer>
     </section>
   </main>
+  <script src="lunar.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

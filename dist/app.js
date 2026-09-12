@@ -98,3 +98,129 @@ function registerWebMCP(){const context=document.modelContext;if(!context||!cont
 registerWebMCP();
 function registerDivinationWebMCP(){const context=document.modelContext;if(!context||!context.registerTool)return;try{Promise.resolve(context.registerTool({name:'analyze_current_situation',title:'近期事件算卦',description:'在已生成命盤後，根據近期事件提供有利發展、建設性行動與風險提醒。',inputSchema:{type:'object',properties:{situation:{type:'string',minLength:8,maxLength:500},category:{type:'string',enum:['career','money','love','decision','other']},horizonDays:{type:'string',enum:['30','90','365']}},required:['situation','category','horizonDays'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:true},execute:function(input){if(!currentReading)throw new Error('請先生成命盤');if(typeof input.situation!=='string'||input.situation.trim().length<8||input.situation.length>500)throw new Error('事件內容需為 8 至 500 個字');if(!eventGuidance[input.category]||!['30','90','365'].includes(input.horizonDays))throw new Error('事件分類或觀察時間不正確');document.querySelector('#event-text').value=input.situation;document.querySelector('#event-type').value=input.category;document.querySelector('#event-horizon').value=input.horizonDays;return analyzeSituation(input.situation,input.category,input.horizonDays)}})).catch(function(){})}catch(e){}}
 registerDivinationWebMCP();
+
+/* 精細排盤引擎：節氣月、藏干、十神、旺衰與沖合交叉判讀 */
+const hiddenStems=[[9],[5,9,7],[0,2,4],[1],[4,1,9],[2,4,6],[3,5],[5,3,1],[6,8,4],[7],[4,7,3],[8,0]];
+const hiddenWeights=[0.7,0.2,0.1];
+const elementCycle=['木','火','土','金','水'];
+const pillarRoles=['早年／外部環境','職涯／社會模式','自我／伴侶模式','內在／後期發展'];
+const stemProfiles=[
+ {image:'甲木 · 參天之木',core:'你傾向先看方向與長期價值，再決定投入多少。對能持續成長的事有耐性，也自然想建立秩序與主幹。',skills:['長線規劃與系統搭建','在混亂中立起共同方向','承擔開創期的不確定'],risks:['容易把堅持變成不易轉彎','責任感過強時不願求助']},
+ {image:'乙木 · 藤蔓花木',core:'你不是靠正面硬推取勝，而是靠觀察環境、連結資源與逐步滲透。你能辨認細微差異，也擅長讓關係與方案慢慢成熟。',skills:['跨人脈與資源的柔性整合','細節優化與情境式溝通','在限制中另闢可行路徑'],risks:['顧及太多人而推遲自己的決定','選項過多時主線容易模糊']},
+ {image:'丙火 · 太陽之火',core:'你習慣用清楚、直接與可見的方式帶動局面。當目標值得相信，你能快速凝聚注意力並把氣氛推向行動。',skills:['公開表達與動員共識','快速抓住趨勢和機會窗口','把抽象願景轉成可感受的畫面'],risks:['高昂狀態下容易答應過多','回饋不足時熱度下降得快']},
+ {image:'丁火 · 燈燭之火',core:'你擅長聚焦少數關鍵人事物，以細緻觀察持續照亮問題。影響力不一定張揚，卻常能深入人心。',skills:['洞察情緒與隱性需求','精準內容、設計或顧問式表達','長時間打磨一項專業'],risks:['對環境氣氛過度敏感','容易把在意放在心裡反覆燃燒']},
+ {image:'戊土 · 高山厚土',core:'你重視架構、信用與可承擔性。面對複雜局面，會本能地穩住秩序，讓他人知道可以依靠什麼。',skills:['大型專案的承載與整合','建立制度、邊界與穩定預期','危機中維持判斷與節奏'],risks:['容易把穩定變成不願改變','承擔過久才承認已經超載']},
+ {image:'己土 · 田園之土',core:'你擅長把資源照顧到能真正產出，重視細節、節奏與人的實際感受。你追求的不是聲勢，而是可持續運作。',skills:['營運優化與細節管理','培育人才、客戶與長期關係','把零散工作整理成順暢流程'],risks:['容易默默接下別人的缺口','改善細節時可能錯過更大方向']},
+ {image:'庚金 · 刀斧礦石',core:'你傾向直接面對問題、切除無效部分並推動改革。壓力越清楚，反而越能激發你的決斷力。',skills:['危機處理與果斷取捨','流程改革與效率提升','處理高難度或高壓任務'],risks:['推進太快時忽略他人的接受速度','容易用解決問題代替理解感受']},
+ {image:'辛金 · 珠玉精金',core:'你對品質、差異與邊界有高度感受力。擅長從細節辨認價值，並以精準標準提升成果。',skills:['品質控制、風險辨識與審核','美感、品牌與精細表達','把複雜內容修整得清楚有序'],risks:['標準過高造成延遲或自我壓力','不易讓他人看見尚未完成的過程']},
+ {image:'壬水 · 江海之水',core:'你善於掌握大範圍資訊、人脈與流向，對變化有較高容納度。越是跨域與複雜的場景，越能看見路徑。',skills:['跨域策略與資源調度','建立廣泛網絡與資訊優勢','在快速變動中找到替代路線'],risks:['擴張太快時忽略收斂與落地','容易同時開啟過多戰線']},
+ {image:'癸水 · 雨露之水',core:'你習慣從微小訊號理解整體，直覺與觀察常比外在表現更先運作。適合深度研究與精準陪伴。',skills:['研究、診斷與細節洞察','理解未明說的需求','以耐心累積信任與專業'],risks:['吸收太多情緒或資訊而內耗','想得周全後才行動，容易錯過窗口']}
+];
+const groupData={
+ '比劫':{label:'自主／協作',talents:['自主啟動，不等外部指令才前進','在同儕競合中快速校準能力','適合共同創業、社群或需要主體性的角色'],risk:'主見與競爭感過強時，協作成本會升高'},
+ '食傷':{label:'創造／表達',talents:['把複雜內容轉譯成可理解的成果','提出新方法並以作品驗證','適合內容、產品、技術輸出與顧問工作'],risk:'輸出太快時，容易先表達後評估後果'},
+ '財星':{label:'資源／成果',talents:['對市場需求、成本與交換價值敏感','能把人力與資源轉成具體成果','適合商務、營運、客戶與資產管理'],risk:'過度追逐可量化成果，容易壓縮恢復空間'},
+ '官殺':{label:'責任／決策',talents:['在規範與壓力中建立秩序','願意對成果負責並作困難決定','適合管理、法遵、專案治理與高標準場域'],risk:'把外部標準內化過度，容易長期緊繃'},
+ '印星':{label:'學習／洞察',talents:['快速建立知識架構並追溯根因','能從經驗與專業系統取得支援','適合研究、教育、策略與知識密集工作'],risk:'準備與推演過多時，行動速度會下降'}
+};
+function solarMonthInfo(y,m,d){
+ const cut=[0,6,4,6,5,6,6,7,8,8,8,7,7],branchBefore=[0,0,1,2,3,4,5,6,7,8,9,10,11];
+ const b=d>=cut[m]?mod(branchBefore[m]+1,12):branchBefore[m];
+ const solarYear=(m<2||(m===2&&d<4))?y-1:y;
+ return{branch:b,solarYear:solarYear,nearTerm:Math.abs(d-cut[m])<=1};
+}
+function getPillars(date,time){
+ const a=date.split('-').map(Number),t=time.split(':').map(Number);
+ const solar=Solar.fromYmdHms(a[0],a[1],a[2],t[0],t[1],0),lunar=solar.getLunar(),eight=lunar.getEightChar();
+ const labels=['年柱','月柱','日柱','時柱'],values=[eight.getYear(),eight.getMonth(),eight.getDay(),eight.getTime()];
+ const result=values.map(function(v,i){return{label:labels[i],s:stems.indexOf(v[0]),b:branches.indexOf(v[1])}});
+ if(result.some(function(p){return p.s<0||p.b<0}))throw new Error('四柱排盤失敗');
+ const previous=lunar.getPrevJie().getSolar(),next=lunar.getNextJie().getSolar();
+ result.nearTerm=Math.min(Math.abs(solar.subtract(previous)),Math.abs(next.subtract(solar)))<=1;
+ result.solar=solar;result.eight=eight;return result;
+}
+function tenGod(dayStem,otherStem){
+ if(dayStem===otherStem)return'比肩';
+ const dayEl=stemEls[dayStem],otherEl=stemEls[otherStem],di=elementCycle.indexOf(dayEl),oi=elementCycle.indexOf(otherEl),samePolarity=dayStem%2===otherStem%2,rel=mod(oi-di,5);
+ if(rel===0)return samePolarity?'比肩':'劫財';
+ if(rel===1)return samePolarity?'食神':'傷官';
+ if(rel===2)return samePolarity?'偏財':'正財';
+ if(rel===3)return samePolarity?'七殺':'正官';
+ return samePolarity?'偏印':'正印';
+}
+function godGroup(name){if(['比肩','劫財'].includes(name))return'比劫';if(['食神','傷官'].includes(name))return'食傷';if(['偏財','正財'].includes(name))return'財星';if(['七殺','正官'].includes(name))return'官殺';return'印星'}
+function seasonName(b){if([2,3,4].includes(b))return'春木當令';if([5,6,7].includes(b))return'夏火當令';if([8,9,10].includes(b))return'秋金當令';return'冬水當令'}
+function analyzeChart(ps){
+ const counts={木:0,火:0,土:0,金:0,水:0},gods={比劫:0,食傷:0,財星:0,官殺:0,印星:0},day=ps[2].s,master=stemEls[day],monthB=ps[1].b;
+ const seasonEl=[2,3,4].includes(monthB)?'木':[5,6,7].includes(monthB)?'火':[8,9,10].includes(monthB)?'金':'水';
+ const si=elementCycle.indexOf(seasonEl),multipliers={};elementCycle.forEach(function(el,i){const diff=mod(i-si,5);multipliers[el]=[1.45,1.12,.88,.68,.95][diff]});
+ ps.forEach(function(p,index){
+  counts[stemEls[p.s]]+=1*multipliers[stemEls[p.s]];if(index!==2)gods[godGroup(tenGod(day,p.s))]+=1;
+  hiddenStems[p.b].forEach(function(h,j){const w=hiddenWeights[j]||0.1;counts[stemEls[h]]+=w*multipliers[stemEls[h]];gods[godGroup(tenGod(day,h))]+=w});
+ });
+ const total=Object.values(counts).reduce(function(a,b){return a+b},0),resource=elementCycle[mod(elementCycle.indexOf(master)-1,5)],support=(counts[master]+counts[resource])/total,roots=ps.filter(function(p){return hiddenStems[p.b].some(function(h){return stemEls[h]===master})}).length;
+ const strengthScore=support+(roots>=2?.05:roots===0?-.04:0),strength=strengthScore>.53?'身偏強':strengthScore<.39?'身偏弱':'中和';
+ const dominant=Object.entries(gods).sort(function(a,b){return b[1]-a[1]})[0][0],sortedEls=Object.entries(counts).sort(function(a,b){return b[1]-a[1]});
+ const mi=elementCycle.indexOf(master),balance=strength==='身偏強'?elementCycle[mod(mi+(counts[elementCycle[mod(mi+1,5)]]<=counts[elementCycle[mod(mi+2,5)]]?1:2),5)]:strength==='身偏弱'?resource:sortedEls[sortedEls.length-1][0];
+ const interactions=[],clashes=[[0,6],[1,7],[2,8],[3,9],[4,10],[5,11]],combines=[[0,1],[2,11],[3,10],[4,9],[5,8],[6,7]];
+ for(let i=0;i<ps.length;i++)for(let j=i+1;j<ps.length;j++){const pair=[ps[i].b,ps[j].b];if(clashes.some(function(x){return x.every(function(v){return pair.includes(v)})}))interactions.push(pillarRoles[i]+'與'+pillarRoles[j]+'有「'+branches[ps[i].b]+branches[ps[j].b]+'沖」：變動會逼出調整能力');else if(combines.some(function(x){return x.every(function(v){return pair.includes(v)})}))interactions.push(pillarRoles[i]+'與'+pillarRoles[j]+'形成「'+branches[ps[i].b]+branches[ps[j].b]+'合」：擅長透過連結與協調整合資源')}
+ if(!interactions.length)interactions.push('原局地支沒有明顯六合或六沖：做事較依靠自身節奏，重大變化通常來自大運觸發');
+ return{counts:counts,gods:gods,master:master,resource:resource,support:support,roots:roots,strength:strength,dominant:dominant,strong:sortedEls[0][0],weak:sortedEls[sortedEls.length-1][0],balance:balance,season:seasonName(monthB),interactions:interactions};
+}
+function refinedStrengths(profile,chart){
+ const extra=groupData[chart.dominant].talents;
+ return[profile.skills[0]+'：'+(chart.strength==='身偏弱'?'善用資訊與合作放大成果':'能自行建立節奏並持續推進'),profile.skills[1]+'：在'+groupData[chart.dominant].label+'場景中特別容易被看見',extra[0],extra[1]];
+}
+function refinedRisks(profile,chart){
+ const stateRisk=chart.strength==='身偏強'?'自我驅動充足，但要防止只用熟悉方式硬推':'感受環境與他人要求較快，需要避免把主導權全部交出去';
+ return[profile.risks[0],profile.risks[1],groupData[chart.dominant].risk,stateRisk];
+}
+function buildReading(input){
+ const ps=getPillars(input.date,input.time),chart=analyzeChart(ps),day=ps[2].s,sp=stemProfiles[day],profile=profiles[chart.master],max=Math.max.apply(null,Object.values(chart.counts));
+ fill('#report-name',input.name?input.name.replace(/[<>]/g,'')+'的':'你的');fill('#birth-summary',input.date.replaceAll('-','.')+' · '+input.time+' · '+document.querySelector('#place').selectedOptions[0].textContent);
+ fill('#day-master',stems[day]+chart.master);fill('#day-trait',(day%2===0?'陽':'陰')+chart.master+' · '+sp.image.split(' · ')[1]);
+ fill('#pillars',ps.map(function(p,i){const hidden=hiddenStems[p.b].map(function(h){return stems[h]}).join('、'),god=i===2?'日主':tenGod(day,p.s);return'<div class="pillar"><small>'+p.label+' · '+god+'</small><b>'+stems[p.s]+branches[p.b]+'</b><span>'+stemEls[p.s]+' · '+branchEls[p.b]+'</span><em>藏干 '+hidden+'</em></div>'}).join(''));
+ fill('#calculation-note','以輸入地區的 UTC+8 民用時間、精確節氣與子時不換日流派排盤；'+(ps.nearTerm?'接近交節時刻，請核對出生地與時間。':'四柱已按節氣交接計算。')+' 年月日時由 lunar-javascript 1.7.7 換算；五行強弱與文字解讀為本站啟發式模型。');
+ fill('#element-chart',Object.entries(chart.counts).map(function(x){const value=Math.round(x[1]*10)/10;return'<div class="element-bar" style="--value:'+(18+x[1]/max*72)+'%;--color:'+colors[x[0]]+'"><i></i><b>'+value+'</b><span>'+x[0]+'</span></div>'}).join(''));
+ fill('#element-insight',chart.season+'；按本站季節與藏干權重模型，'+chart.strong+'的相對分值最高。同類與印星支持分值占模型約 '+Math.round(chart.support*100)+'%，日主在 '+chart.roots+' 個地支有根，暫列「'+chart.strength+'」。這不是傳統定格、喜用神或客觀能量百分比；'+chart.balance+'僅是反思時可留意的平衡方向。');
+ fill('#core-quote',sp.core+' 你的命局又以「'+chart.dominant+'」為主導，所以這項特質會更常透過'+groupData[chart.dominant].label+'表現出來。');
+ fill('#core-tags',[sp.image,chart.strength,chart.dominant+'主導'].map(function(x){return'<span>'+x+'</span>'}).join(''));
+ fill('#structure-summary','<div class="structure-chip"><small>月令</small><b>'+chart.season+'</b></div><div class="structure-chip"><small>日主狀態</small><b>'+chart.strength+' · 根氣 '+chart.roots+'</b></div><div class="structure-chip"><small>主要動力</small><b>'+chart.dominant+' · '+groupData[chart.dominant].label+'</b></div>');
+ fill('#strength-list',refinedStrengths(sp,chart).map(function(x){return'<li>'+x+'</li>'}).join(''));fill('#weakness-list',refinedRisks(sp,chart).map(function(x){return'<li>'+x+'</li>'}).join(''));
+ const godMax=Math.max.apply(null,Object.values(chart.gods));fill('#ten-god-chart',Object.entries(chart.gods).map(function(x){return'<div class="god-row"><span>'+x[0]+'</span><div class="god-track"><i style="--god:'+Math.round(x[1]/godMax*100)+'%"></i></div><b>'+x[1].toFixed(1)+'</b></div>'}).join(''));
+ const evidence=['月令「'+branches[ps[1].b]+'」屬'+chart.season+'，是本模型的季節底色。','日主'+stems[day]+chart.master+'在四支取得 '+chart.roots+' 處根氣；印比加權占比約 '+Math.round(chart.support*100)+'%（模型指標）。','加權後'+chart.dominant+'分值最高，因此解讀偏向「'+groupData[chart.dominant].label+'」運作。'].concat(chart.interactions);
+ fill('#evidence-list',evidence.map(function(x){return'<li>'+x+'</li>'}).join(''));
+ fill('#talent-list',refinedStrengths(sp,chart).concat(['最合適的補位能力：'+profiles[chart.balance].trait+'，用來平衡'+chart.dominant+'使用過量。']).map(function(x){return'<li>'+x+'</li>'}).join(''));
+ fill('#life-copy','你的機會不是泛泛的「多嘗試」，而是把「'+sp.skills[0]+'」用在需要'+groupData[chart.dominant].label+'的情境。'+chart.strength+'意味著你'+(chart.strength==='身偏強'?'可以主動創造局面，但要用'+chart.balance+'來疏通過度集中':'更適合借助平台、導師與既有資源起步，再逐步取得主導權')+'。');
+ fill('#career-copy','職涯上最能形成差異化的組合是「'+sp.skills[0]+' × '+groupData[chart.dominant].talents[0]+'」。比起只看產業名稱，更應檢查工作是否讓你運用這兩項能力；若長期只要求你做'+profiles[chart.balance].trait+'之外的單一反應，容易感到耗損。');
+ fill('#risk-copy','這張命盤的風險不是固定缺點，而是「'+chart.dominant+'」被使用過量。具體表現為：'+groupData[chart.dominant].risk+'。再加上'+sp.risks[0]+'，重要選擇前應刻意加入一個'+chart.balance+'型檢核步驟。');
+ buildLuck(ps,input.date,input.time,input.gender,chart);buildBenefactor(chart.balance);
+ return{pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant};
+}
+function approximateLuckStart(date,forward){
+ const a=date.split('-').map(Number),base=Date.UTC(a[0],a[1]-1,a[2]),cuts=[[1,6],[2,4],[3,6],[4,5],[5,6],[6,6],[7,7],[8,8],[9,8],[10,8],[11,7],[12,7]],points=[];
+ for(let y=a[0]-1;y<=a[0]+1;y++)cuts.forEach(function(c){points.push(Date.UTC(y,c[0]-1,c[1]))});
+ const target=forward?Math.min.apply(null,points.filter(function(x){return x>base})):Math.max.apply(null,points.filter(function(x){return x<base}));
+ return Math.max(1,Math.min(10,Math.abs(target-base)/86400000/3));
+}
+function branchLink(branch,natal){
+ const clash={0:6,1:7,2:8,3:9,4:10,5:11,6:0,7:1,8:2,9:3,10:4,11:5},combine={0:1,1:0,2:11,11:2,3:10,10:3,4:9,9:4,5:8,8:5,6:7,7:6};
+ if(natal.includes(branch))return'與原局同支，熟悉議題會被放大';
+ if(natal.includes(clash[branch]))return'沖動原局，環境或角色較容易變動';
+ if(natal.includes(combine[branch]))return'與原局有合，合作與資源整合機會增加';
+ return'與原局互動平穩，成果更依賴主動經營';
+}
+function buildLuck(ps,date,time,gender,chart){
+ const birthYear=Number(date.slice(0,4)),day=ps[2].s,yang=ps[0].s%2===0,forward=gender==='other'?true:(gender==='male')===yang,natal=ps.map(function(p){return p.b});
+ const yun=ps.eight.getYun(gender==='other'?(yang?1:0):(gender==='male'?1:0),2),startSolar=yun.getStartSolar(),startDate=startSolar.toYmdHms(),startAge=(Date.UTC(startSolar.getYear(),startSolar.getMonth()-1,startSolar.getDay())-Date.UTC(birthYear,Number(date.slice(5,7))-1,Number(date.slice(8,10))))/31557600000;
+ fill('#luck-start','約 '+startAge.toFixed(1)+' 歲起運（'+startDate.slice(0,16)+'） · '+(forward?'順排':'逆排')+(gender==='other'?' · 未指定性別時暫以順行示意，請勿視為個人定盤':'')+' · 實際結果仍受流派與出生地時差影響');
+ let html='';
+ const chance={比劫:'自主權、同儕網絡與新團隊',食傷:'作品輸出、創新與個人品牌',財星:'客戶、商務與資源變現',官殺:'職位責任、制度與領導機會',印星:'進修、證照、導師與知識資產'};
+ const action={比劫:'先界定權責，再擴大合作',食傷:'以可見作品持續驗證市場',財星:'用數字管理資源與報酬',官殺:'承擔前先確認授權和標準',印星:'把學習轉成可交付成果'};
+ const warning={比劫:'避免因比較或義氣做決定',食傷:'避免表達過快而忽略規範',財星:'避免成果壓力侵蝕長期節奏',官殺:'避免把高壓視為唯一成長方式',印星:'避免準備太久卻沒有實際輸出'};
+ const cycles=yun.getDaYun(9).slice(1);
+ for(let i=0;i<cycles.length;i++){const cycle=cycles[i],gz=cycle.getGanZhi(),s=stems.indexOf(gz[0]),b=branches.indexOf(gz[1]),god=godGroup(tenGod(day,s)),link=branchLink(b,natal),current=new Date().getFullYear()>=cycle.getStartYear()&&new Date().getFullYear()<=cycle.getEndYear(),helpful=(chart.strength==='身偏弱'&&['比劫','印星'].includes(god))||(chart.strength==='身偏強'&&['食傷','財星','官殺'].includes(god)),tone=helpful?'順勢開展':god===chart.dominant?'主題加倍':'調整鍛鍊';
+  html+='<div class="cycle '+(current?'current':'')+'"><small>'+cycle.getStartYear()+'—'+cycle.getEndYear()+'</small><b>'+gz+'</b><span>'+cycle.getStartAge()+'—'+cycle.getEndAge()+' 虛歲'+(current?' · 當前':'')+'</span><div class="cycle-tone">'+tone+' · '+god+'</div><p>'+chance[god]+'成為主題；'+link+'。</p><ul><li>'+action[god]+'</li><li>'+warning[god]+'</li></ul><div class="cycle-link">'+tenGod(day,s)+'透干 · '+branches[b]+'支藏'+hiddenStems[b].map(function(h){return tenGod(day,h)}).join('／')+'</div></div>';
+ }
+ fill('#luck-timeline',html);
+}
