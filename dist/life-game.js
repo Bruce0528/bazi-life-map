@@ -1,45 +1,51 @@
+/* 八關圓夢卡牌：八字只決定起始角色與輕量共鳴，不預測現實結果。 */
 (function(root){
  'use strict';
- const types={opportunity:{name:'機會',icon:'✦'},resources:{name:'資源',icon:'◈'},connection:{name:'連結',icon:'♡'},recovery:{name:'修整',icon:'☘'}};
- const board=['opportunity','resources','connection','recovery','opportunity','connection','resources','recovery','opportunity','resources','connection','recovery'];
- const cards=[
-  {id:'portfolio',type:'opportunity',title:'把作品拿到圈外',story:'有人邀你展示一項技能，但準備時間只有一週。',metric:'agency',target:68,mission:'完成一份能讓陌生人看懂的作品介紹',choices:{a:{label:'做小版本並請三人試看',delta:{energy:-6,resources:2,relations:5,agency:12}},b:{label:'等內容完美再公開',delta:{energy:-3,resources:0,relations:0,agency:2}}}},
-  {id:'proposal',type:'opportunity',title:'跨領域邀約',story:'陌生團隊邀你試做一個月合作，成果與分工都還不清楚。',metric:'agency',target:65,mission:'拿到可驗證的小合作，而非空泛承諾',choices:{a:{label:'先談交付範圍與退出條件',delta:{energy:-4,resources:3,relations:6,agency:10}},b:{label:'立即答應全部需求',delta:{energy:-12,resources:7,relations:2,agency:-7}}}},
-  {id:'trial',type:'opportunity',title:'新技能試水溫',story:'一項新工具可能改善工作，但你只有有限的空檔。',metric:'agency',target:64,mission:'用一個真實小問題測試新技能',choices:{a:{label:'安排兩小時做可交付實驗',delta:{energy:-5,resources:2,relations:0,agency:11}},b:{label:'只收藏教學等有空再學',delta:{energy:2,resources:0,relations:0,agency:1}}}},
-  {id:'buffer',type:'resources',title:'意外支出',story:'原本預定投入進修的預算，突然碰上設備修繕。',metric:'resources',target:64,mission:'保住基本緩衝，同時不完全停止學習',choices:{a:{label:'分期安排並縮小學習計畫',delta:{energy:-3,resources:9,relations:1,agency:4}},b:{label:'照原計畫一次花完',delta:{energy:-5,resources:-11,relations:0,agency:2}}}},
-  {id:'pricing',type:'resources',title:'第一次報價',story:'有人想付費買你的服務，但需求可能越做越多。',metric:'resources',target:67,mission:'寫出報價、交付項目與修改次數',choices:{a:{label:'先列範圍，再報試行價格',delta:{energy:-5,resources:12,relations:3,agency:5}},b:{label:'先免費做完再看對方心意',delta:{energy:-9,resources:-5,relations:2,agency:-4}}}},
-  {id:'reserve',type:'resources',title:'收入突然增加',story:'一筆額外收入進帳，你同時想慶祝與投資下一步。',metric:'resources',target:68,mission:'訂出可執行的三筆資金分配',choices:{a:{label:'先留緩衝、再分學習與享受',delta:{energy:3,resources:10,relations:2,agency:3}},b:{label:'立即把全部押在新想法上',delta:{energy:-7,resources:-10,relations:-2,agency:4}}}},
-  {id:'mentor',type:'connection',title:'請教圈外前輩',story:'你想認識一位不同領域的前輩，但不知道如何開口。',metric:'relations',target:65,mission:'提出具體問題並完成一次交流',choices:{a:{label:'寫三句自介和一個明確問題',delta:{energy:-3,resources:1,relations:12,agency:3}},b:{label:'只按讚，等對方主動聯繫',delta:{energy:1,resources:0,relations:1,agency:-1}}}},
-  {id:'boundaries',type:'connection',title:'合作分工卡住',story:'夥伴期待你多做一點，你卻開始感到失衡。',metric:'relations',target:66,mission:'把彼此期待轉成可確認的分工',choices:{a:{label:'約 20 分鐘釐清責任與時程',delta:{energy:-3,resources:2,relations:11,agency:4}},b:{label:'先忍下來，避免破壞氣氛',delta:{energy:-8,resources:0,relations:-5,agency:-5}}}},
-  {id:'community',type:'connection',title:'加入新社群',story:'一個主題社群能讓你遇見不同背景的人，但你需要主動參與。',metric:'relations',target:66,mission:'帶著一項可分享的經驗建立雙向連結',choices:{a:{label:'分享一次實作心得並回應他人',delta:{energy:-5,resources:1,relations:12,agency:4}},b:{label:'只默默瀏覽不留下交流',delta:{energy:0,resources:0,relations:2,agency:0}}}},
-  {id:'rest',type:'recovery',title:'排滿的行事曆',story:'連續幾週都在趕進度，下一個邀約又來了。',metric:'energy',target:65,mission:'保住下週能穩定行動的時間',choices:{a:{label:'刪去低優先事項，保留休息時段',delta:{energy:12,resources:-2,relations:1,agency:5}},b:{label:'全部答應，再靠週末補進度',delta:{energy:-12,resources:4,relations:2,agency:-4}}}},
-  {id:'review',type:'recovery',title:'計畫沒有達標',story:'一項嘗試的結果不如預期，繼續硬推或調整都需要勇氣。',metric:'energy',target:64,mission:'做一次可行的復盤，而非自責',choices:{a:{label:'記錄一個保留點與一個待改點',delta:{energy:9,resources:2,relations:1,agency:5}},b:{label:'再熬夜加做一輪相同方法',delta:{energy:-10,resources:-2,relations:-1,agency:-2}}}},
-  {id:'routine',type:'recovery',title:'建立穩定節奏',story:'你已找到方向，但每天的零碎急事不斷打斷進度。',metric:'energy',target:65,mission:'設計下週可重複的行動節奏',choices:{a:{label:'每天固定留 30 分鐘深度時段',delta:{energy:10,resources:3,relations:0,agency:6}},b:{label:'有空再做，不設定固定時段',delta:{energy:1,resources:0,relations:0,agency:-2}}}}
+ const labels={energy:'精力',relations:'關係',wealth:'財富',achievement:'成就'};
+ const stages=[
+  {name:'探索起點',cards:[
+   {title:'第一份工作',story:'一份穩定工作和一個有成長空間的新團隊同時找上你。',focus:'achievement',delta:{energy:-2,relations:2,wealth:5,achievement:10},action:'先談清楚工作內容與三個月學習目標'},
+   {title:'再學一項技能',story:'你想轉向新的領域，需要安排時間與一筆學習預算。',focus:'energy',delta:{energy:7,relations:1,wealth:-3,achievement:10},action:'用兩週做一個可展示的小作品'}]},
+  {name:'建立節奏',cards:[
+   {title:'額外收入',story:'新的接案邀請到來，但也會占用週末。',focus:'wealth',delta:{energy:-6,relations:-2,wealth:15,achievement:8},action:'先設定工時上限與交付範圍'},
+   {title:'休息與進度',story:'進度有點落後，朋友卻提醒你最近太疲憊。',focus:'energy',delta:{energy:13,relations:4,wealth:-2,achievement:4},action:'先刪掉一項低優先任務，保留完整休息'}]},
+  {name:'合作連結',cards:[
+   {title:'跨圈合作',story:'一位不同領域的夥伴邀你共同完成專案。',focus:'relations',delta:{energy:-3,relations:14,wealth:5,achievement:9},action:'先寫清雙方分工與試行期限'},
+   {title:'修補關係',story:'重要的人覺得你總是太忙，想好好談一次。',focus:'relations',delta:{energy:5,relations:16,wealth:-2,achievement:2},action:'約一段不被打斷的時間，先聽後說'}]},
+  {name:'選擇轉折',cards:[
+   {title:'升遷邀請',story:'職位升級，責任與收入同時增加。',focus:'achievement',delta:{energy:-7,relations:-2,wealth:13,achievement:14},action:'確認權限、資源與考核標準'},
+   {title:'換一條路',story:'你開始懷疑目前方向，想試一條更符合自己的路。',focus:'energy',delta:{energy:9,relations:2,wealth:-5,achievement:11},action:'先做一個月的小規模實驗'}]},
+  {name:'跨出舒適圈',cards:[
+   {title:'發表自己的作品',story:'你有一個尚未完美的成果，可以公開給別人看。',focus:'achievement',delta:{energy:-4,relations:8,wealth:3,achievement:15},action:'先拿可用版本給三個人看'},
+   {title:'把握新市場',story:'一個新市場對你的技能有興趣，但需求還不明確。',focus:'wealth',delta:{energy:-6,relations:4,wealth:15,achievement:9},action:'用一個付費小案驗證需求'}]},
+  {name:'承擔取捨',cards:[
+   {title:'家人需要支持',story:'家人需要你投入時間，原本安排好的計畫必須調整。',focus:'relations',delta:{energy:3,relations:16,wealth:-3,achievement:4},action:'談好你能提供的時間與需要的支援'},
+   {title:'團隊交接',story:'手上的工作越來越多，是時候讓別人一起承擔。',focus:'energy',delta:{energy:10,relations:9,wealth:4,achievement:7},action:'選一項任務寫出交接標準'}]},
+  {name:'重新布局',cards:[
+   {title:'第二人生計畫',story:'你想把累積的經驗轉成新的作品或服務。',focus:'achievement',delta:{energy:5,relations:5,wealth:8,achievement:13},action:'先試做一場分享或小型服務'},
+   {title:'留下緩衝',story:'手上資源增加了，你可以選擇加速，也可以先穩住底盤。',focus:'wealth',delta:{energy:8,relations:3,wealth:15,achievement:4},action:'寫下緩衝金與下一步的投入上限'}]},
+  {name:'圓夢終點',cards:[
+   {title:'完成代表作',story:'只剩最後一段時間，你要把一個重要作品真正交出去。',focus:'achievement',delta:{energy:-3,relations:6,wealth:6,achievement:16},action:'訂公開日期，完成最小可交付版本'},
+   {title:'和重要的人分享成果',story:'回頭看這段旅程，你想把時間與成果留給誰？',focus:'relations',delta:{energy:6,relations:16,wealth:5,achievement:7},action:'安排一次不談績效的真誠對話'}]}
  ];
- const byType=Object.keys(types).reduce(function(map,type){map[type]=cards.filter(function(card){return card.type===type});return map},{});
- const labels={energy:'精力',resources:'資源',relations:'關係',agency:'自主'};
- function clamp(n){return Math.max(0,Math.min(100,n))}
- function create(reading){return{reading:reading,round:0,position:0,stats:{energy:50,resources:50,relations:50,agency:50},completed:0,history:[],phase:'roll',current:null}}
- function roll(state,die){
-  if(state.phase!=='roll'||!Number.isInteger(die)||die<1||die>6)throw Error('此回合無法擲骰');
-  state.position=(state.position+die)%board.length;
-  const type=board[state.position],pool=byType[type],used=state.history.map(function(item){return item.card.id});
-  const start=(state.round+die+state.position)%pool.length;
-  let card=pool[start];for(let i=0;i<pool.length;i++){const candidate=pool[(start+i)%pool.length];if(!used.includes(candidate.id)){card=candidate;break}}
-  state.current={die:die,type:type,card:card,station:state.reading.lifeGameStations[state.round]};state.phase='card';return state.current;
+ const affinity={tiger:'achievement',wolf:'achievement',fox:'wealth',eagle:'energy',bear:'energy',leopard:'achievement',rabbit:'relations',turtle:'wealth'};
+ function clamp(n){return Math.max(0,Math.min(100,Math.round(n)))}
+ function initialStats(c){return{energy:clamp(28+c.stability*.25),relations:clamp(28+c.social*.25),wealth:clamp(28+c.wealth*.25),achievement:clamp(28+c.action*.25)}}
+ function create(reading){return{reading:reading,round:0,position:0,stats:initialStats(reading.capabilities),history:[],phase:'roll',die:null}}
+ function roll(state,die){if(state.phase!=='roll'||!Number.isInteger(die)||die<1||die>6)throw Error('此回合不能擲骰');state.die=die;state.position=(state.position+die)%8;state.phase='choose';return{die:die,position:state.position,stage:stages[state.round]}}
+ function choose(state,index){
+  if(state.phase!=='choose'||![0,1].includes(index))throw Error('請先擲骰並選擇一張情境卡');
+  const stage=stages[state.round],card=stage.cards[index],beast=state.reading.beastMatch.primary.profile,bonus=affinity[beast.id]===card.focus?3:0;
+  const before=Object.assign({},state.stats);
+  Object.entries(card.delta).forEach(function(pair){state.stats[pair[0]]=clamp(state.stats[pair[0]]+pair[1])});
+  const dieBonus=Math.ceil(state.die/2);state.stats[card.focus]=clamp(state.stats[card.focus]+dieBonus+bonus);
+  const result={round:state.round+1,stage:stage.name,card:card,index:index,die:state.die,before:before,after:Object.assign({},state.stats),dieBonus:dieBonus,resonance:bonus,average:score(state.stats)};
+  state.history.push(result);state.phase='result';return result;
  }
- function resolve(state,key){
-  if(state.phase!=='card'||!['a','b'].includes(key))throw Error('請先擲骰並選擇行動');
-  const turn=state.current,choice=turn.card.choices[key];
-  Object.keys(state.stats).forEach(function(metric){state.stats[metric]=clamp(state.stats[metric]+(choice.delta[metric]||0))});
-  const score=state.stats[turn.card.metric]+turn.die*3,success=score>=turn.card.target;
-  const outcome={round:state.round+1,position:state.position,card:turn.card,station:turn.station,die:turn.die,choice:choice,score:score,success:success};
-  if(success)state.completed++;
-  state.history.push(outcome);state.phase='outcome';return outcome;
- }
- function next(state){if(state.phase!=='outcome')throw Error('請先完成任務');state.round++;state.current=null;state.phase=state.round===8?'done':'roll';return state.phase}
- function summary(state){if(state.phase!=='done')throw Error('尚未完成八回合');return{breakout:state.completed>=5&&Object.values(state.stats).every(function(value){return value>=35}),completed:state.completed,stats:state.stats,history:state.history}}
+ function next(state){if(state.phase!=='result')throw Error('請先完成本關');state.round++;state.die=null;state.phase=state.round===8?'done':'roll';return state.phase}
+ function score(stats){return Math.round(Object.values(stats).reduce(function(sum,value){return sum+value},0)/4)}
+ function summary(state){if(state.phase!=='done')throw Error('尚未完成八關');return{score:score(state.stats),breakout:score(state.stats)>80,stats:Object.assign({},state.stats),history:state.history.slice()}}
  function randomDie(){if(root.crypto&&root.crypto.getRandomValues){const a=new Uint32Array(1),limit=4294967296-(4294967296%6);do{root.crypto.getRandomValues(a)}while(a[0]>=limit);return a[0]%6+1}return Math.floor(Math.random()*6)+1}
- root.BaziLifeGame={types:types,board:board,cards:cards,labels:labels,create:create,roll:roll,resolve:resolve,next:next,summary:summary,randomDie:randomDie};
+ root.BaziLifeGame={stages:stages,labels:labels,affinity:affinity,create:create,roll:roll,choose:choose,next:next,score:score,summary:summary,randomDie:randomDie};
  if(typeof module!=='undefined'&&module.exports)module.exports={BaziLifeGame:root.BaziLifeGame};
 })(typeof window==='undefined'?globalThis:window);

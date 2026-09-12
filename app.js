@@ -29,10 +29,12 @@ function buildBenefactor(weak){
 }
 let currentReading=null;
 function openResultView(view){
- document.querySelector('#report-eyebrow').textContent={choice:'生辰已排好 · CHOOSE A PATH',chart:'命盤結果 · PERSONAL READING',game:'角色遊戲 · LIFE SIMULATION'}[view];
+ document.querySelector('#report-eyebrow').textContent={choice:'生辰已排好 · CHOOSE A PATH',chart:'命盤結果 · PERSONAL READING',game:'角色遊戲 · LIFE SIMULATION',palm:'手掌觀察 · PALM PHOTO',question:'問題抽卡 · THREE CARDS'}[view];
  document.querySelector('#result-choice').hidden=view!=='choice';
  document.querySelector('#chart-view').hidden=view!=='chart';
  document.querySelector('#game-view').hidden=view!=='game';
+ document.querySelector('#palm-view').hidden=view!=='palm';
+ document.querySelector('#question-view').hidden=view!=='question';
  if(view==='game'){
   document.querySelector('#game-picker').hidden=false;
   document.querySelector('#lifegame').hidden=true;
@@ -44,9 +46,15 @@ function openResultView(view){
 function showReport(input){const result=buildReading(input);currentReading=result;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;document.querySelector('#report').hidden=false;openResultView('choice');return result}
 document.querySelector('#choose-chart').addEventListener('click',function(){openResultView('chart')});
 document.querySelector('#choose-game').addEventListener('click',function(){openResultView('game')});
+document.querySelector('#choose-palm').addEventListener('click',function(){openResultView('palm')});
+document.querySelector('#choose-question').addEventListener('click',function(){openResultView('question')});
+document.querySelector('#choose-compatibility').addEventListener('click',function(){document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
+document.querySelector('#compatibility-return').addEventListener('click',function(){document.querySelector('#report').hidden=false;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;openResultView('choice')});
 document.querySelector('#chart-back').addEventListener('click',function(){openResultView('choice')});
 document.querySelector('#game-back').addEventListener('click',function(){openResultView('choice')});
-document.querySelector('#ip-gallery').addEventListener('click',function(event){
+document.querySelector('#palm-back').addEventListener('click',function(){openResultView('choice')});
+document.querySelector('#question-back').addEventListener('click',function(){openResultView('choice')});
+const gameGallery=document.querySelector('#ip-gallery');if(gameGallery)gameGallery.addEventListener('click',function(event){
  const button=event.target.closest('button[data-ip]');
  if(!button||!currentReading)return;
  const chosen=BaziIps.profiles.find(function(p){return p.id===button.dataset.ip});
@@ -345,7 +353,8 @@ function buildReading(input){
  fill('#health-cards',hea.cards.map(function(c){return advice(c[0],c[1],c[2])}).join(''));
  fill('#risk-cards',advice('體質傾向','慣性風險',sp.risks[0])+advice('思考盲點','視角風險',sp.risks[1])+advice('本階段風險',chart.dominant+'（'+groupData[chart.dominant].label+'）用過頭',groupData[chart.dominant].risk)+advice('防護機制','事前清單','重大決定前先寫下成功標準、最大成本與退出條件，並找一位敢對你說不同意見的人。'));
  const luck=buildLuck(ps,input.date,input.time,input.gender,chart);buildBenefactor(chart.balance);
- const reading={pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:luck.currentCycle,lifeGameStations:luck.stations,character:character.profile,characterMatch:character};
+ const beastMatch=BaziBeasts.classify(chart),capabilities=BaziBeasts.capabilities(chart);
+ const reading={pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:luck.currentCycle,lifeGameStations:luck.stations,character:character.profile,characterMatch:character,beastMatch:beastMatch,capabilities:capabilities};
  renderLifeGame(reading);
  return reading;
 }
@@ -377,70 +386,59 @@ function buildLuck(ps,date,time,gender,chart){
  return{currentCycle:currentCycle,stations:stations};
 }
 
-/* 獨立的八回合桌遊；命盤只決定情境與建議，不把擲骰結果說成預言。 */
-let lifeGameState=null;
+/* 八關雙情境遊戲與命盤分析分開；結果是遊戲分數，不是人生預測。 */
+let lifeGameState=null,lifeGameReading=null;
+const lifeGameStatLabels=BaziLifeGame.labels;
+function gameTradeoff(delta){return Object.keys(delta).map(function(key){return lifeGameStatLabels[key]+' '+(delta[key]>=0?'+':'−')+Math.abs(delta[key])}).join(' · ')}
 function renderLifeGame(reading){
- const section=document.querySelector('#lifegame'),stations=reading.lifeGameStations;
- if(!section)return;
- if(!stations||!stations.length){section.hidden=true;return}
- section.hidden=true;
- lifeGameState=BaziLifeGame.create(reading);
- document.querySelector('#lifegame-start').hidden=false;
+ lifeGameReading=reading;lifeGameState=null;
+ const beast=reading.beastMatch.primary.profile,fit=reading.beastMatch.primary.fit;
+ fill('#beast-profile','<article class="beast-main" style="--beast-accent:'+beast.accent+'"><small>你的命格獸 · 遊戲符合度 '+fit+'／100</small><div class="beast-symbol" aria-hidden="true">'+beast.icon+'</div><h4>'+beast.name+' · '+beast.role+'</h4><p>'+beast.gift+'</p><div class="beast-tags">'+beast.talents.map(function(x){return'<span>'+x+'</span>'}).join('')+'</div><p class="beast-shadow">需要留意：'+beast.shadow+'</p><small>依五行、十神與強弱的自訂規則計算，不按生肖分配，也不是人格定論。</small></article>');
+ document.querySelector('#lifegame').hidden=true;
  document.querySelector('#lifegame-play').hidden=true;
 }
 function startLifeGame(){
- if(!lifeGameState)return;
+ if(!lifeGameReading)return;
+ lifeGameState=BaziLifeGame.create(lifeGameReading);
  document.querySelector('#game-picker').hidden=true;
  document.querySelector('#lifegame').hidden=false;
- lifeGameState=BaziLifeGame.create(lifeGameState.reading);
- document.querySelector('#lifegame-result').hidden=true;
- document.querySelector('#lifegame-start').hidden=true;
  document.querySelector('#lifegame-play').hidden=false;
  document.querySelector('#lifegame-stage').hidden=false;
- fill('#lifegame-history','擲骰決定落點與卡片；你的行動決定四項數值。每回合只有一次選擇。');
+ document.querySelector('#lifegame-result').hidden=true;
+ fill('#lifegame-rule','擲骰前進，八個關卡各有兩張不同情境卡。選一張後會改變精力、關係、財富、成就。四項平均分數<b>嚴格大於 80</b> 才算這一局破圈；骰點與命格獸只提供少量遊戲加分。');
+ fill('#lifegame-history','八字決定起始角色，接下來由你選擇。');
  renderLifeGameStage();
  document.querySelector('#lifegame-play').scrollIntoView({behavior:'smooth',block:'start'});
 }
-const lifeGameStatLabels=BaziLifeGame.labels;
-function lifeGameTradeoff(delta){return Object.keys(delta).filter(function(key){return delta[key]!==0}).map(function(key){return lifeGameStatLabels[key]+' '+(delta[key]>0?'+':'−')+Math.abs(delta[key])}).join(' · ')}
 function renderLifeGameStats(stats){
  fill('#lifegame-stats',Object.keys(lifeGameStatLabels).map(function(key){return'<div class="lg-stat"><span>'+lifeGameStatLabels[key]+'</span><b>'+stats[key]+'</b><i><em style="width:'+stats[key]+'%"></em></i></div>'}).join(''));
 }
 function renderLifeGameStage(){
- const st=lifeGameState,station=st.reading.lifeGameStations[st.round],companion=st.reading.character;
- fill('#lifegame-progress','<b>第 '+(st.round+1)+'／8 回合</b><span>已完成任務 '+st.completed+'／8</span>');
- fill('#lifegame-board',BaziLifeGame.board.map(function(type,i){const space=BaziLifeGame.types[type];return'<div class="lg-space '+(i===st.position?'is-current':'')+'"><span class="lg-space-icon" aria-hidden="true">'+space.icon+'</span><small>'+space.name+'</small>'+(i===st.position?'<b aria-label="角色目前位置">'+companion.name.slice(0,1)+'</b>':'')+'</div>'}).join(''));
+ const st=lifeGameState,beast=st.reading.beastMatch.primary.profile,stage=BaziLifeGame.stages[st.round];
+ fill('#lifegame-progress','<b>第 '+(st.round+1)+'／8 關 · '+stage.name+'</b><span>目前綜合 '+BaziLifeGame.score(st.stats)+'／100</span>');
+ fill('#lifegame-board',BaziLifeGame.stages.map(function(item,i){return'<div class="lg-space '+(i===st.position?'is-current':'')+'"><span class="lg-space-icon" aria-hidden="true">'+(i<st.round?'✿':'✦')+'</span><small>'+(i+1)+' · '+item.name+'</small>'+(i===st.position?'<b aria-label="目前位置">'+beast.icon+'</b>':'')+'</div>'}).join(''));
  renderLifeGameStats(st.stats);
  if(st.phase==='roll'){
-  fill('#lifegame-stage','<div class="lg-station">'+BaziIps.art(companion,'ip-art--game')+'<div><small>'+station.startAge+'—'+station.endAge+' 虛歲 · '+companion.name+'同行</small><b>'+station.ganzhi+' · '+station.god+'</b><p>這回合的背景是「'+luckThemeByGod[station.god]+'」。擲骰前進，看看會遇到哪一種任務。</p></div></div><div class="lg-dice-panel"><span class="lg-die" aria-hidden="true">⚄</span><div><b>準備抽卡</b><small>骰點 1–6；落點決定卡片類型</small></div><button type="button" id="lifegame-roll">擲骰並抽卡 →</button></div>');
+  fill('#lifegame-stage','<div class="lg-station"><span class="lg-beast-avatar" aria-hidden="true">'+beast.icon+'</span><div><small>命格獸 '+beast.name+' 陪你走這一關</small><b>'+stage.name+'</b><p>擲骰前進後，從兩張情境卡中挑一張。你會看到每張卡對四項數值的不同取捨。</p></div></div><div class="lg-dice-panel"><span class="lg-die" aria-hidden="true">⚄</span><div><b>準備擲骰</b><small>骰點 1–6，落點顯示在上方八格路線</small></div><button type="button" id="lifegame-roll">擲骰前進 →</button></div>');
   document.querySelector('#lifegame-roll').addEventListener('click',function(){BaziLifeGame.roll(st,BaziLifeGame.randomDie());renderLifeGameStage()});
- }else if(st.phase==='card'){
-  const turn=st.current,card=turn.card,kind=BaziLifeGame.types[turn.type];
-  fill('#lifegame-stage','<div class="lg-draw-head"><span class="lg-die" aria-label="骰到 '+turn.die+' 點">'+['','⚀','⚁','⚂','⚃','⚄','⚅'][turn.die]+'</span><div><small>骰出 '+turn.die+' 點 · 前進至「'+kind.name+'」格</small><b>'+kind.icon+' '+kind.name+'任務卡</b></div></div><article class="lg-card"><small>第 '+(st.round+1)+' 回合 · '+station.ganzhi+'／'+station.god+'</small><h4>'+card.title+'</h4><p>'+card.story+'</p><div class="lg-mission"><b>本回合任務</b><span>'+card.mission+'</span><small>判定：行動後「'+lifeGameStatLabels[card.metric]+'」＋骰點 × 3 ≥ '+card.target+'</small></div><div class="lg-choices"><button type="button" data-c="a"><b>'+card.choices.a.label+'</b><small>'+lifeGameTradeoff(card.choices.a.delta)+'</small></button><button type="button" data-c="b"><b>'+card.choices.b.label+'</b><small>'+lifeGameTradeoff(card.choices.b.delta)+'</small></button></div></article>');
-  document.querySelectorAll('#lifegame-stage .lg-choices button').forEach(function(btn){btn.addEventListener('click',function(){pickLifeGameChoice(btn.dataset.c)})});
- }else if(st.phase==='outcome'){
-  const last=st.history[st.history.length-1],card=last.card;
-  fill('#lifegame-stage','<div class="lg-outcome '+(last.success?'is-success':'')+'"><span aria-hidden="true">'+(last.success?'✿':'☘')+'</span><small>第 '+last.round+' 回合 · '+card.title+'</small><h4>'+(last.success?'任務完成！':'這次尚未達標')+'</h4><p>你選了「'+last.choice.label+'」，'+lifeGameStatLabels[card.metric]+' '+st.stats[card.metric]+' ＋ 骰點 '+last.die+' × 3 ＝ '+last.score+'；門檻 '+card.target+'。</p><p>數值變動：'+lifeGameTradeoff(last.choice.delta)+'</p><button type="button" id="lifegame-next">'+(st.round===7?'查看破圈結果':'進入下一回合 →')+'</button></div>');
+ }else if(st.phase==='choose'){
+  fill('#lifegame-stage','<div class="lg-draw-head"><span class="lg-die" aria-label="骰到 '+st.die+' 點">'+['','⚀','⚁','⚂','⚃','⚄','⚅'][st.die]+'</span><div><small>骰出 '+st.die+' 點 · 第 '+(st.round+1)+' 關</small><b>選一張情境卡</b></div></div><div class="lg-choices lg-two-cards">'+stage.cards.map(function(card,i){return'<button type="button" data-c="'+i+'"><small>情境 '+['A','B'][i]+'</small><b>'+card.title+'</b><span>'+card.story+'</span><small>'+gameTradeoff(card.delta)+'</small></button>'}).join('')+'</div>');
+  document.querySelectorAll('#lifegame-stage .lg-choices button').forEach(function(btn){btn.addEventListener('click',function(){BaziLifeGame.choose(st,Number(btn.dataset.c));renderLifeGameStage()})});
+ }else if(st.phase==='result'){
+  const last=st.history[st.history.length-1];
+  fill('#lifegame-stage','<div class="lg-outcome"><span aria-hidden="true">✿</span><small>第 '+last.round+' 關 · '+last.card.title+'</small><h4>這一步，留下了新的分數</h4><p>'+gameTradeoff(last.card.delta)+'。骰點讓「'+lifeGameStatLabels[last.card.focus]+'」再加 '+last.dieBonus+'；'+(last.resonance?'命格獸共鳴再加 '+last.resonance+'。':'這張卡沒有額外共鳴。')+'</p><p>目前四項綜合：<b>'+last.average+'／100</b>。</p><button type="button" id="lifegame-next">'+(st.round===7?'查看破圈結果':'進入下一關 →')+'</button></div>');
   document.querySelector('#lifegame-next').addEventListener('click',function(){BaziLifeGame.next(st);if(st.phase==='done')finishLifeGame();else renderLifeGameStage()});
  }
 }
-function pickLifeGameChoice(key){
- const st=lifeGameState,outcome=BaziLifeGame.resolve(st,key);
- fill('#lifegame-history','最近一張卡：「'+outcome.card.title+'」'+(outcome.success?'已完成':'未達標')+'。目前累積 '+st.completed+' 張完成任務。');
- renderLifeGameStage();
-}
 function finishLifeGame(){
  const st=lifeGameState,result=BaziLifeGame.summary(st);
- fill('#lifegame-stage','');
  document.querySelector('#lifegame-stage').hidden=true;
- renderLifeGameStats(st.stats);
- const lowest=Object.keys(st.stats).sort(function(a,b){return st.stats[a]-st.stats[b]})[0];
- const suggestions={energy:'未來 7 天，選一個固定時段休息 30 分鐘，並刪掉一項低優先任務。',resources:'未來 7 天，列出必要支出與可動用緩衝，替新計畫設定最高投入額。',relations:'未來 7 天，約一位夥伴談 20 分鐘，明確確認彼此的期待與分工。',agency:'未來 7 天，選一件小事由你主導，寫下目標、期限與可退出的條件。'};
- const missed=st.history.filter(function(item){return !item.success}),repeat=missed.length?missed[missed.length-1].card:null;
- const route=st.history.map(function(c){return'<li><span>'+c.round.toString().padStart(2,'0')+' · '+c.station.ganzhi+'</span>'+(c.success?'✓ ':'○ ')+c.card.title+'：'+c.choice.label+'</li>'}).join('');
- const advice='<ul class="lg-advice"><li><b>先補最吃緊的「'+lifeGameStatLabels[lowest]+'」：</b>'+suggestions[lowest]+'</li><li><b>把命盤主軸用在行動：</b>你的盤以「'+st.reading.dominantTenGod+'」為突出訊號；下週挑一個與「'+luckThemeByGod[st.reading.dominantTenGod]+'」相關的小實驗，訂出可驗證的交付成果。</li><li><b>把未完成任務變成下一步：</b>'+(repeat?'從「'+repeat.title+'」重新出發，先做卡片所需的一個最小步驟，三天後回看結果。':'選一張最有感的卡片，在真實生活中試做一次，不必複製遊戲選項。')+'</li></ul>';
- fill('#lifegame-progress','<b>8／8 回合完成</b><span>完成任務 '+st.completed+'／8</span>');
- fill('#lifegame-result','<div class="lg-result-head">'+BaziIps.art(st.reading.character,'ip-art--result')+'<div><small>'+st.reading.character.name+'陪你走完 8 回合</small><h4>'+(result.breakout?'✿ 這一局成功破圈！':'☘ 這一局尚未破圈')+'</h4><p>完成 '+result.completed+'／8 張任務；四項數值最低為「'+lifeGameStatLabels[lowest]+'」'+st.stats[lowest]+'。'+(result.breakout?'你達成了公開的遊戲門檻。':'下次可優先補強短板，再挑戰五張任務。')+'</p></div></div><div class="lg-result-rules">破圈門檻：完成 ≥ 5 張，且四項數值皆 ≥ 35。你的結果：'+(result.completed>=5?'任務達標':'任務未達標')+'／'+(Object.values(st.stats).every(function(v){return v>=35})?'四項數值達標':'至少一項數值未達標')+'。</div><h5>把這局帶回生活的三件事</h5>'+advice+'<h5>八回合紀錄</h5><ol class="lg-route">'+route+'</ol><p class="lg-disclaimer">骰點、任務與破圈只反映這次遊戲選擇；角色與大運是文化情境，不是對未來、健康或財務的預測。</p><button type="button" id="lifegame-restart">重新玩一次</button>');
+ fill('#lifegame-progress','<b>八關完成</b><span>綜合 '+result.score+'／100</span>');
+ renderLifeGameStats(result.stats);
+ const lowest=Object.keys(result.stats).sort(function(a,b){return result.stats[a]-result.stats[b]})[0];
+ const suggestions={energy:'未來一週，先留兩段各 30 分鐘不被打擾的休息，再接新的承諾。',relations:'找一位重要的人，約 20 分鐘確認彼此期待，先聽完再給建議。',wealth:'列出目前必要支出與一個可承擔的上限，先保留緩衝再試新計畫。',achievement:'挑一個能在七天完成的小作品，訂交付日並請一人回饋。'};
+ const route=result.history.map(function(item){return'<li><span>'+String(item.round).padStart(2,'0')+' · '+item.stage+'</span>'+item.card.title+' · 綜合 '+item.average+'</li>'}).join('');
+ fill('#lifegame-result','<div class="lg-result-head"><span class="lg-ending-icon" aria-hidden="true">'+st.reading.beastMatch.primary.profile.icon+'</span><div><small>你的命格獸：'+st.reading.beastMatch.primary.profile.name+'</small><h4>'+(result.breakout?'✿ 成功破圈！':'☘ 這一局還沒破圈')+'</h4><p>精力、關係、財富、成就的綜合分數：<b>'+result.score+'／100</b>；判定需要嚴格大於 80。</p></div></div><div class="lg-result-rules">目前最低的是「'+lifeGameStatLabels[lowest]+'」'+result.stats[lowest]+' 分。高分不是現實的成功保證；低分也不是你的真實能力。</div><h5>給這局的你一個人生建議</h5><p>'+suggestions[lowest]+'</p><h5>八關選擇紀錄</h5><ol class="lg-route">'+route+'</ol><p class="lg-disclaimer">本遊戲以八字作為文化情境與初始角色，擲骰和分數只供娛樂與自我反思。</p><button type="button" id="lifegame-restart">再玩一次</button>');
  document.querySelector('#lifegame-result').hidden=false;
  document.querySelector('#lifegame-restart').addEventListener('click',startLifeGame);
 }

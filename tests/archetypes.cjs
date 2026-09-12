@@ -22,6 +22,6 @@ assert.equal(ips.choose({ ...base, dayElement: '火', dayStemIndex: 0, dayMaster
 assert.equal(ips.choose({ ...base, counts: { 木: 2, 火: 2, 土: 2, 金: 2, 水: 2 }, strength: '中和', dayElement: '土', dayStemIndex: 1, dayMaster: '己土' }).profile.id, 'harmony');
 assert.match(ips.art(ips.profiles[0]), /role="img"/);
 const html = fs.readFileSync(path.join(root, 'dist/index.html'), 'utf8');
-assert.match(html, /id="ip-selected"/);
+assert.match(html, /id="beast-profile"/);
 assert.match(html, /src="archetypes.js"/);
 console.log('Eight character mappings and assets: OK');

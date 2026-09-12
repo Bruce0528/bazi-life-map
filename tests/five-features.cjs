@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const root=path.join(__dirname,'..','dist');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const palm=fs.readFileSync(path.join(root,'palm.js'),'utf8');
+const question=fs.readFileSync(path.join(root,'question-cards.js'),'utf8');
+for(const id of ['choose-chart','choose-compatibility','choose-game','choose-palm','choose-question','palm-view','question-view','palm-male','palm-female','question-card-form','question-card-deck'])assert.ok(html.includes('id="'+id+'"'),id);
+assert.match(html, /id="palm-male"[^>]*capture="environment"/);
+assert.match(html, /id="palm-female"[^>]*capture="environment"/);
+assert.match(palm, /getUserMedia/);
+assert.match(palm, /getTracks\(\)/);
+assert.match(question, /order\.slice\(0,3\)/);
+assert.match(question, /function escape\(/);
+assert.match(html, /目前提供免費試玩，不收費/);
+console.log('Five routes, two-hand capture and three covered cards: OK');

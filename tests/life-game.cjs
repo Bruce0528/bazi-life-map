@@ -1,33 +1,21 @@
 const assert=require('node:assert/strict');
+const beasts=require('../beast-rules.js').BaziBeasts;
 const game=require('../life-game.js').BaziLifeGame;
-const reading={lifeGameStations:Array.from({length:8},(_,i)=>({ganzhi:'甲子',god:'印星',startAge:i*10+3,endAge:i*10+12}))};
-assert.equal(game.board.length,12);
-assert.equal(game.cards.length,12);
-assert.equal(new Set(game.cards.map(c=>c.id)).size,12);
-assert.deepEqual(new Set(game.cards.map(c=>c.type)),new Set(Object.keys(game.types)));
-assert.throws(()=>game.roll(game.create(reading),0));
-function play(choices,dice){
- const state=game.create(reading);
- for(let i=0;i<8;i++){
-  assert.equal(state.phase,'roll');
-  const turn=game.roll(state,dice[i]);
-  assert.equal(state.phase,'card');
-  assert.equal(turn.type,game.board[state.position]);
-  const result=game.resolve(state,choices[i]);
-  assert.equal(result.score,state.stats[turn.card.metric]+dice[i]*3);
-  assert.equal(result.success,result.score>=turn.card.target);
-  assert.deepEqual(Object.values(state.stats).every(v=>v>=0&&v<=100),true);
-  game.next(state);
- }
- assert.equal(state.phase,'done');
- assert.equal(state.history.length,8);
- assert.throws(()=>game.roll(state,2));
- return game.summary(state);
-}
-const wins=play(Array(8).fill('a'),[4,1,2,5,1,6,5,4]);
-const losses=play(Array(8).fill('b'),Array(8).fill(1));
-assert.equal(wins.breakout,true);
-assert.equal(losses.breakout,false);
-assert.ok(wins.completed>=5);
-assert.ok(losses.completed<5 || Object.values(losses.stats).some(v=>v<35));
-console.log('Eight-round dice, card, mission and breakout game: OK');
+const chart={counts:{木:3,火:3,土:1,金:1,水:2},gods:{比劫:2,食傷:3,財星:1,官殺:2,印星:2},strength:'身偏強'};
+const reading={beastMatch:beasts.classify(chart),capabilities:beasts.capabilities(chart)};
+assert.equal(beasts.profiles.length,8);
+assert.equal(new Set(beasts.profiles.map(p=>p.id)).size,8);
+assert.notEqual(beasts.classify({...chart,gods:{比劫:8,食傷:0,財星:0,官殺:0,印星:0}}).primary.profile.id,beasts.classify({...chart,gods:{比劫:0,食傷:0,財星:0,官殺:0,印星:8}}).primary.profile.id);
+assert.equal(game.stages.length,8);
+assert.ok(game.stages.every(stage=>stage.cards.length===2));
+assert.equal(new Set(game.stages.flatMap(stage=>stage.cards.map(card=>card.title))).size,16);
+function play(choice,die){const state=game.create(reading);for(let i=0;i<8;i++){assert.equal(state.phase,'roll');game.roll(state,die);assert.equal(state.phase,'choose');const result=game.choose(state,choice);assert.equal(result.round,i+1);assert.ok(Object.values(state.stats).every(n=>n>=0&&n<=100));game.next(state)}assert.equal(state.phase,'done');return game.summary(state)}
+const low=play(0,1),high=play(1,6);
+assert.equal(low.breakout,false);
+assert.equal(high.breakout,true);
+assert.equal(low.history.length,8);
+const exact=game.create(reading);exact.phase='done';exact.stats={energy:80,relations:80,wealth:80,achievement:80};
+assert.equal(game.summary(exact).breakout,false);
+exact.stats.achievement=84;
+assert.equal(game.summary(exact).breakout,true);
+console.log('Eight beasts, sixteen scenes, eight rounds and strict >80 breakout: OK');
