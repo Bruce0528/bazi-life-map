@@ -13,7 +13,7 @@
   <div class="grain" aria-hidden="true"></div>
   <header class="topbar">
     <a class="brand" href="#top" aria-label="時序命盤首頁"><span class="seal">命</span><span>時序命盤</span></a>
-    <span class="meta-note">傳統文化觀點 · 自我反思工具</span>
+    <nav class="top-links"><a href="#compatibility">免費男女合盤</a><span class="meta-note">傳統文化觀點 · 自我反思工具</span></nav>
   </header>
 
   <main id="top">
@@ -53,6 +53,19 @@
       <div class="pillar-mini active"><b>日主</b><strong>乙木</strong><span>柔韌 · 生長</span></div>
       <div class="teaser"><span>五行強度視覺化</span><div class="mini-bars"><i style="--h:72%"></i><i style="--h:46%"></i><i style="--h:80%"></i><i style="--h:58%"></i><i style="--h:34%"></i></div></div>
       <div class="teaser text"><span>一份完整報告</span><b>優勢 · 事業 · 關係 · 大運</b></div>
+    </section>
+
+    <section class="compatibility-section" id="compatibility" aria-labelledby="compatibility-title">
+      <div class="compatibility-heading"><div><p class="eyebrow">TWO CHARTS · FREE</p><h2 id="compatibility-title"><svg class="compat-heading-icon" viewBox="0 0 64 64" aria-hidden="true"><circle cx="24" cy="31" r="15" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="40" cy="31" r="15" fill="none" stroke="currentColor" stroke-width="3"/><path d="M18 48c9 8 19 8 28 0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>男女合盤</h2><p>輸入兩人的出生時刻，查看命盤互動。金錢、價值與感情觀可填入你們真實的選擇，報告會區分「命盤提示」與「已知經驗」。</p></div><span class="free-badge">免費</span></div>
+      <form id="compatibility-form" class="compatibility-form">
+        <fieldset><legend>男方資料</legend><label>稱呼（選填）<input id="male-name" placeholder="例：阿明"></label><label>出生日期<input id="male-date" type="date" required></label><label>出生時間<input id="male-time" type="time" required></label><label>金錢偏好<select id="male-money"><option value="">尚未討論</option><option value="steady">先存足安全預備金</option><option value="growth">願意投入成長機會</option><option value="flexible">保留彈性與生活品質</option></select></label><label>生活價值<select id="male-values"><option value="">尚未討論</option><option value="steady">穩定與長期規劃</option><option value="growth">探索與個人成長</option><option value="family">家庭與照顧責任</option></select></label><label>感情期待<select id="male-love"><option value="">尚未討論</option><option value="talk">有事直接談</option><option value="space">需要獨處空間</option><option value="action">用行動表達在乎</option></select></label></fieldset>
+        <fieldset><legend>女方資料</legend><label>稱呼（選填）<input id="female-name" placeholder="例：小安"></label><label>出生日期<input id="female-date" type="date" required></label><label>出生時間<input id="female-time" type="time" required></label><label>金錢偏好<select id="female-money"><option value="">尚未討論</option><option value="steady">先存足安全預備金</option><option value="growth">願意投入成長機會</option><option value="flexible">保留彈性與生活品質</option></select></label><label>生活價值<select id="female-values"><option value="">尚未討論</option><option value="steady">穩定與長期規劃</option><option value="growth">探索與個人成長</option><option value="family">家庭與照顧責任</option></select></label><label>感情期待<select id="female-love"><option value="">尚未討論</option><option value="talk">有事直接談</option><option value="space">需要獨處空間</option><option value="action">用行動表達在乎</option></select></label></fieldset>
+        <div class="compatibility-actions"><button type="submit">生成免費合盤分析 →</button><p>未填偏好時只顯示待核對問題，不會從八字推定你們實際的金錢或感情觀。</p></div>
+      </form>
+      <div id="compatibility-result" class="compatibility-result" hidden aria-live="polite">
+        <div id="compatibility-summary" class="compatibility-summary"></div>
+        <div id="compatibility-cards" class="compatibility-cards"></div>
+      </div>
     </section>
 
     <section class="report" id="report" hidden aria-live="polite">
@@ -114,14 +127,16 @@
       <section class="divination-section" id="divination">
         <div class="divination-intro">
           <p class="eyebrow">CURRENT SITUATION · 情境推演</p>
-          <h3>近期事件算卦<svg class="mascot-fox mascot-fox--sm" viewBox="0 0 64 64" aria-hidden="true"><path d="M14 22 22 6 28 24Z" fill="#b74332"/><path d="M50 22 42 6 36 24Z" fill="#b74332"/><path d="M17 21 22 12 25 22Z" fill="#f1eee6"/><path d="M47 21 42 12 39 22Z" fill="#f1eee6"/><path d="M32 20c12 0 18 8 18 17 0 10-8 17-18 17S14 47 14 37c0-9 6-17 18-17Z" fill="#d6aa57"/><path d="M32 34c6 0 10 4 10 9 0 6-4 10-10 10s-10-4-10-10c0-5 4-9 10-9Z" fill="#f1eee6"/><circle cx="25" cy="35" r="2.6" fill="#101923"/><circle cx="39" cy="35" r="2.6" fill="#101923"/><circle cx="32" cy="44" r="1.8" fill="#101923"/><circle cx="19" cy="40" r="2.6" fill="#b74332" opacity=".35"/><circle cx="45" cy="40" r="2.6" fill="#b74332" opacity=".35"/></svg></h3>
+          <h3>近期事件推演</h3>
           <p>寫下你最近正在面對的事情。系統會以此刻、事件內容與你的命盤特質，整理最有利的發展條件、可採取的行動與需要避開的風險。</p>
+          <p class="price-line"><strong>NT$99</strong>／解鎖 1 次推演</p>
         </div>
         <form class="divination-form" id="divination-form">
           <label>事件類型<select id="event-type"><option value="career">事業／工作</option><option value="money">金錢／投資</option><option value="love">愛情／關係</option><option value="decision">重大選擇</option><option value="other">其他</option></select></label>
           <label>最近遇到的事情<textarea id="event-text" rows="4" minlength="8" maxlength="500" required placeholder="例：公司提出新的職務機會，但需要換到陌生團隊，我擔心發展性與適應問題……"></textarea></label>
           <label>希望觀察的時間<select id="event-horizon"><option value="30">未來 30 天</option><option value="90">未來 3 個月</option><option value="365">未來 1 年</option></select></label>
-          <button type="submit"><span>結合命盤推演方向</span><span aria-hidden="true">→</span></button>
+          <button type="submit" disabled><span>近期事件推演暫停開放</span><span aria-hidden="true">鎖</span></button>
+          <p class="payment-note">金流串接已暫停。目前不會收費，也不會產生推演結果。</p>
         </form>
         <div class="oracle-result" id="oracle-result" hidden>
           <div class="hexagram"><small>本次卦象</small><strong id="hexagram-name"></strong><div class="hexagram-lines" id="hexagram-lines"></div><span id="hexagram-keyword"></span></div>
@@ -148,5 +163,6 @@
   </main>
   <script src="lunar.js"></script>
   <script src="app.js"></script>
+  <script src="compatibility.js"></script>
 </body>
 </html>
