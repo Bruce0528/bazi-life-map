@@ -73,17 +73,22 @@
       <div class="report-head">
         <button class="back-button" id="back-button" type="button">← 重新輸入</button>
         <div class="report-title">
-          <p class="eyebrow">命盤結果 · PERSONAL READING</p>
+          <p class="eyebrow" id="report-eyebrow">生辰已排好 · CHOOSE A PATH</p>
           <h2><span id="report-name">你的</span>生命旅途<svg class="mascot-shiba" viewBox="0 0 80 80" aria-hidden="true"><path d="M9 30 19 3l15 21M71 30 61 3 46 24" fill="#c97843" stroke="#9b5439" stroke-width="2" stroke-linejoin="round"/><path d="M16 25 21 12l8 12M64 25 59 12l-8 12" fill="#f6b9a2"/><path d="M40 13c19 0 31 13 31 31 0 17-12 28-31 28S9 61 9 44c0-18 12-31 31-31Z" fill="#d99052" stroke="#9b5439" stroke-width="2"/><path d="M12 44c4 0 9 2 13 7 4 5 9 6 15 6s11-1 15-6c4-5 9-7 13-7-1 17-13 28-28 28S13 61 12 44Z" fill="#fff5e8"/><ellipse cx="40" cy="51" rx="13" ry="10" fill="#fff9ef"/><ellipse cx="28" cy="38" rx="2.7" ry="3.2" fill="#28323a"/><ellipse cx="52" cy="38" rx="2.7" ry="3.2" fill="#28323a"/><circle cx="22" cy="47" r="4" fill="#e97e6c" opacity=".5"/><circle cx="58" cy="47" r="4" fill="#e97e6c" opacity=".5"/><path d="M36 48q4-3 8 0l-4 4Z" fill="#28323a"/><path d="M40 52v3m0 0q-4 5-8 1m8-1q4 5 8 1" fill="none" stroke="#6d4b3d" stroke-width="2" stroke-linecap="round"/><path d="M19 67q21 12 42 0" fill="none" stroke="#b74332" stroke-width="5" stroke-linecap="round"/><circle cx="40" cy="70" r="3" fill="#d6aa57"/></svg></h2>
           <p id="birth-summary"></p>
         </div>
         <div class="day-master-badge"><span>日主</span><strong id="day-master">乙木</strong><small id="day-trait">陰木 · 柔韌生長</small></div>
       </div>
-      <section class="ip-section" aria-labelledby="ip-title">
-        <div class="ip-heading"><div><p class="eyebrow">EIGHT CHARACTERS · ONE COMPANION</p><h3 id="ip-title">你的命盤旅途夥伴</h3></div><p>八種角色依日主、命盤強弱與四柱天干陰陽，對應其中一位。這是遊戲化的自我探索，不是性格診斷或命運評分。</p></div>
-        <div class="ip-selected" id="ip-selected"></div>
-        <div class="ip-gallery" id="ip-gallery" aria-label="八種旅途夥伴"></div>
+      <section class="result-choice" id="result-choice" aria-labelledby="result-choice-title">
+        <p class="eyebrow">CHOOSE YOUR PATH</p><h3 id="result-choice-title">接下來，想先走哪一條路？</h3>
+        <p>同一份生辰資料，命盤分析與角色遊戲分開閱讀，隨時可以回來切換。</p>
+        <div class="result-choice-grid">
+          <button type="button" id="choose-chart"><span class="choice-icon" aria-hidden="true">☯</span><small>01 · READING</small><b>查看我的命盤</b><span>五行、核心特質、人生面向與十年大運解讀</span><em aria-hidden="true">↗</em></button>
+          <button type="button" id="choose-game"><span class="choice-icon" aria-hidden="true">✿</span><small>02 · GAME</small><b>選角色，玩人生遊戲</b><span>選好旅途夥伴後，走進獨立的八站大運模擬</span><em aria-hidden="true">↗</em></button>
+        </div>
       </section>
+      <div class="chart-view" id="chart-view" hidden>
+      <button type="button" class="view-back" id="chart-back">← 返回兩個選項</button>
       <div class="pillars" id="pillars"></div>
       <p class="calculation-note" id="calculation-note"></p>
       <div class="dashboard-grid">
@@ -123,17 +128,6 @@
       <section class="luck-section">
         <div class="section-heading"><div><p class="eyebrow">DECADE CYCLES</p><h3>十年大運</h3><small class="luck-start" id="luck-start"></small></div><p>每一步大運都會和原命盤產生不同十神與沖合。以下顯示的是各階段最容易被放大的能力、課題與行動策略。</p></div>
         <div class="timeline" id="luck-timeline"></div>
-      </section>
-      <section class="lifegame-section" id="lifegame" hidden>
-        <div class="section-heading"><div><p class="eyebrow">PLAY IT OUT</p><h3>和你的夥伴走一遍人生大運</h3></div><p>以命盤的八步十年大運作為關卡背景，由你的角色陪你選擇。每一步會改變精力、資源、關係與自主；這是情境遊戲，不預測真實人生。</p></div>
-        <button type="button" class="lg-start" id="lifegame-start"><span class="lg-start-icon" aria-hidden="true">✿</span><span class="lg-start-text"><b>開始我的人生模擬</b><small>8 站 · 每站 2 個有取捨的選擇 · 約 2 分鐘</small></span><span aria-hidden="true">→</span></button>
-        <div class="lg-play" id="lifegame-play" hidden>
-          <div class="lg-board" id="lifegame-board"></div>
-          <div class="lg-stats" id="lifegame-stats" aria-live="polite"></div>
-          <div class="lg-stage" id="lifegame-stage"></div>
-          <p class="lg-history" id="lifegame-history" aria-live="polite"></p>
-          <div class="lg-result" id="lifegame-result" hidden></div>
-        </div>
       </section>
       <section class="benefactor-section">
         <span class="corner-cloud corner-cloud--tl" aria-hidden="true"></span>
@@ -181,6 +175,28 @@
         </div>
       </section>
       <footer class="report-footer"><span>時序命盤</span><p>把命盤當成鏡子，別把它當成答案。真正改變人生的，仍是你的選擇與行動。排盤使用 <a href="https://github.com/6tail/lunar-javascript" target="_blank" rel="noopener noreferrer">lunar-javascript</a>（MIT 授權）。</p></footer>
+      </div>
+      <div class="game-view" id="game-view" hidden>
+        <button type="button" class="view-back" id="game-back">← 返回兩個選項</button>
+        <div id="game-picker">
+          <section class="ip-section" aria-labelledby="ip-title">
+            <div class="ip-heading"><div><p class="eyebrow">EIGHT CHARACTERS · ONE COMPANION</p><h3 id="ip-title">先選你的旅途夥伴</h3></div><p>命盤會推薦一位角色，但你可以點選任一張圖自行改選。角色只影響遊戲畫面，不改變八字或大運內容。</p></div>
+            <div class="ip-selected" id="ip-selected"></div>
+            <div class="ip-gallery" id="ip-gallery" aria-label="選擇旅途夥伴"></div>
+          </section>
+          <button type="button" class="lg-start" id="lifegame-start"><span class="lg-start-icon" aria-hidden="true">✿</span><span class="lg-start-text"><b>用選好的角色開始遊戲</b><small>八站十年大運 · 每站兩個有取捨的選擇</small></span><span aria-hidden="true">→</span></button>
+        </div>
+        <section class="lifegame-section" id="lifegame" hidden>
+          <div class="section-heading"><div><p class="eyebrow">PLAY IT OUT</p><h3>和你的夥伴走一遍人生大運</h3></div><p>以命盤的八步十年大運作為關卡背景，由你的角色陪你選擇。每一步會改變精力、資源、關係與自主；這是情境遊戲，不預測真實人生。</p></div>
+          <div class="lg-play" id="lifegame-play" hidden>
+            <div class="lg-board" id="lifegame-board"></div>
+            <div class="lg-stats" id="lifegame-stats" aria-live="polite"></div>
+            <div class="lg-stage" id="lifegame-stage"></div>
+            <p class="lg-history" id="lifegame-history" aria-live="polite"></p>
+            <div class="lg-result" id="lifegame-result" hidden></div>
+          </div>
+        </section>
+      </div>
     </section>
 
     <section class="policy-section" id="site-info">

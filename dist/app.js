@@ -28,7 +28,32 @@ function buildBenefactor(weak){
  fill('#benefactor-compass',data.map(function(x){return '<div class="compass-item"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>'}).join(''));
 }
 let currentReading=null;
-function showReport(input){const result=buildReading(input);currentReading=result;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;document.querySelector('#report').hidden=false;window.scrollTo({top:0,behavior:'smooth'});return result}
+function openResultView(view){
+ document.querySelector('#report-eyebrow').textContent={choice:'生辰已排好 · CHOOSE A PATH',chart:'命盤結果 · PERSONAL READING',game:'角色遊戲 · LIFE SIMULATION'}[view];
+ document.querySelector('#result-choice').hidden=view!=='choice';
+ document.querySelector('#chart-view').hidden=view!=='chart';
+ document.querySelector('#game-view').hidden=view!=='game';
+ if(view==='game'){
+  document.querySelector('#game-picker').hidden=false;
+  document.querySelector('#lifegame').hidden=true;
+  document.querySelector('#lifegame-start').hidden=false;
+  document.querySelector('#lifegame-play').hidden=true;
+ }
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function showReport(input){const result=buildReading(input);currentReading=result;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;document.querySelector('#report').hidden=false;openResultView('choice');return result}
+document.querySelector('#choose-chart').addEventListener('click',function(){openResultView('chart')});
+document.querySelector('#choose-game').addEventListener('click',function(){openResultView('game')});
+document.querySelector('#chart-back').addEventListener('click',function(){openResultView('choice')});
+document.querySelector('#game-back').addEventListener('click',function(){openResultView('choice')});
+document.querySelector('#ip-gallery').addEventListener('click',function(event){
+ const button=event.target.closest('button[data-ip]');
+ if(!button||!currentReading)return;
+ const chosen=BaziIps.profiles.find(function(p){return p.id===button.dataset.ip});
+ if(!chosen)return;
+ currentReading.character=chosen;
+ BaziIps.render(currentReading.characterMatch,chosen.id);
+});
 document.querySelector('#birth-form').addEventListener('submit',function(event){event.preventDefault();const input={name:document.querySelector('#name').value.trim(),date:document.querySelector('#birth-date').value,time:document.querySelector('#birth-time').value,gender:document.querySelector('#gender').value};if(!input.date||!input.time)return;const button=event.currentTarget.querySelector('button');button.firstElementChild.textContent='正在排列命盤…';button.disabled=true;setTimeout(function(){showReport(input);button.firstElementChild.textContent='生成我的命盤分析';button.disabled=false},550)});
 document.querySelector('#back-button').addEventListener('click',function(){document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;window.scrollTo({top:0,behavior:'smooth'})});
 document.querySelectorAll('.report-tabs button').forEach(function(btn){btn.addEventListener('click',function(){document.querySelectorAll('.report-tabs button').forEach(function(x){x.classList.toggle('active',x===btn)});document.querySelectorAll('.tab-panel').forEach(function(x){x.classList.toggle('active',x.dataset.panel===btn.dataset.tab)})})});
@@ -320,7 +345,7 @@ function buildReading(input){
  fill('#health-cards',hea.cards.map(function(c){return advice(c[0],c[1],c[2])}).join(''));
  fill('#risk-cards',advice('體質傾向','慣性風險',sp.risks[0])+advice('思考盲點','視角風險',sp.risks[1])+advice('本階段風險',chart.dominant+'（'+groupData[chart.dominant].label+'）用過頭',groupData[chart.dominant].risk)+advice('防護機制','事前清單','重大決定前先寫下成功標準、最大成本與退出條件，並找一位敢對你說不同意見的人。'));
  const luck=buildLuck(ps,input.date,input.time,input.gender,chart);buildBenefactor(chart.balance);
- const reading={pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:luck.currentCycle,lifeGameStations:luck.stations,character:character.profile};
+ const reading={pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:luck.currentCycle,lifeGameStations:luck.stations,character:character.profile,characterMatch:character};
  renderLifeGame(reading);
  return reading;
 }
@@ -365,13 +390,15 @@ function renderLifeGame(reading){
  const section=document.querySelector('#lifegame'),stations=reading.lifeGameStations;
  if(!section)return;
  if(!stations||!stations.length){section.hidden=true;return}
- section.hidden=false;
+ section.hidden=true;
  lifeGameState={reading:reading,stations:stations,step:0,choices:[],stats:{energy:50,resources:50,relations:50,agency:50}};
  document.querySelector('#lifegame-start').hidden=false;
  document.querySelector('#lifegame-play').hidden=true;
 }
 function startLifeGame(){
  if(!lifeGameState)return;
+ document.querySelector('#game-picker').hidden=true;
+ document.querySelector('#lifegame').hidden=false;
  lifeGameState.step=0;lifeGameState.choices=[];lifeGameState.stats={energy:50,resources:50,relations:50,agency:50};
  fill('#lifegame-board',lifeGameState.stations.map(function(s,i){return'<span class="lg-dot" data-i="'+i+'" title="'+s.ganzhi+' · '+s.god+'">'+(i+1)+'</span>'}).join(''));
  document.querySelector('#lifegame-result').hidden=true;

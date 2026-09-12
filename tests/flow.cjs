@@ -1,0 +1,18 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+
+const root = path.join(__dirname, '..', 'dist');
+const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
+const choice = html.indexOf('id="result-choice"');
+const chart = html.indexOf('id="chart-view"');
+const game = html.indexOf('id="game-view"');
+assert.ok(choice > 0 && chart > choice && game > chart);
+assert.match(html.slice(choice, chart), /id="choose-chart"[\s\S]*id="choose-game"/);
+assert.doesNotMatch(html.slice(chart, game), /id="lifegame"|id="ip-gallery"/);
+assert.match(html.slice(game), /id="ip-gallery"[\s\S]*id="lifegame-start"[\s\S]*id="lifegame"/);
+assert.match(app, /openResultView\('choice'\)/);
+assert.match(app, /currentReading\.character=chosen/);
+assert.match(app, /document\.querySelector\('#game-picker'\)\.hidden=true/);
+console.log('Separated result menu, chart, character picker and game: OK');

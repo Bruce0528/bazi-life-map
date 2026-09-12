@@ -24,12 +24,14 @@
   return{profile:byId[id],why:why,detail:'日主 '+chart.dayMaster+' · '+chart.strength+' · 天干陰 '+yin+'／陽 '+yang+'；此為本站設計的角色對應，不是八字定論。'};
  }
  function art(profile,extraClass){return'<span class="ip-art ip-art--'+profile.row+(extraClass?' '+extraClass:'')+'" style="--ip-x:'+profile.x+';--ip-y:'+profile.y+'" role="img" aria-label="'+profile.element+' · '+profile.name+'角色插畫"></span>'}
- function render(matched){
-  const p=matched.profile;
+ function render(matched,selectedId){
+  const p=byId[selectedId]||matched.profile;
+  const isRecommended=p.id===matched.profile.id;
+  const reason=isRecommended?matched.why:'你自行選擇了「'+p.name+'」；命盤原本推薦「'+matched.profile.name+'」。改選只影響遊戲角色，不會改變命盤與十年大運。';
   const selected=document.querySelector('#ip-selected');
   if(!selected)return;
-  selected.innerHTML='<div class="ip-hero-art">'+art(p,'ip-art--hero')+'</div><div class="ip-hero-copy"><span class="ip-kicker">YOUR CHARACTER · '+p.element+'</span><h3>你的旅途夥伴：'+p.name+'</h3><p class="ip-theme">'+p.theme+'</p><p>'+p.gift+'</p><div class="ip-watch"><b>一起練習</b><span>'+p.watch+'</span></div><p class="ip-evidence">'+matched.why+'</p><small>'+matched.detail+'</small></div>';
-  document.querySelector('#ip-gallery').innerHTML=profiles.map(function(item){return'<div class="ip-mini'+(item.id===p.id?' is-selected':'')+'">'+art(item,'ip-art--mini')+'<b>'+item.name+'</b><small>'+item.element+'</small></div>'}).join('');
+  selected.innerHTML='<div class="ip-hero-art">'+art(p,'ip-art--hero')+'</div><div class="ip-hero-copy"><span class="ip-kicker">'+(isRecommended?'命盤推薦':'自行選擇')+' · '+p.element+'</span><h3>你的旅途夥伴：'+p.name+'</h3><p class="ip-theme">'+p.theme+'</p><p>'+p.gift+'</p><div class="ip-watch"><b>一起練習</b><span>'+p.watch+'</span></div><p class="ip-evidence">'+reason+'</p><small>'+matched.detail+'</small></div>';
+  document.querySelector('#ip-gallery').innerHTML=profiles.map(function(item){return'<button type="button" class="ip-mini'+(item.id===p.id?' is-selected':'')+'" data-ip="'+item.id+'" aria-pressed="'+(item.id===p.id)+'" aria-label="選擇'+item.name+(item.id===matched.profile.id?'，命盤推薦':'')+'">'+art(item,'ip-art--mini')+'<b>'+item.name+'</b><small>'+item.element+(item.id===matched.profile.id?' · 推薦':'')+'</small></button>'}).join('');
  }
  root.BaziIps={profiles:profiles,choose:choose,art:art,render:render};
 })(window);
