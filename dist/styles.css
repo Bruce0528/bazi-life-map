@@ -43,3 +43,24 @@
 .compat-score-hero{display:flex;align-items:center;gap:12px}.compat-score-hero>svg{width:76px;height:76px;flex:none;filter:drop-shadow(0 6px 5px rgba(121,58,47,.14))}.compat-score-hero span{display:block;color:#956945;font-size:.78rem;font-weight:700;letter-spacing:.08em}.compat-score-hero strong{margin:0}.compat-score-part>div{align-items:center;gap:9px}.compat-score-icon{display:grid;place-items:center;flex:none;width:36px;height:36px;background:rgba(255,255,255,.67);border-radius:12px}.compat-score-icon svg{width:30px;height:30px}.compat-score-part b{min-width:68px}.compat-score-track i{background:linear-gradient(90deg,#d6aa57,#c85f52)}
 @media(max-width:900px){.compatibility-section{margin:32px 24px 70px;padding:38px 28px}.compatibility-form{grid-template-columns:1fr}}
 @media(max-width:560px){.topbar{flex-wrap:wrap;height:auto;min-height:64px;row-gap:8px;padding:10px 18px}.top-links{gap:10px}.top-links a{font-size:.72rem;padding:8px 11px}.compatibility-section{margin:24px 12px 56px;padding:30px 16px}.compatibility-heading{margin-bottom:27px}.compatibility-form fieldset{padding:22px 14px;gap:13px}.compatibility-actions{display:block}.compatibility-actions button{width:100%}.compatibility-actions p{margin-top:12px}.compat-score{grid-template-columns:1fr;padding:22px;gap:20px}.compat-score-part>div{flex-wrap:wrap;gap:3px 8px}.compat-score-part small{order:3;flex-basis:100%}.compat-score-part strong{margin-left:auto}.compat-chart-grid,.compat-verdict,.compatibility-cards{grid-template-columns:1fr}.compat-chart{padding:16px}.compat-pillars{gap:4px}.compat-pillar b{font-size:1.08rem}.compat-card{min-height:0}.compatibility-result{padding-top:30px}}
+
+/* Site info: contact / refund / privacy / FAQ -- uses the shared theme
+   variables (not hardcoded colors) so it re-themes automatically along
+   with the rest of the site (e.g. theme-daisy.css). */
+.policy-section{max-width:1400px;margin:0 auto;padding:56px max(5vw,28px);border-top:1px solid var(--line);scroll-margin-top:20px}
+.policy-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px 60px}
+.policy-grid article{scroll-margin-top:20px}
+.policy-grid h3{font:600 1.5rem var(--serif);color:var(--gold);margin:0 0 16px}
+.policy-grid p{opacity:.82;line-height:1.9;font-size:.88rem;margin:0 0 12px}
+.policy-grid p a{color:var(--gold)}
+.policy-grid dl{margin:0}
+.policy-grid dt{font-weight:700;margin-top:16px;font-size:.92rem}
+.policy-grid dt:first-child{margin-top:0}
+.policy-grid dd{margin:6px 0 0;opacity:.82;line-height:1.8;font-size:.86rem}
+.site-footer{max-width:1400px;margin:0 auto;padding:0 max(5vw,28px) 60px}
+.site-footer-links{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:16px}
+.site-footer-links a{color:var(--gold);text-decoration:none;font-size:.8rem;font-weight:700}
+.site-footer-links a:hover{text-decoration:underline}
+.site-footer p{opacity:.7;font-size:.75rem;margin:0}
+@media(max-width:900px){.policy-grid{grid-template-columns:1fr;gap:36px}}
+@media(max-width:560px){.policy-section{padding:40px 18px}}
