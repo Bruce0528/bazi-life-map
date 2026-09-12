@@ -67,3 +67,29 @@
 .site-footer p{opacity:.7;font-size:.75rem;margin:0}
 @media(max-width:900px){.policy-grid{grid-template-columns:1fr;gap:36px}}
 @media(max-width:560px){.policy-section{padding:40px 18px}}
+
+/* 人生模擬小遊戲：8 站對應 8 步大運 */
+.lifegame-section{max-width:1400px;margin:42px auto 0;padding:50px 0;border-top:1px solid #bcb7ab}
+.lg-board{display:flex;flex-wrap:wrap;gap:10px;margin:30px 0}
+.lg-dot{width:40px;height:40px;border-radius:50%;background:#e7e2d7;border:2px solid #c9c4b8;display:flex;align-items:center;justify-content:center;opacity:.4;transition:opacity .2s,border-color .2s}
+.lg-dot svg{width:26px;height:26px}
+.lg-dot.current{opacity:1;border-color:var(--red);box-shadow:0 0 0 3px rgba(183,67,50,.15)}
+.lg-dot.done{opacity:.85;border-color:var(--gold)}
+.lg-stage{background:#e7e2d7;padding:clamp(24px,4vw,40px);min-height:150px}
+.lg-station{display:flex;gap:20px;align-items:center;margin-bottom:22px}
+.lg-mascot{flex:none;width:56px;height:56px;border-radius:50%;background:var(--paper);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.lg-mascot svg{width:40px;height:40px}
+.lg-mascot--sm{width:38px;height:38px}
+.lg-mascot--sm svg{width:26px;height:26px}
+.lg-station small{display:block;color:#89784d;font-size:.72rem;letter-spacing:.08em;margin-bottom:4px}
+.lg-station b{font:600 1.3rem var(--serif);color:var(--ink)}
+.lg-station p{margin:6px 0 0;color:#5e6569;font-size:.88rem}
+.lg-choices{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lg-choices button{min-height:64px;border:0;background:var(--ink);color:var(--paper);padding:14px 18px;font:600 .92rem var(--sans);line-height:1.5;cursor:pointer;text-align:left;transition:transform .15s,background .15s}
+.lg-choices button:hover{background:var(--red);transform:translateY(-2px)}
+.lg-result{margin-top:24px;padding:clamp(24px,4vw,36px);background:#152231;color:white}
+.lg-recap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.lg-result p{font:500 1.15rem/1.7 var(--serif);margin:0 0 20px}
+.lg-result button{border:0;background:var(--gold);color:#152231;font:700 .9rem var(--sans);padding:12px 22px;cursor:pointer}
+.lg-result button:hover{background:#e6c37c}
+@media(max-width:560px){.lg-choices{grid-template-columns:1fr}.lg-station{flex-direction:column;align-items:flex-start;gap:12px}}

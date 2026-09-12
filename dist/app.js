@@ -317,8 +317,10 @@ function buildReading(input){
  fill('#health-copy',hea.copy);
  fill('#health-cards',hea.cards.map(function(c){return advice(c[0],c[1],c[2])}).join(''));
  fill('#risk-cards',advice('體質傾向','慣性風險',sp.risks[0])+advice('思考盲點','視角風險',sp.risks[1])+advice('本階段風險',chart.dominant+'（'+groupData[chart.dominant].label+'）用過頭',groupData[chart.dominant].risk)+advice('防護機制','事前清單','重大決定前先寫下成功標準、最大成本與退出條件，並找一位敢對你說不同意見的人。'));
- const currentCycle=buildLuck(ps,input.date,input.time,input.gender,chart);buildBenefactor(chart.balance);
- return{pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:currentCycle};
+ const luck=buildLuck(ps,input.date,input.time,input.gender,chart);buildBenefactor(chart.balance);
+ const reading={pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:luck.currentCycle,lifeGameStations:luck.stations};
+ renderLifeGame(reading);
+ return reading;
 }
 function approximateLuckStart(date,forward){
  const a=date.split('-').map(Number),base=Date.UTC(a[0],a[1]-1,a[2]),cuts=[[1,6],[2,4],[3,6],[4,5],[5,6],[6,6],[7,7],[8,8],[9,8],[10,8],[11,7],[12,7]],points=[];
@@ -337,12 +339,74 @@ function buildLuck(ps,date,time,gender,chart){
  const birthYear=Number(date.slice(0,4)),day=ps[2].s,yang=ps[0].s%2===0,forward=gender==='other'?true:(gender==='male')===yang,natal=ps.map(function(p){return p.b});
  const yun=ps.eight.getYun(gender==='other'?(yang?1:0):(gender==='male'?1:0),2),startSolar=yun.getStartSolar(),startDate=startSolar.toYmdHms(),startAge=(Date.UTC(startSolar.getYear(),startSolar.getMonth()-1,startSolar.getDay())-Date.UTC(birthYear,Number(date.slice(5,7))-1,Number(date.slice(8,10))))/31557600000;
  fill('#luck-start','約在 '+startAge.toFixed(1)+' 歲、'+startDate.slice(0,16)+' 前後，開始進入你的第一步十年大運'+(gender==='other'?'（未指定性別時，暫以較常見的方向示意，請勿當作精準定盤）':'')+'。實際起算時間仍會受流派與出生地時差影響，僅供參考。');
- let html='',currentCycle=null;
+ let html='',currentCycle=null;const stations=[];
  const cycles=yun.getDaYun(9).slice(1);
  for(let i=0;i<cycles.length;i++){const cycle=cycles[i],gz=cycle.getGanZhi(),s=stems.indexOf(gz[0]),b=branches.indexOf(gz[1]),god=godGroup(tenGod(day,s)),link=branchLink(b,natal),current=new Date().getFullYear()>=cycle.getStartYear()&&new Date().getFullYear()<=cycle.getEndYear(),helpful=(chart.strength==='身偏弱'&&['比劫','印星'].includes(god))||(chart.strength==='身偏強'&&['食傷','財星','官殺'].includes(god)),tone=helpful?'順勢開展':god===chart.dominant?'主題加倍':'調整鍛鍊';
+  stations.push({ganzhi:gz,god:god,tone:tone,startYear:cycle.getStartYear(),endYear:cycle.getEndYear(),startAge:cycle.getStartAge(),endAge:cycle.getEndAge()});
   html+='<div class="cycle '+(current?'current':'')+'"><small>'+cycle.getStartYear()+'—'+cycle.getEndYear()+'</small><b>'+gz+'</b><span>'+cycle.getStartAge()+'—'+cycle.getEndAge()+' 虛歲'+(current?' · 當前':'')+'</span><div class="cycle-tone">'+tone+' · '+god+'</div><p>這十年主要圍繞著'+luckThemeByGod[god]+'；'+link+'。</p><ul><li>'+luckActionByGod[god]+'</li><li>'+luckWarningByGod[god]+'</li></ul></div>';
   if(current)currentCycle={ganzhi:gz,god:god,tone:tone,startYear:cycle.getStartYear(),endYear:cycle.getEndYear(),startAge:cycle.getStartAge(),endAge:cycle.getEndAge()};
  }
  fill('#luck-timeline',html);
- return currentCycle;
+ return{currentCycle:currentCycle,stations:stations};
+}
+
+/* 人生模擬：8 站對應 8 步大運，每站 2 個選擇，跑完給一句總結 */
+/* 8 個原創角色，對應 8 個固定站別（不隨命盤變動），象徵一段成長旅程：
+   萌芽→學飛→機靈→沉穩→衝刺→智慧→厚實→昇華 */
+const lifeGameMascots=[
+ {name:'種子精靈',svg:'<svg viewBox="0 0 64 64"><ellipse cx="32" cy="38" rx="16" ry="18" fill="#8a9195"/><path d="M32 20c-6 0-9 6-9 6s6 3 9 3 9-3 9-3-3-6-9-6Z" fill="#4f8062"/><circle cx="27" cy="38" r="2.4" fill="#101923"/><circle cx="37" cy="38" r="2.4" fill="#101923"/><path d="M27 46q5 4 10 0" stroke="#101923" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>'},
+ {name:'雛鳥',svg:'<svg viewBox="0 0 64 64"><ellipse cx="32" cy="40" rx="17" ry="15" fill="#d6aa57"/><path d="M14 34c-6-2-9-8-9-8s7 0 11 3Z" fill="#e6c37c"/><path d="M50 34c6-2 9-8 9-8s-7 0-11 3Z" fill="#e6c37c"/><path d="M32 30 24 22l16 0Z" fill="#b74332"/><circle cx="26" cy="36" r="2.4" fill="#101923"/><circle cx="38" cy="36" r="2.4" fill="#101923"/></svg>'},
+ {name:'機靈狐',svg:'<svg viewBox="0 0 64 64"><path d="M10 44c4-10 14-18 22-18s18 8 22 18c-6 4-14 6-22 6s-16-2-22-6Z" fill="#b74332"/><path d="M14 30 8 18l10 6Z" fill="#b74332"/><path d="M50 30l6-12-10 6Z" fill="#b74332"/><circle cx="26" cy="36" r="2.2" fill="#101923"/><circle cx="38" cy="36" r="2.2" fill="#101923"/><path d="M28 42q4 3 8 0" stroke="#f1eee6" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>'},
+ {name:'沉穩鹿',svg:'<svg viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="16" ry="14" fill="#b59658"/><path d="M22 26c-4-6-2-10-2-10s6 2 7 8Z" fill="#8a6d3f"/><path d="M42 26c4-6 2-10 2-10s-6 2-7 8Z" fill="#8a6d3f"/><path d="M16 22c-3-4-2-7-2-7s4 1 5 6Z" fill="#8a6d3f"/><path d="M48 22c3-4 2-7 2-7s-4 1-5 6Z" fill="#8a6d3f"/><circle cx="27" cy="40" r="2.2" fill="#101923"/><circle cx="37" cy="40" r="2.2" fill="#101923"/></svg>'},
+ {name:'衝刺虎',svg:'<svg viewBox="0 0 64 64"><circle cx="32" cy="36" r="18" fill="#d6aa57"/><path d="M18 24 12 14l10 8Z" fill="#d6aa57"/><path d="M46 24l6-10-10 8Z" fill="#d6aa57"/><path d="M20 30h6M38 30h6M24 36h4M36 36h4" stroke="#101923" stroke-width="2" stroke-linecap="round"/><circle cx="25" cy="38" r="2.2" fill="#101923"/><circle cx="39" cy="38" r="2.2" fill="#101923"/><path d="M28 46q4 3 8 0" stroke="#101923" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>'},
+ {name:'智慧鴞',svg:'<svg viewBox="0 0 64 64"><ellipse cx="32" cy="38" rx="17" ry="18" fill="#315f77"/><circle cx="24" cy="34" r="7" fill="#f1eee6"/><circle cx="40" cy="34" r="7" fill="#f1eee6"/><circle cx="24" cy="34" r="3" fill="#101923"/><circle cx="40" cy="34" r="3" fill="#101923"/><path d="M32 38 28 44h8Z" fill="#d6aa57"/></svg>'},
+ {name:'厚實龜',svg:'<svg viewBox="0 0 64 64"><ellipse cx="32" cy="38" rx="18" ry="14" fill="#4f8062"/><path d="M20 38a12 9 0 1 1 24 0a12 9 0 1 1 -24 0Z" fill="#3c6650"/><circle cx="14" cy="34" r="6" fill="#4f8062"/><circle cx="12" cy="33" r="1.6" fill="#101923"/><ellipse cx="24" cy="50" rx="4" ry="3" fill="#4f8062"/><ellipse cx="40" cy="50" rx="4" ry="3" fill="#4f8062"/></svg>'},
+ {name:'昇華鶴',svg:'<svg viewBox="0 0 64 64"><path d="M32 50V26" stroke="#8a9195" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="22" rx="8" ry="10" fill="#f1eee6" stroke="#c9c4b8" stroke-width="1"/><path d="M32 16 28 8l4 3 4-3Z" fill="#d6aa57"/><path d="M24 30c-10-2-16 4-16 4s8 6 18 4Z" fill="#e7c98a"/><path d="M40 30c10-2 16 4 16 4s-8 6-18 4Z" fill="#e7c98a"/><circle cx="30" cy="20" r="1.6" fill="#101923"/></svg>'}
+];
+const lifeGameChoices={
+ 比劫:{a:{label:'放手一搏，自己主導這個階段',effect:'bold'},b:{label:'找夥伴一起分攤，穩紮穩打',effect:'steady'}},
+ 食傷:{a:{label:'大膽發表新想法，搶先卡位',effect:'bold'},b:{label:'先打磨作品，準備好再推出',effect:'steady'}},
+ 財星:{a:{label:'積極追求成果，把握變現機會',effect:'bold'},b:{label:'先顧好現金流，穩健布局',effect:'steady'}},
+ 官殺:{a:{label:'主動承擔更大的責任與壓力',effect:'bold'},b:{label:'先確認授權與規則，再接手',effect:'steady'}},
+ 印星:{a:{label:'投入時間深造，累積知識資產',effect:'bold'},b:{label:'邊做邊學，實戰中累積經驗',effect:'steady'}}
+};
+let lifeGameState=null;
+function renderLifeGame(reading){
+ const section=document.querySelector('#lifegame'),stations=reading.lifeGameStations;
+ if(!section)return;
+ if(!stations||!stations.length){section.hidden=true;return}
+ section.hidden=false;
+ lifeGameState={reading:reading,stations:stations,step:0,choices:[]};
+ fill('#lifegame-board',stations.map(function(s,i){return'<span class="lg-dot" data-i="'+i+'" title="'+lifeGameMascots[i].name+'">'+lifeGameMascots[i].svg+'</span>'}).join(''));
+ document.querySelector('#lifegame-result').hidden=true;
+ renderLifeGameStage();
+}
+function renderLifeGameStage(){
+ const st=lifeGameState,station=st.stations[st.step],pair=lifeGameChoices[station.god];
+ document.querySelectorAll('#lifegame-board .lg-dot').forEach(function(d,i){d.classList.toggle('done',i<st.step);d.classList.toggle('current',i===st.step)});
+ const mascot=lifeGameMascots[st.step];
+ fill('#lifegame-stage','<div class="lg-station"><span class="lg-mascot">'+mascot.svg+'</span><div><small>第 '+(st.step+1)+' 站 · '+mascot.name+' · '+station.startAge+'—'+station.endAge+' 虛歲</small><b>'+station.ganzhi+' · '+station.god+'</b><p>這一站圍繞著'+luckThemeByGod[station.god]+'。</p></div></div><div class="lg-choices"><button type="button" data-c="a">'+pair.a.label+'</button><button type="button" data-c="b">'+pair.b.label+'</button></div>');
+ document.querySelectorAll('#lifegame-stage .lg-choices button').forEach(function(btn){btn.addEventListener('click',function(){pickLifeGameChoice(btn.dataset.c)})});
+}
+function pickLifeGameChoice(key){
+ const st=lifeGameState,station=st.stations[st.step],choice=lifeGameChoices[station.god][key];
+ st.choices.push({station:station,choice:choice});
+ st.step++;
+ if(st.step>=st.stations.length)finishLifeGame();else renderLifeGameStage();
+}
+function summarizeLifeGame(boldCount,steadyCount,reading){
+ const lean=boldCount>steadyCount?'bold':steadyCount>boldCount?'steady':'even',strength=reading.dayStrength;
+ if(lean==='bold')return strength==='身偏強'?'你這輪選擇大膽衝刺了 '+boldCount+' 次，剛好呼應你命盤身強的底氣——這樣的組合容易活得精彩，但別忘了偶爾煞車。':'你這輪選擇大膽衝刺了 '+boldCount+' 次，命盤卻偏身弱，這提醒你：真實人生裡，衝勁需要多找人分攤風險，才走得久。';
+ if(lean==='steady')return strength==='身偏強'?'你這輪選擇穩健了 '+steadyCount+' 次，跟你身強的底氣相比略保守——你其實有本錢再多冒一點險。':'你這輪選擇穩健了 '+steadyCount+' 次，剛好呼應你命盤身弱、適合借力的體質，這是你走得長久的節奏。';
+ return'你這輪選擇大膽與穩健各半，跟你命盤「'+strength+'」的彈性其實很搭——懂得看情況調整節奏，本來就是你的天賦。';
+}
+function finishLifeGame(){
+ const st=lifeGameState;
+ document.querySelectorAll('#lifegame-board .lg-dot').forEach(function(d){d.classList.add('done');d.classList.remove('current')});
+ fill('#lifegame-stage','');
+ const boldCount=st.choices.filter(function(c){return c.choice.effect==='bold'}).length,steadyCount=st.choices.length-boldCount;
+ const recap=lifeGameMascots.map(function(m){return'<span class="lg-mascot lg-mascot--sm" title="'+m.name+'">'+m.svg+'</span>'}).join('');
+ fill('#lifegame-result','<div class="lg-recap">'+recap+'</div><p>'+summarizeLifeGame(boldCount,steadyCount,st.reading)+'</p><button type="button" id="lifegame-restart">重新玩一次</button>');
+ document.querySelector('#lifegame-result').hidden=false;
+ document.querySelector('#lifegame-restart').addEventListener('click',function(){renderLifeGame(st.reading)});
 }
