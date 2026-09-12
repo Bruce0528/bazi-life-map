@@ -46,8 +46,61 @@ function list(items){return items.map(function(x){return '<li>'+x+'</li>'}).join
 function listPlus(items,extra){return list(items)+'<li class="chart-linked">'+extra+'</li>'}
 function hashText(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 const categoryFrame={career:'這次的工作機會',money:'這次的金錢決定',love:'這段感情裡的選擇',decision:'這個重大選擇',other:'眼前這件事'};
-function personalizedGuidance(type,reading){
- const dom=reading.dominantTenGod,label=groupData[dom].label,domRisk=groupData[dom].risk,bal=reading.balancingElement,frame=categoryFrame[type]||categoryFrame.other;
+const categoryNoun={career:'職涯決定',money:'金錢決定',love:'感情選擇',decision:'重大選擇',other:'這件事'};
+const situationThemes={
+ career:[
+  {kw:['升遷','晉升','升職','主管職'],theme:'升遷／晉升機會',concern:'這個新位置能不能讓你真正拿到更大的舞台，而不只是換個頭銜。'},
+  {kw:['離職','跳槽','轉職','換工作','裸辭'],theme:'轉職／離職',concern:'離開熟悉的環境後，新選擇是否真的比現在更好。'},
+  {kw:['創業','開公司','接案','自己出來做'],theme:'創業／接案',concern:'從穩定收入跨到不確定的自主性，能不能撐過起步期。'},
+  {kw:['加薪','薪水','薪資','待遇'],theme:'薪資／待遇調整',concern:'付出與回報是否對等，值不值得繼續投入。'},
+  {kw:['代理商','經銷','合作案','新客戶','新團隊','新業務'],theme:'新合作／新業務機會',concern:'新的合作關係能不能真的帶來成長，還是只是換個包裝的舊問題。'}
+ ],
+ money:[
+  {kw:['投資','買股','基金','加密貨幣','比特幣','股票'],theme:'投資決策',concern:'現在進場的時機與風險，是否在你能承受的範圍內。'},
+  {kw:['借錢','貸款','負債','信貸'],theme:'借貸／資金調度',concern:'這筆資金壓力會不會超出你長期可負擔的範圍。'},
+  {kw:['買房','買車','大筆支出'],theme:'大額支出決策',concern:'這筆支出是否會犧牲掉其他更重要的財務彈性。'}
+ ],
+ love:[
+  {kw:['分手','離婚','冷戰'],theme:'關係是否要結束',concern:'留下來是因為還有希望，還是只是不想面對結束。'},
+  {kw:['告白','曖昧','追求'],theme:'關係的下一步',concern:'對方的態度和你想要的方向，是不是真的一致。'},
+  {kw:['結婚','訂婚','同居'],theme:'進入更深的承諾',concern:'這段關係的基礎，禁不禁得起長期生活的考驗。'},
+  {kw:['外遇','出軌','劈腿'],theme:'信任受損',concern:'關係還有沒有修復的空間，或已經到了該離開的時候。'}
+ ],
+ decision:[
+  {kw:['搬家','移民','出國'],theme:'環境的重大改變',concern:'離開熟悉的環境，能不能換來真正想要的生活。'},
+  {kw:['讀書','進修','考試','留學'],theme:'進修／升學選擇',concern:'投入的時間與成本，能不能換回相應的長期價值。'}
+ ],
+ other:[]
+};
+function detectTheme(text,type){
+ const list=situationThemes[type]||[];
+ for(let i=0;i<list.length;i++){if(list[i].kw.some(function(k){return text.indexOf(k)>-1}))return list[i]}
+ return null;
+}
+function restateProblem(text,type,detected){
+ const noun=categoryNoun[type]||categoryNoun.other,excerpt=text.length>44?text.slice(0,44)+'…':text;
+ if(detected)return'整理你寫的內容，這其實是一個關於「'+detected.theme+'」的'+noun+'。你在意的核心，很可能不是表面的選項本身，而是：'+detected.concern+'（你的原話：「'+excerpt+'」）';
+ return'整理你寫的內容，這是一個關於'+noun+'的抉擇（你的原話：「'+excerpt+'」）。真正要問自己的，往往不是「行不行」，而是「這是不是我現在最想要的方向」。';
+}
+function trendLine(cycle,horizon){
+ const span=horizon==='30'?'這 30 天':horizon==='90'?'這 3 個月':'這 1 年';
+ if(!cycle)return span+'內主要受你原本性格慣性影響，還沒有明顯大運加成，重點是先把基本盤顧好，不必躁進。';
+ if(cycle.tone==='順勢開展')return span+'內走勢偏向緩步向上；只要持續投入，成果會比你預期的更快浮現。';
+ if(cycle.tone==='主題加倍')return span+'內容易出現放大效應——選對方向會加速成長，選錯方向也會更快看到代價，值得把決策想清楚再出手。';
+ return span+'內可能會先卡在調整期，短期不一定馬上見效，撐過磨合階段後，後段會比開頭更順。';
+}
+function crossAnalysis(reading,type,detected){
+ const dom=reading.dominantTenGod,label=groupData[dom].label,cycle=reading.currentCycle,themeWord=detected?detected.theme+'這種情境':(categoryFrame[type]||categoryFrame.other);
+ const natureLine='從你的命盤看，你的性格主軸是「'+dom+'（'+label+'）」，遇到'+themeWord+'時，你習慣的反應模式就是'+groupData[dom].talents[0]+'。';
+ const cycleLine=cycle?('你目前正走在「'+cycle.ganzhi+'」大運（'+cycle.startYear+'—'+cycle.endYear+'年，'+cycle.startAge+'—'+cycle.endAge+' 虛歲），主題是'+luckThemeByGod[cycle.god]+'，屬於「'+cycle.tone+'」：這幾年你在'+label+'相關的事情上，會'+(cycle.tone==='順勢開展'?'特別順手，是加碼投入的好時機。':cycle.tone==='主題加倍'?'被放大檢視，成敗都會比平常更明顯。':'需要花更多力氣調整節奏，急不得。')):'你目前尚未進入第一步大運，還是以原本命盤的性格慣性為主，沒有明顯的大運加成或考驗。';
+ return natureLine+cycleLine;
+}
+function crossGrid(reading,cycle,horizon){
+ const dom=reading.dominantTenGod;
+ return[['機會點',groupData[dom].talents[2]],['優勢',reading.skills[0]],['劣勢',reading.risks[0]],['未來走勢',trendLine(cycle,horizon)]].map(function(x){return'<div class="structure-chip"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>'}).join('');
+}
+function personalizedGuidance(type,reading,detected){
+ const dom=reading.dominantTenGod,label=groupData[dom].label,domRisk=groupData[dom].risk,bal=reading.balancingElement,frame=detected?detected.theme:(categoryFrame[type]||categoryFrame.other);
  const strengthTip=reading.dayStrength==='身偏強'?'你的命盤偏「身強」，容易靠自己硬推到底，這次可以主動找一位敢說出不同意見的人一起確認判斷。':reading.dayStrength==='身偏弱'?'你的命盤偏「身弱」，比起單打獨鬥，借助夥伴、平台或導師的資源，這次會比獨自扛下更穩。':'你的命盤五行中和，不必套用單一策略，依現場狀況彈性調整反而對你更有利。';
  return{
   adv:'你的命盤以「'+dom+'（'+label+'）」為主要動能，'+frame+'如果剛好用得上這項能力，會比一般情況更順手、更省力。',
@@ -57,10 +110,15 @@ function personalizedGuidance(type,reading){
 }
 function analyzeSituation(text,type,horizon){
  if(!currentReading)throw new Error('請先生成命盤');
- const seed=hashText(text+type+horizon+currentReading.dayMaster+new Date().toISOString().slice(0,10)),hex=gua[seed%gua.length],guide=eventGuidance[type]||eventGuidance.other,personal=personalizedGuidance(type,currentReading);
+ const detected=detectTheme(text,type);
+ const seed=hashText(text+type+horizon+currentReading.dayMaster+new Date().toISOString().slice(0,10)),hex=gua[seed%gua.length],guide=eventGuidance[type]||eventGuidance.other,personal=personalizedGuidance(type,currentReading,detected);
  fill('#hexagram-name',hex.name);fill('#hexagram-keyword',hex.key);
  fill('#hexagram-lines',hex.lines.slice().reverse().map(function(v){return v?'<div class="gua-line yang"></div>':'<div class="gua-line"><i></i><i></i></div>'}).join(''));
- fill('#oracle-title',guide.title);fill('#oracle-summary',hex.summary+' 你的命盤以「'+currentReading.strongElement+'」為主要動能，這次若能同時加入「'+currentReading.balancingElement+'」的'+profiles[currentReading.balancingElement].trait+'，會比只靠原本習慣更有利。');
+ fill('#oracle-title',guide.title);
+ fill('#oracle-restate',restateProblem(text,type,detected));
+ fill('#oracle-summary',hex.summary);
+ fill('#oracle-cross-copy',crossAnalysis(currentReading,type,detected));
+ fill('#oracle-cross-grid',crossGrid(currentReading,currentReading.currentCycle,horizon));
  fill('#oracle-advantage',listPlus(guide.adv,personal.adv));fill('#oracle-actions',listPlus(guide.act,personal.act));fill('#oracle-risks',listPlus(guide.risk,personal.risk));
  document.querySelector('#oracle-result').hidden=false;document.querySelector('#oracle-result').scrollIntoView({behavior:'smooth',block:'start'});
  return{hexagram:hex.name,keyword:hex.key,mostFavorable:guide.adv.concat([personal.adv]),recommendedActions:guide.act.concat([personal.act]),risksToAvoid:guide.risk.concat([personal.risk])};
@@ -96,6 +154,9 @@ const groupData={
  '印星':{label:'學習／洞察',talents:['快速建立知識架構並追溯根因','能從經驗與專業系統取得支援','適合研究、教育、策略與知識密集工作'],risk:'準備與推演過多時，行動速度會下降'}
 };
 const balancePractice={木:'定期接觸新領域、新方法，保持成長感。',火:'主動分享進度與成果，讓熱度被更多人看見。',土:'把想法排進行事曆，變成具體、可檢核的產出。',金:'替重要決定設立清楚的標準與截止日。',水:'固定留時間吸收不同來源的資訊與觀點。'};
+const luckThemeByGod={比劫:'自主權、同儕網絡與新團隊',食傷:'作品輸出、創新與個人品牌',財星:'客戶、商務與資源變現',官殺:'職位責任、制度與領導機會',印星:'進修、證照、導師與知識資產'};
+const luckActionByGod={比劫:'先界定權責，再擴大合作',食傷:'以可見作品持續驗證市場',財星:'用數字管理資源與報酬',官殺:'承擔前先確認授權和標準',印星:'把學習轉成可交付成果'};
+const luckWarningByGod={比劫:'避免因比較或義氣做決定',食傷:'避免表達過快而忽略規範',財星:'避免成果壓力侵蝕長期節奏',官殺:'避免把高壓視為唯一成長方式',印星:'避免準備太久卻沒有實際輸出'};
 const financeByGod={
  比劫:'比起精算報表，你更習慣憑感覺與行動力累積資源；建議設一個自動化的強制儲蓄機制，避免衝動消費侵蝕本金。',
  食傷:'收入常跟著作品、專案或創意輸出波動；建議準備至少半年的生活緩衝金，讓你等待下一個機會時不必倉促妥協。',
@@ -196,8 +257,8 @@ function buildReading(input){
  fill('#health-copy',hea.copy);
  fill('#health-cards',hea.cards.map(function(c){return advice(c[0],c[1],c[2])}).join(''));
  fill('#risk-cards',advice('體質傾向','慣性風險',sp.risks[0])+advice('思考盲點','視角風險',sp.risks[1])+advice('本階段風險',chart.dominant+'過量',groupData[chart.dominant].risk)+advice('防護機制','事前清單','重大決定前先寫下成功標準、最大成本與退出條件，並找一位敢對你說不同意見的人。'));
- buildLuck(ps,input.date,input.time,input.gender,chart);buildBenefactor(chart.balance);
- return{pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant};
+ const currentCycle=buildLuck(ps,input.date,input.time,input.gender,chart);buildBenefactor(chart.balance);
+ return{pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:currentCycle};
 }
 function approximateLuckStart(date,forward){
  const a=date.split('-').map(Number),base=Date.UTC(a[0],a[1]-1,a[2]),cuts=[[1,6],[2,4],[3,6],[4,5],[5,6],[6,6],[7,7],[8,8],[9,8],[10,8],[11,7],[12,7]],points=[];
@@ -216,13 +277,12 @@ function buildLuck(ps,date,time,gender,chart){
  const birthYear=Number(date.slice(0,4)),day=ps[2].s,yang=ps[0].s%2===0,forward=gender==='other'?true:(gender==='male')===yang,natal=ps.map(function(p){return p.b});
  const yun=ps.eight.getYun(gender==='other'?(yang?1:0):(gender==='male'?1:0),2),startSolar=yun.getStartSolar(),startDate=startSolar.toYmdHms(),startAge=(Date.UTC(startSolar.getYear(),startSolar.getMonth()-1,startSolar.getDay())-Date.UTC(birthYear,Number(date.slice(5,7))-1,Number(date.slice(8,10))))/31557600000;
  fill('#luck-start','約 '+startAge.toFixed(1)+' 歲起運（'+startDate.slice(0,16)+'） · '+(forward?'順排':'逆排')+(gender==='other'?' · 未指定性別時暫以順行示意，請勿視為個人定盤':'')+' · 實際結果仍受流派與出生地時差影響');
- let html='';
- const chance={比劫:'自主權、同儕網絡與新團隊',食傷:'作品輸出、創新與個人品牌',財星:'客戶、商務與資源變現',官殺:'職位責任、制度與領導機會',印星:'進修、證照、導師與知識資產'};
- const action={比劫:'先界定權責，再擴大合作',食傷:'以可見作品持續驗證市場',財星:'用數字管理資源與報酬',官殺:'承擔前先確認授權和標準',印星:'把學習轉成可交付成果'};
- const warning={比劫:'避免因比較或義氣做決定',食傷:'避免表達過快而忽略規範',財星:'避免成果壓力侵蝕長期節奏',官殺:'避免把高壓視為唯一成長方式',印星:'避免準備太久卻沒有實際輸出'};
+ let html='',currentCycle=null;
  const cycles=yun.getDaYun(9).slice(1);
  for(let i=0;i<cycles.length;i++){const cycle=cycles[i],gz=cycle.getGanZhi(),s=stems.indexOf(gz[0]),b=branches.indexOf(gz[1]),god=godGroup(tenGod(day,s)),link=branchLink(b,natal),current=new Date().getFullYear()>=cycle.getStartYear()&&new Date().getFullYear()<=cycle.getEndYear(),helpful=(chart.strength==='身偏弱'&&['比劫','印星'].includes(god))||(chart.strength==='身偏強'&&['食傷','財星','官殺'].includes(god)),tone=helpful?'順勢開展':god===chart.dominant?'主題加倍':'調整鍛鍊';
-  html+='<div class="cycle '+(current?'current':'')+'"><small>'+cycle.getStartYear()+'—'+cycle.getEndYear()+'</small><b>'+gz+'</b><span>'+cycle.getStartAge()+'—'+cycle.getEndAge()+' 虛歲'+(current?' · 當前':'')+'</span><div class="cycle-tone">'+tone+' · '+god+'</div><p>'+chance[god]+'成為主題；'+link+'。</p><ul><li>'+action[god]+'</li><li>'+warning[god]+'</li></ul><div class="cycle-link">'+tenGod(day,s)+'透干 · '+branches[b]+'支藏'+hiddenStems[b].map(function(h){return tenGod(day,h)}).join('／')+'</div></div>';
+  html+='<div class="cycle '+(current?'current':'')+'"><small>'+cycle.getStartYear()+'—'+cycle.getEndYear()+'</small><b>'+gz+'</b><span>'+cycle.getStartAge()+'—'+cycle.getEndAge()+' 虛歲'+(current?' · 當前':'')+'</span><div class="cycle-tone">'+tone+' · '+god+'</div><p>'+luckThemeByGod[god]+'成為主題；'+link+'。</p><ul><li>'+luckActionByGod[god]+'</li><li>'+luckWarningByGod[god]+'</li></ul><div class="cycle-link">'+tenGod(day,s)+'透干 · '+branches[b]+'支藏'+hiddenStems[b].map(function(h){return tenGod(day,h)}).join('／')+'</div></div>';
+  if(current)currentCycle={ganzhi:gz,god:god,tone:tone,startYear:cycle.getStartYear(),endYear:cycle.getEndYear(),startAge:cycle.getStartAge(),endAge:cycle.getEndAge()};
  }
  fill('#luck-timeline',html);
+ return currentCycle;
 }
