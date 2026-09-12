@@ -1,0 +1,30 @@
+# Cloudflare Worker config for the 近期事件推演 payment API.
+# Fill in the placeholders marked <...> after you have a Cloudflare account.
+
+name = "bazi-payments-api"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# Non-secret config. HashKey / HashIV / the real MerchantID go in via
+# `wrangler secret put`, never here — this file is safe to commit.
+[vars]
+NEWEBPAY_ENV = "test"                      # "test" or "prod" — switches the MPG gateway URL
+ALLOWED_ORIGIN = "https://bruce0528.github.io"  # CORS: only your site may call this API
+ITEM_DESC = "近期事件推演 1 次"
+AMOUNT_TWD = 99
+
+# Create with: wrangler d1 create bazi-orders
+# Then paste the returned database_id below.
+[[d1_databases]]
+binding = "DB"
+database_name = "bazi-orders"
+database_id = "<paste-the-database-id-from-wrangler-d1-create>"
+
+# Secrets (never put real values in this file — set them with:
+#   wrangler secret put NEWEBPAY_MERCHANT_ID
+#   wrangler secret put NEWEBPAY_HASHKEY
+#   wrangler secret put NEWEBPAY_HASHIV
+# ):
+#   NEWEBPAY_MERCHANT_ID — your 商店代號 (test one starts as issued by NewebPay)
+#   NEWEBPAY_HASHKEY      — 32-byte HashKey issued by NewebPay
+#   NEWEBPAY_HASHIV       — 16-byte HashIV issued by NewebPay
