@@ -1,7 +1,7 @@
 (function(){
  'use strict';
- const names={love:'愛情線',career:'事業線',life:'生命線'};
- const descriptions={love:'這條線在傳統手相裡常被拿來談情感表達；現實關係更值得從溝通與承諾觀察。',career:'這條線在傳統手相裡常被拿來談工作方向；實際職涯仍由能力、機會與選擇塑造。',life:'生命線不能判斷壽命或健康。若在意身體狀況，請用正規健康檢查與專業諮詢。'};
+ const names={life:'生命線',love:'感情線',wisdom:'智慧線',destiny:'命運線'};
+ const descriptions={life:'生命線圍繞拇指根部，傳統手相用它談體力與生活步調；它不能判斷壽命或健康，若在意身體狀況，請用正規健康檢查與專業諮詢。',love:'感情線橫在手指下方，傳統手相用它談情感表達方式；現實關係更值得從溝通與承諾觀察。',wisdom:'智慧線橫貫掌心中段，傳統手相用它談思考與判斷風格；實際的判斷力仍來自經驗與資訊的累積。',destiny:'命運線多為縱向，傳統手相用它談生涯走向；實際發展仍由選擇、努力與際遇共同塑造。'};
  const genderLabel={male:'男生',female:'女生'},sideLabel={left:'左手掌',right:'右手掌'};
  let photo=null,url=null,stream=null,cameraOn=false,cameraRequest=0;
  function status(message){document.querySelector('#palm-camera-status').textContent=message}
@@ -46,7 +46,7 @@
   const target=document.querySelector('#palm-result');target.hidden=false;
   if(!photo){target.innerHTML='<p>請先拍攝或選擇'+currentLabel()+'的照片。</p>';return}
   const labels={unknown:'看不清，這次不作猜測',clear:'照片中看起來比較清晰',faint:'照片中看起來比較淺淡',branch:'照片中似乎有分岔或中斷'};
-  target.innerHTML='<h4>'+currentLabel()+' 紋路觀察筆記</h4><p>以下只是你對照片的選擇摘要，網站沒有自動辨識線條，也沒有把照片送到網路資料庫。</p><div class="palm-notes"><article>'+Object.keys(names).map(function(key){const value=document.querySelector('#palm-line-'+key).value;return'<p><b>'+names[key]+'：</b>'+labels[value]+'。'+descriptions[key]+'</p>'}).join('')+'</article></div><p class="palm-disclaimer">手相不能可靠預測愛情、事業、壽命或健康；照片只在本裝置的這個頁面中預覽，重新整理後會消失。</p>';
+  target.innerHTML='<h4>'+currentLabel()+' 手相分析筆記</h4><p>以下只是你對照片的選擇摘要，網站沒有自動辨識線條，也沒有把照片送到網路資料庫。</p><div class="palm-notes"><article>'+Object.keys(names).map(function(key){const value=document.querySelector('#palm-line-'+key).value;return'<p><b>'+names[key]+'：</b>'+labels[value]+'。'+descriptions[key]+'</p>'}).join('')+'</article></div><p class="palm-disclaimer">手相不能可靠預測感情、事業、壽命或健康；照片只在本裝置的這個頁面中預覽，重新整理後會消失。</p>';
   target.scrollIntoView({behavior:'smooth',block:'start'});
  });
 })();

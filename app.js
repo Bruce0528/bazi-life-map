@@ -29,12 +29,11 @@ function buildBenefactor(weak){
 }
 let currentReading=null;let pendingView=null;
 function openResultView(view){
- document.querySelector('#report-eyebrow').textContent={choice:'生辰已排好 · CHOOSE A PATH',chart:'命盤結果 · PERSONAL READING',game:'角色遊戲 · LIFE SIMULATION',palm:'手掌觀察 · PALM PHOTO',question:'情境推演 · CURRENT SITUATION'}[view];
+ document.querySelector('#report-eyebrow').textContent={choice:'生辰已排好 · CHOOSE A PATH',chart:'命盤結果 · PERSONAL READING',game:'角色遊戲 · LIFE SIMULATION',palm:'手相分析 · PALM READING'}[view];
  document.querySelector('#result-choice').hidden=view!=='choice';
  document.querySelector('#chart-view').hidden=view!=='chart';
  document.querySelector('#game-view').hidden=view!=='game';
  document.querySelector('#palm-view').hidden=view!=='palm';
- document.querySelector('#question-view').hidden=view!=='question';
  if(view==='game'){
   document.querySelector('#game-picker').hidden=false;
   document.querySelector('#lifegame').hidden=true;
@@ -47,7 +46,6 @@ function showReport(input){const result=buildReading(input);currentReading=resul
 document.querySelector('#choose-chart').addEventListener('click',function(){openResultView('chart')});
 document.querySelector('#choose-game').addEventListener('click',function(){openResultView('game')});
 document.querySelector('#choose-palm').addEventListener('click',function(){openResultView('palm')});
-document.querySelector('#choose-question').addEventListener('click',function(){openResultView('question')});
 document.querySelector('#choose-compatibility').addEventListener('click',function(){document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
 /* 首頁「接下來想先走哪一條路」入口：已有命盤就直接跳頁，還沒有就先捲到生辰表單並記住目的地 */
 function goToPath(view){
@@ -57,13 +55,11 @@ function goToPath(view){
 document.querySelector('#land-chart').addEventListener('click',function(){goToPath('chart')});
 document.querySelector('#land-game').addEventListener('click',function(){goToPath('game')});
 document.querySelector('#land-palm').addEventListener('click',function(){goToPath('palm')});
-document.querySelector('#land-question').addEventListener('click',function(){goToPath('question')});
 document.querySelector('#land-compatibility').addEventListener('click',function(){document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
 document.querySelector('#compatibility-return').addEventListener('click',function(){document.querySelector('#report').hidden=false;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;openResultView('choice')});
 document.querySelector('#chart-back').addEventListener('click',function(){openResultView('choice')});
 document.querySelector('#game-back').addEventListener('click',function(){openResultView('choice')});
 document.querySelector('#palm-back').addEventListener('click',function(){openResultView('choice')});
-document.querySelector('#question-back').addEventListener('click',function(){openResultView('choice')});
 const gameGallery=document.querySelector('#ip-gallery');if(gameGallery)gameGallery.addEventListener('click',function(event){
  const button=event.target.closest('button[data-ip]');
  if(!button||!currentReading)return;
@@ -75,161 +71,8 @@ const gameGallery=document.querySelector('#ip-gallery');if(gameGallery)gameGalle
 document.querySelector('#birth-form').addEventListener('submit',function(event){event.preventDefault();const input={name:document.querySelector('#name').value.trim(),date:document.querySelector('#birth-date').value,time:document.querySelector('#birth-time').value,gender:document.querySelector('#gender').value};if(!input.date||!input.time)return;const button=event.currentTarget.querySelector('button');button.firstElementChild.textContent='正在排列命盤…';button.disabled=true;setTimeout(function(){showReport(input);button.firstElementChild.textContent='生成我的命盤分析';button.disabled=false},550)});
 document.querySelector('#back-button').addEventListener('click',function(){document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;window.scrollTo({top:0,behavior:'smooth'})});
 document.querySelectorAll('.report-tabs button').forEach(function(btn){btn.addEventListener('click',function(){document.querySelectorAll('.report-tabs button').forEach(function(x){x.classList.toggle('active',x===btn)});document.querySelectorAll('.tab-panel').forEach(function(x){x.classList.toggle('active',x.dataset.panel===btn.dataset.tab)})})});
-const gua=[
- {name:'乾為天',key:'主動 · 開創',summary:'局勢需要清楚主導，但真正有利的不是硬推，而是先確立原則與可承擔的責任。',lines:[1,1,1,1,1,1]},
- {name:'坤為地',key:'承接 · 蓄勢',summary:'眼前更適合蒐集條件、穩住基本盤，讓事情自然成熟後再推進。',lines:[0,0,0,0,0,0]},
- {name:'水雷屯',key:'起步 · 排障',summary:'這是開局不順但可逐步打通的情境。先處理最小阻礙，不必一次解決全部問題。',lines:[1,0,0,0,1,0]},
- {name:'風山漸',key:'漸進 · 累積',summary:'優勢來自循序推進與可驗證的成果。速度不是關鍵，穩定增加信任才是。',lines:[0,0,1,0,1,1]},
- {name:'地天泰',key:'交流 · 通達',summary:'局勢有利於合作與資源交換。主動說清楚你能提供什麼，也明確提出需要什麼。',lines:[1,1,1,0,0,0]},
- {name:'水風井',key:'深耕 · 資源',summary:'答案不一定在換方向，而可能在重新整理既有資源、專長與人脈的使用方式。',lines:[0,1,1,0,1,0]},
- {name:'水澤節',key:'邊界 · 節制',summary:'設好範圍會讓事情更順。時間、金錢與責任都需要明確上限，才能保留長期選擇權。',lines:[1,1,0,0,1,0]},
- {name:'水火既濟',key:'完成 · 守成',summary:'條件已接近完整，現在的重點是收尾、驗證與防止最後階段因鬆懈而反覆。',lines:[1,0,1,0,1,0]}
-];
-const eventGuidance={
- career:{title:'讓能力在可見的成果中發揮',adv:['能取得明確成果責任的方案','可累積作品、經驗或決策權的位置','有可信任夥伴支援的漸進式改變'],act:['把選項拆成三個可比較條件','先談清楚權責、資源與檢核日期','用一次小型試行驗證適配度'],risk:['只被頭銜或短期薪資吸引','責任增加但權限與資源不變','未確認成功標準就匆忙承諾']},
- money:{title:'先保留選擇權，再追求成長',adv:['資訊透明且能理解的方案','最壞情境仍在可承擔範圍內','能分批驗證而非一次投入'],act:['先寫下最大損失與退出條件','核對至少兩個獨立資訊來源','把決策分成觀察、試行、加碼三階段'],risk:['把卦象當成投資依據','借貸或高槓桿放大不確定性','因害怕錯過而跳過查證']},
- love:{title:'讓真實需求有被聽見的空間',adv:['願意對話而非互相猜測的關係','行動與承諾一致的互動','彼此都保有邊界與生活重心'],act:['先描述感受，再提出具體需求','選一個情緒平穩的時間談','觀察對方是否持續用行動回應'],risk:['只看一時熱度忽略長期一致性','替對方解釋反覆或失信','用測試、冷戰取代直接溝通']},
- decision:{title:'把模糊選擇轉成可驗證條件',adv:['能留下長期能力與關係資產的方向','即使失敗也保有回頭路的方案','與核心價值一致而非只滿足期待'],act:['列出一年後最在意的三個結果','設定24小時冷靜期','找一位敢提出反對意見的人檢視'],risk:['在疲累或焦慮高峰做決定','把別人的期待誤認為自己的目標','追求零風險而無限延後']},
- other:{title:'先定義真正要解的問題',adv:['能增加資訊與回饋的下一步','成本小但學習價值高的嘗試','讓你更接近關鍵人物或資源的行動'],act:['用一句話重寫問題','區分可控制與不可控制項目','在七天內完成一個最小行動'],risk:['同時處理太多層次的問題','期待一次行動解決所有不確定','只在腦中推演而缺少真實回饋']}
-};
-function list(items){return items.map(function(x){return '<li>'+x+'</li>'}).join('')}
-function listPlus(items,extra){return list(items)+'<li class="chart-linked">'+extra+'</li>'}
-function hashText(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
-const categoryFrame={career:'這次的工作機會',money:'這次的金錢決定',love:'這段感情裡的選擇',decision:'這個重大選擇',other:'眼前這件事'};
-const categoryNoun={career:'職涯決定',money:'金錢決定',love:'感情選擇',decision:'重大選擇',other:'這件事'};
-const situationThemes={
- career:[
-  {kw:['升遷','晉升','升職','主管職'],theme:'升遷／晉升機會',concern:'這個新位置能不能讓你真正拿到更大的舞台，而不只是換個頭銜。'},
-  {kw:['離職','跳槽','轉職','換工作','裸辭'],theme:'轉職／離職',concern:'離開熟悉的環境後，新選擇是否真的比現在更好。'},
-  {kw:['創業','開公司','接案','自己出來做'],theme:'創業／接案',concern:'從穩定收入跨到不確定的自主性，能不能撐過起步期。'},
-  {kw:['加薪','薪水','薪資','待遇'],theme:'薪資／待遇調整',concern:'付出與回報是否對等，值不值得繼續投入。'},
-  {kw:['代理商','經銷','合作案','新客戶','新團隊','新業務'],theme:'新合作／新業務機會',concern:'新的合作關係能不能真的帶來成長，還是只是換個包裝的舊問題。'}
- ],
- money:[
-  {kw:['投資','買股','基金','加密貨幣','比特幣','股票'],theme:'投資決策',concern:'現在進場的時機與風險，是否在你能承受的範圍內。'},
-  {kw:['借錢','貸款','負債','信貸'],theme:'借貸／資金調度',concern:'這筆資金壓力會不會超出你長期可負擔的範圍。'},
-  {kw:['買房','買車','大筆支出'],theme:'大額支出決策',concern:'這筆支出是否會犧牲掉其他更重要的財務彈性。'}
- ],
- love:[
-  {kw:['分手','離婚','冷戰'],theme:'關係是否要結束',concern:'留下來是因為還有希望，還是只是不想面對結束。'},
-  {kw:['告白','曖昧','追求'],theme:'關係的下一步',concern:'對方的態度和你想要的方向，是不是真的一致。'},
-  {kw:['結婚','訂婚','同居'],theme:'進入更深的承諾',concern:'這段關係的基礎，禁不禁得起長期生活的考驗。'},
-  {kw:['外遇','出軌','劈腿'],theme:'信任受損',concern:'關係還有沒有修復的空間，或已經到了該離開的時候。'}
- ],
- decision:[
-  {kw:['搬家','移民','出國'],theme:'環境的重大改變',concern:'離開熟悉的環境，能不能換來真正想要的生活。'},
-  {kw:['讀書','進修','考試','留學'],theme:'進修／升學選擇',concern:'投入的時間與成本，能不能換回相應的長期價值。'}
- ],
- other:[]
-};
-function detectTheme(text,type){
- const list=situationThemes[type]||[];
- for(let i=0;i<list.length;i++){if(list[i].kw.some(function(k){return text.indexOf(k)>-1}))return list[i]}
- return null;
-}
-function restateProblem(text,type,detected){
- const noun=categoryNoun[type]||categoryNoun.other,excerpt=text.length>44?text.slice(0,44)+'…':text;
- if(detected)return'整理你寫的內容，這其實是一個關於「'+detected.theme+'」的'+noun+'。你在意的核心，很可能不是表面的選項本身，而是：'+detected.concern+'（你的原話：「'+excerpt+'」）';
- return'整理你寫的內容，這是一個關於'+noun+'的抉擇（你的原話：「'+excerpt+'」）。真正要問自己的，往往不是「行不行」，而是「這是不是我現在最想要的方向」。';
-}
-function trendLine(cycle,horizon){
- const span=horizon==='30'?'這 30 天':horizon==='90'?'這 3 個月':'這 1 年';
- if(!cycle)return span+'內主要受你原本性格慣性影響，還沒有明顯大運加成，重點是先把基本盤顧好，不必躁進。';
- if(cycle.tone==='順勢開展')return span+'內走勢偏向緩步向上；只要持續投入，成果會比你預期的更快浮現。';
- if(cycle.tone==='主題加倍')return span+'內容易出現放大效應——選對方向會加速成長，選錯方向也會更快看到代價，值得把決策想清楚再出手。';
- return span+'內可能會先卡在調整期，短期不一定馬上見效，撐過磨合階段後，後段會比開頭更順。';
-}
-function crossAnalysis(reading,type,detected){
- const dom=reading.dominantTenGod,label=groupData[dom].label,cycle=reading.currentCycle,themeWord=detected?detected.theme+'這種情境':(categoryFrame[type]||categoryFrame.other);
- const natureLine='從你的命盤看，你的性格主軸是「'+dom+'（'+label+'）」，遇到'+themeWord+'時，你習慣的反應模式就是'+groupData[dom].talents[0]+'。';
- const cycleLine=cycle?('你目前正走在「'+cycle.ganzhi+'」大運（'+cycle.startYear+'—'+cycle.endYear+'年，'+cycle.startAge+'—'+cycle.endAge+' 虛歲），主題是'+luckThemeByGod[cycle.god]+'，屬於「'+cycle.tone+'」：這幾年你在'+label+'相關的事情上，會'+(cycle.tone==='順勢開展'?'特別順手，是加碼投入的好時機。':cycle.tone==='主題加倍'?'被放大檢視，成敗都會比平常更明顯。':'需要花更多力氣調整節奏，急不得。')):'你目前尚未進入第一步大運，還是以原本命盤的性格慣性為主，沒有明顯的大運加成或考驗。';
- return natureLine+cycleLine;
-}
-function crossGrid(reading,cycle,horizon){
- const dom=reading.dominantTenGod;
- return[['機會點',groupData[dom].talents[2]],['優勢',reading.skills[0]],['劣勢',reading.risks[0]],['未來走勢',trendLine(cycle,horizon)]].map(function(x){return'<div class="structure-chip"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>'}).join('');
-}
-function personalizedGuidance(type,reading,detected){
- const dom=reading.dominantTenGod,label=groupData[dom].label,domRisk=groupData[dom].risk,bal=reading.balancingElement,frame=detected?detected.theme:(categoryFrame[type]||categoryFrame.other);
- const strengthTip=reading.dayStrength==='身偏強'?'你的命盤偏「身強」，容易靠自己硬推到底，這次可以主動找一位敢說出不同意見的人一起確認判斷。':reading.dayStrength==='身偏弱'?'你的命盤偏「身弱」，比起單打獨鬥，借助夥伴、平台或導師的資源，這次會比獨自扛下更穩。':'你的命盤五行中和，不必套用單一策略，依現場狀況彈性調整反而對你更有利。';
- return{
-  adv:'你的命盤以「'+dom+'（'+label+'）」為主要動能，'+frame+'如果剛好用得上這項能力，會比一般情況更順手、更省力。',
-  act:strengthTip,
-  risk:frame+'最大的風險，其實和你命盤「'+dom+'（'+label+'）」用過頭的傾向重疊：'+domRisk+'。行動前，不妨刻意做一件「'+bal+'（'+profiles[bal].trait+'）」屬性的小事來提醒自己踩煞車，例如：'+balancePractice[bal]
- };
-}
-function analyzeSituation(text,type,horizon){
- if(!currentReading)throw new Error('請先生成命盤');
- const detected=detectTheme(text,type);
- const seed=hashText(text+type+horizon+currentReading.dayMaster+new Date().toISOString().slice(0,10)),hex=gua[seed%gua.length],guide=eventGuidance[type]||eventGuidance.other,personal=personalizedGuidance(type,currentReading,detected);
- fill('#hexagram-name',hex.name);fill('#hexagram-keyword',hex.key);
- fill('#hexagram-lines',hex.lines.slice().reverse().map(function(v){return v?'<div class="gua-line yang"></div>':'<div class="gua-line"><i></i><i></i></div>'}).join(''));
- fill('#oracle-title',guide.title);
- fill('#oracle-restate',restateProblem(text,type,detected));
- fill('#oracle-summary',hex.summary);
- fill('#oracle-cross-copy',crossAnalysis(currentReading,type,detected));
- fill('#oracle-cross-grid',crossGrid(currentReading,currentReading.currentCycle,horizon));
- fill('#oracle-advantage',listPlus(guide.adv,personal.adv));fill('#oracle-actions',listPlus(guide.act,personal.act));fill('#oracle-risks',listPlus(guide.risk,personal.risk));
- document.querySelector('#oracle-result').hidden=false;document.querySelector('#oracle-result').scrollIntoView({behavior:'smooth',block:'start'});
- return{hexagram:hex.name,keyword:hex.key,mostFavorable:guide.adv.concat([personal.adv]),recommendedActions:guide.act.concat([personal.act]),risksToAvoid:guide.risk.concat([personal.risk])};
-}
-document.querySelector('#divination-form').addEventListener('submit',function(event){event.preventDefault();const text=document.querySelector('#event-text').value.trim();if(text.length<8)return;analyzeSituation(text,document.querySelector('#event-type').value,document.querySelector('#event-horizon').value)});
-
-/* 付款解鎖：呼叫 worker/ 後端（尚未部署前 PAYMENT_API_BASE 為空，維持暫停狀態，不會扣款也不會暴露繞過付款的路徑） */
-const PAYMENT_API_BASE=(window.PAYMENT_API_BASE||'').replace(/\/$/,'');
-function paymentReady(){return!!PAYMENT_API_BASE}
-function getDeviceToken(){return localStorage.getItem('bazi_device_token')||''}
-function setDeviceToken(t){localStorage.setItem('bazi_device_token',t)}
-function isDivinationUnlocked(){return localStorage.getItem('bazi_divination_unlocked')==='1'}
-function setDivinationUnlocked(){localStorage.setItem('bazi_divination_unlocked','1')}
-function renderDivinationGate(){
- const paywall=document.querySelector('#paywall'),form=document.querySelector('#divination-form'),note=document.querySelector('#payment-note'),btn=document.querySelector('#unlock-button');
- if(!paywall||!form)return;
- if(isDivinationUnlocked()){paywall.hidden=true;form.hidden=false;return}
- form.hidden=true;paywall.hidden=false;
- if(!paymentReady()){btn.disabled=true;btn.firstElementChild.textContent='藍新金流尚未開通';note.textContent='藍新商店與安全付款後端尚待設定。目前不會收費，也不會產生推演結果。'}
- else{btn.disabled=false;btn.firstElementChild.textContent='NT$99 解鎖並開始推演';note.textContent=''}
-}
-async function startCheckout(){
- const btn=document.querySelector('#unlock-button'),note=document.querySelector('#payment-note'),original=btn.firstElementChild.textContent;
- btn.disabled=true;btn.firstElementChild.textContent='正在建立訂單…';
- try{
-  const orderRes=await fetch(PAYMENT_API_BASE+'/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({deviceToken:getDeviceToken()||undefined})});
-  if(!orderRes.ok)throw new Error('order');
-  const order=await orderRes.json();setDeviceToken(order.deviceToken);
-  const payRes=await fetch(PAYMENT_API_BASE+'/payments/newebpay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({orderId:order.orderId})});
-  if(!payRes.ok)throw new Error('payment');
-  const pay=await payRes.json(),form=document.createElement('form');
-  form.method='POST';form.action=pay.gatewayUrl;form.style.display='none';
-  Object.entries(pay.fields).forEach(function(entry){const i=document.createElement('input');i.type='hidden';i.name=entry[0];i.value=entry[1];form.appendChild(i)});
-  document.body.appendChild(form);form.submit();
- }catch(e){
-  btn.disabled=false;btn.firstElementChild.textContent=original;
-  note.textContent='連線失敗，請稍後再試，或聯絡客服 a00168201@gmail.com。';
- }
-}
-async function tryRedeemFromReturn(){
- const url=new URL(location.href),payment=url.searchParams.get('payment');
- if(!payment)return;
- url.searchParams.delete('payment');url.searchParams.delete('orderId');
- history.replaceState(null,'',url.pathname+url.search+url.hash);
- const note=document.querySelector('#payment-note');
- if(payment!=='paid'){if(note)note.textContent='付款未完成或已取消，請重新嘗試。';return}
- const deviceToken=getDeviceToken();
- if(!deviceToken)return;
- try{
-  const res=await fetch(PAYMENT_API_BASE+'/premium/reading',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({deviceToken})}),data=await res.json();
-  if(data.ok){setDivinationUnlocked();renderDivinationGate();document.querySelector('#divination').scrollIntoView({behavior:'smooth'})}
-  else if(note)note.textContent='解鎖失敗，請聯絡客服協助處理。';
- }catch(e){if(note)note.textContent='連線失敗，請稍後再試，或聯絡客服。'}
-}
-document.querySelector('#unlock-button').addEventListener('click',startCheckout);
-renderDivinationGate();
-tryRedeemFromReturn();
 function registerWebMCP(){const context=document.modelContext;if(!context||!context.registerTool)return;try{Promise.resolve(context.registerTool({name:'generate_bazi_reading',title:'生成八字命盤分析',description:'使用生辰資料產生並顯示五行、特質、人生面向與十年大運的文化參考報告。',inputSchema:{type:'object',properties:{name:{type:'string'},birthDate:{type:'string',pattern:'^\\d{4}-\\d{2}-\\d{2}$'},birthTime:{type:'string',pattern:'^\\d{2}:\\d{2}$'},gender:{type:'string',enum:['female','male','other']}},required:['birthDate','birthTime','gender'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute:function(input){if(!/^\d{4}-\d{2}-\d{2}$/.test(input.birthDate)||!/^\d{2}:\d{2}$/.test(input.birthTime))throw new Error('生日或時間格式不正確');document.querySelector('#name').value=input.name||'';document.querySelector('#birth-date').value=input.birthDate;document.querySelector('#birth-time').value=input.birthTime;document.querySelector('#gender').value=input.gender;return showReport({name:input.name||'',date:input.birthDate,time:input.birthTime,gender:input.gender})}})).catch(function(){})}catch(e){}}
 registerWebMCP();
-function registerDivinationWebMCP(){const context=document.modelContext;if(!context||!context.registerTool)return;try{Promise.resolve(context.registerTool({name:'analyze_current_situation',title:'近期事件算卦',description:'在已生成命盤後，根據近期事件提供有利發展、建設性行動與風險提醒。',inputSchema:{type:'object',properties:{situation:{type:'string',minLength:8,maxLength:500},category:{type:'string',enum:['career','money','love','decision','other']},horizonDays:{type:'string',enum:['30','90','365']}},required:['situation','category','horizonDays'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:true},execute:function(input){if(!currentReading)throw new Error('請先生成命盤');if(typeof input.situation!=='string'||input.situation.trim().length<8||input.situation.length>500)throw new Error('事件內容需為 8 至 500 個字');if(!eventGuidance[input.category]||!['30','90','365'].includes(input.horizonDays))throw new Error('事件分類或觀察時間不正確');document.querySelector('#event-text').value=input.situation;document.querySelector('#event-type').value=input.category;document.querySelector('#event-horizon').value=input.horizonDays;return analyzeSituation(input.situation,input.category,input.horizonDays)}})).catch(function(){})}catch(e){}}
-// 付款後單次推演須由後端核銷；商店未開通前不暴露可繞過付款的工具。
 
 /* 精細排盤引擎：節氣月、藏干、十神、旺衰與沖合交叉判讀 */
 const hiddenStems=[[9],[5,9,7],[0,2,4],[1],[4,1,9],[2,4,6],[3,5],[5,3,1],[6,8,4],[7],[4,7,3],[8,0]];
@@ -399,7 +242,8 @@ function buildLuck(ps,date,time,gender,chart){
 /* 八關雙情境遊戲與命盤分析分開；結果是遊戲分數，不是人生預測。 */
 let lifeGameState=null,lifeGameReading=null;
 const lifeGameStatLabels=BaziLifeGame.labels;
-function gameTradeoff(delta){return Object.keys(delta).map(function(key){return lifeGameStatLabels[key]+' '+(delta[key]>=0?'+':'−')+Math.abs(delta[key])}).join(' · ')}
+function gameTradeoff(delta){return Object.keys(delta).map(function(key){const mag=Math.abs(delta[key]),tier=mag>=9?'大幅':mag>=4?'明顯':'些微';return lifeGameStatLabels[key]+' '+tier+(delta[key]>=0?'上升':'下降')}).join(' · ')}
+function gameOverallTier(score){return score>=80?'狀態很不錯':score>=65?'穩定前進中':score>=50?'持續累積中':'還在起步'}
 function renderLifeGame(reading){
  lifeGameReading=reading;lifeGameState=null;
  const beast=reading.beastMatch.primary.profile,fit=reading.beastMatch.primary.fit;
@@ -415,17 +259,17 @@ function startLifeGame(){
  document.querySelector('#lifegame-play').hidden=false;
  document.querySelector('#lifegame-stage').hidden=false;
  document.querySelector('#lifegame-result').hidden=true;
- fill('#lifegame-rule','擲骰前進，八個關卡各有兩張不同情境卡。選一張後會改變精力、關係、財富、成就。四項平均分數<b>嚴格大於 80</b> 才算這一局破圈；骰點與命格獸只提供少量遊戲加分。');
+ fill('#lifegame-rule','擲骰前進，八個關卡各有兩張不同情境卡。選一張後會改變精力、關係、財富、成就。四項都要<b>明顯站穩</b>才算這一局破圈；骰點與命格獸只提供少量遊戲加分。');
  fill('#lifegame-history','八字決定起始角色，接下來由你選擇。');
  renderLifeGameStage();
  document.querySelector('#lifegame-play').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function renderLifeGameStats(stats){
- fill('#lifegame-stats',Object.keys(lifeGameStatLabels).map(function(key){return'<div class="lg-stat"><span>'+lifeGameStatLabels[key]+'</span><b>'+stats[key]+'</b><i><em style="width:'+stats[key]+'%"></em></i></div>'}).join(''));
+ fill('#lifegame-stats',Object.keys(lifeGameStatLabels).map(function(key){return'<div class="lg-stat"><span>'+lifeGameStatLabels[key]+'</span><i><em style="width:'+stats[key]+'%"></em></i></div>'}).join(''));
 }
 function renderLifeGameStage(){
  const st=lifeGameState,beast=st.reading.beastMatch.primary.profile,stage=BaziLifeGame.stages[st.round];
- fill('#lifegame-progress','<b>第 '+(st.round+1)+'／8 關 · '+stage.name+'</b><span>目前綜合 '+BaziLifeGame.score(st.stats)+'／100</span>');
+ fill('#lifegame-progress','<b>第 '+(st.round+1)+'／8 關 · '+stage.name+'</b><span>'+gameOverallTier(BaziLifeGame.score(st.stats))+'</span>');
  fill('#lifegame-board',BaziLifeGame.stages.map(function(item,i){const done=i<st.round,current=i===st.position;return'<div class="lg-space '+(current?'is-current':done?'is-done':'is-future')+'"><span class="lg-space-icon" aria-hidden="true">'+(done?'✿':'✦')+'</span><small>'+(i+1)+' · '+item.name+'</small>'+(current?'<b aria-label="目前位置">'+beast.icon+'</b>':'')+'</div>'}).join(''));
  document.querySelector('#lifegame-board').style.setProperty('--lg-progress',(st.round/BaziLifeGame.stages.length*100)+'%');
  renderLifeGameStats(st.stats);
@@ -437,19 +281,19 @@ function renderLifeGameStage(){
   document.querySelectorAll('#lifegame-stage .lg-choices button').forEach(function(btn){btn.addEventListener('click',function(){BaziLifeGame.choose(st,Number(btn.dataset.c));renderLifeGameStage()})});
  }else if(st.phase==='result'){
   const last=st.history[st.history.length-1];
-  fill('#lifegame-stage','<div class="lg-outcome"><span aria-hidden="true">✿</span><small>第 '+last.round+' 關 · '+last.card.title+'</small><h4>這一步，留下了新的分數</h4><p>'+gameTradeoff(last.card.delta)+'。骰點讓「'+lifeGameStatLabels[last.card.focus]+'」再加 '+last.dieBonus+'；'+(last.resonance?'命格獸共鳴再加 '+last.resonance+'。':'這張卡沒有額外共鳴。')+'</p><p>目前四項綜合：<b>'+last.average+'／100</b>。</p><button type="button" id="lifegame-next">'+(st.round===7?'查看破圈結果':'進入下一關 →')+'</button></div>');
+  fill('#lifegame-stage','<div class="lg-outcome"><span aria-hidden="true">✿</span><small>第 '+last.round+' 關 · '+last.card.title+'</small><h4>這一步，留下了新的變化</h4><p>'+gameTradeoff(last.card.delta)+'。骰點也讓「'+lifeGameStatLabels[last.card.focus]+'」再往上推一點；'+(last.resonance?'命格獸共鳴讓它再加分。':'這張卡沒有額外共鳴。')+'</p><p>目前整體狀態：'+gameOverallTier(last.average)+'。</p><button type="button" id="lifegame-next">'+(st.round===7?'查看破圈結果':'進入下一關 →')+'</button></div>');
   document.querySelector('#lifegame-next').addEventListener('click',function(){BaziLifeGame.next(st);if(st.phase==='done')finishLifeGame();else renderLifeGameStage()});
  }
 }
 function finishLifeGame(){
  const st=lifeGameState,result=BaziLifeGame.summary(st);
  document.querySelector('#lifegame-stage').hidden=true;
- fill('#lifegame-progress','<b>八關完成</b><span>綜合 '+result.score+'／100</span>');
+ fill('#lifegame-progress','<b>八關完成</b><span>'+gameOverallTier(result.score)+'</span>');
  renderLifeGameStats(result.stats);
  const lowest=Object.keys(result.stats).sort(function(a,b){return result.stats[a]-result.stats[b]})[0];
  const suggestions={energy:'未來一週，先留兩段各 30 分鐘不被打擾的休息，再接新的承諾。',relations:'找一位重要的人，約 20 分鐘確認彼此期待，先聽完再給建議。',wealth:'列出目前必要支出與一個可承擔的上限，先保留緩衝再試新計畫。',achievement:'挑一個能在七天完成的小作品，訂交付日並請一人回饋。'};
- const route=result.history.map(function(item){return'<li><span>'+String(item.round).padStart(2,'0')+' · '+item.stage+'</span>'+item.card.title+' · 綜合 '+item.average+'</li>'}).join('');
- fill('#lifegame-result','<div class="lg-result-head"><span class="lg-ending-icon" aria-hidden="true">'+st.reading.beastMatch.primary.profile.icon+'</span><div><small>你的命格獸：'+st.reading.beastMatch.primary.profile.name+'</small><h4>'+(result.breakout?'✿ 成功破圈！':'☘ 這一局還沒破圈')+'</h4><p>精力、關係、財富、成就的綜合分數：<b>'+result.score+'／100</b>；判定需要嚴格大於 80。</p></div></div><div class="lg-result-rules">目前最低的是「'+lifeGameStatLabels[lowest]+'」'+result.stats[lowest]+' 分。高分不是現實的成功保證；低分也不是你的真實能力。</div><h5>給這局的你一個人生建議</h5><p>'+suggestions[lowest]+'</p><h5>八關選擇紀錄</h5><ol class="lg-route">'+route+'</ol><p class="lg-disclaimer">本遊戲以八字作為文化情境與初始角色，擲骰和分數只供娛樂與自我反思。</p><button type="button" id="lifegame-restart">再玩一次</button>');
+ const route=result.history.map(function(item){return'<li><span>'+String(item.round).padStart(2,'0')+' · '+item.stage+'</span>'+item.card.title+'</li>'}).join('');
+ fill('#lifegame-result','<div class="lg-result-head"><span class="lg-ending-icon" aria-hidden="true">'+st.reading.beastMatch.primary.profile.icon+'</span><div><small>你的命格獸：'+st.reading.beastMatch.primary.profile.name+'</small><h4>'+(result.breakout?'✿ 成功破圈！':'☘ 這一局還沒破圈')+'</h4><p>精力、關係、財富、成就四項的整體表現，決定這一局是否算破圈。</p></div></div><div class="lg-result-rules">目前相對較弱的是「'+lifeGameStatLabels[lowest]+'」。這只是遊戲設定的高低，不代表你的真實能力。</div><h5>給這局的你一個人生建議</h5><p>'+suggestions[lowest]+'</p><h5>八關選擇紀錄</h5><ol class="lg-route">'+route+'</ol><p class="lg-disclaimer">本遊戲以八字作為文化情境與初始角色，擲骰和分數只供娛樂與自我反思。</p><button type="button" id="lifegame-restart">再玩一次</button>');
  document.querySelector('#lifegame-result').hidden=false;
  document.querySelector('#lifegame-restart').addEventListener('click',startLifeGame);
 }
