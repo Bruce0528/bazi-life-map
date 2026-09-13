@@ -1,0 +1,1494 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>汪汪日記</title>
+<meta name="description" content="以新北市蘆洲區為主,陪毛孩每日散步打卡、探索寵物友善地圖,認識附近狗友並掌握疫苗與寵物展情報的養狗人日記。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%BE%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<!-- Firebase (fill in firebaseConfig below — see README-deploy.md) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script>
+  // TODO: paste your Firebase project's web config here (Firebase console → Project settings → Your apps)
+  var firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+  // TODO: paste your Google Maps Platform API key here — see README-deploy.md
+  var GOOGLE_MAPS_API_KEY = "AIzaSyCUi0Z9xZZVKheM9lgEZDzpKO6_sZe-7IE";
+</script>
+<style>
+:root{color-scheme: light dark;}
+*{box-sizing:border-box;}
+html,body{margin:0; padding:0;}
+img{max-width:100%;}
+[hidden]{display:none!important;}
+/* ============ Tokens ============ */
+:root{
+  --ground:#F1E9D2;
+  --scene-sky-a:#DDE4C0;
+  --scene-sky-b:#9FB57F;
+  --surface:#FBF7E9;
+  --surface-2:#E7DAB6;
+  --surface-3:#D9C696;
+  --border:#C1AB74;
+  --ink:#262F1E;
+  --ink-soft:#5A6247;
+  --ink-faint:#8A9070;
+  --accent:#3F6B45;
+  --accent-deep:#2E5233;
+  --accent-ink:#F3EFDC;
+  --leaf:#8A9A3E;
+  --leaf-soft:#E7E6C4;
+  --sky:#4C7A93;
+  --sky-soft:#DCE6E6;
+  --alert:#A0472B;
+  --alert-soft:#EAD8C8;
+  --plum:#8A6A3F;
+  --plum-soft:#E9DCC0;
+  --rust:#B5652F;
+  --rust-soft:#EFDBBF;
+  --shadow: 0 10px 30px -12px rgba(38,47,30,.32);
+  --shadow-sm: 0 2px 8px -2px rgba(38,47,30,.2);
+  --radius-lg:22px;
+  --radius-md:14px;
+  --radius-sm:9px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:28px; --sp-7:36px;
+  --fs-xs:11.5px; --fs-sm:13px; --fs-base:14.5px; --fs-md:16.5px; --fs-lg:19px; --fs-xl:25px; --fs-2xl:32px;
+  --font-display:'Noto Sans TC','Microsoft JhengHei',sans-serif;
+  --font-body:'Noto Sans TC','Microsoft JhengHei',sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#151A11;
+    --scene-sky-a:#1B2314;
+    --scene-sky-b:#0D110A;
+    --surface:#202719;
+    --surface-2:#29331F;
+    --surface-3:#333F26;
+    --border:#44502E;
+    --ink:#ECE6CF;
+    --ink-soft:#B4BB98;
+    --ink-faint:#7B8464;
+    --accent:#7FA36A;
+    --accent-deep:#9BC17E;
+    --accent-ink:#13190F;
+    --leaf:#B7C168;
+    --leaf-soft:#2A3120;
+    --sky:#8FB7C9;
+    --sky-soft:#20302F;
+    --alert:#D98863;
+    --alert-soft:#3A2418;
+    --plum:#C6AD7C;
+    --plum-soft:#31281A;
+    --rust:#DE9A5E;
+    --rust-soft:#392A18;
+    --shadow: 0 14px 34px -14px rgba(0,0,0,.6);
+    --shadow-sm: 0 2px 10px -2px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#151A11;
+  --scene-sky-a:#1B2314;
+  --scene-sky-b:#0D110A;
+  --surface:#202719;
+  --surface-2:#29331F;
+  --surface-3:#333F26;
+  --border:#44502E;
+  --ink:#ECE6CF;
+  --ink-soft:#B4BB98;
+  --ink-faint:#7B8464;
+  --accent:#7FA36A;
+  --accent-deep:#9BC17E;
+  --accent-ink:#13190F;
+  --leaf:#B7C168;
+  --leaf-soft:#2A3120;
+  --sky:#8FB7C9;
+  --sky-soft:#20302F;
+  --alert:#D98863;
+  --alert-soft:#3A2418;
+  --plum:#C6AD7C;
+  --plum-soft:#31281A;
+  --rust:#DE9A5E;
+  --rust-soft:#392A18;
+  --shadow: 0 14px 34px -14px rgba(0,0,0,.6);
+  --shadow-sm: 0 2px 10px -2px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box;}
+html{font-size:16px;}
+body{
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 0%, var(--scene-sky-a), var(--scene-sky-b) 75%);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:var(--fs-base);
+  line-height:1.55;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.display{font-family:var(--font-display); font-weight:800; text-wrap:balance;}
+button{font-family:inherit;}
+input,select,textarea{font-family:inherit; font-size:inherit; color:inherit;}
+::selection{background:var(--accent); color:var(--accent-ink);}
+a{color:inherit;}
+
+/* ============ Backdrop scene ============ */
+.scene{
+  position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none;
+}
+.scene svg{position:absolute; bottom:0; left:0; width:100%; height:auto;}
+.scene .stars{position:absolute; inset:0; opacity:.5;}
+
+/* ============ App shell ============ */
+.app-wrap{
+  position:relative; z-index:1;
+  min-height:100vh;
+  display:flex; align-items:flex-start; justify-content:center;
+  padding:var(--sp-6) var(--sp-4) 0;
+}
+.app-shell{
+  width:100%; max-width:452px;
+  background:var(--ground);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow);
+  border:1px solid var(--border);
+  min-height:min(884px, 100vh - 48px);
+  display:flex; flex-direction:column;
+  overflow:hidden;
+  position:relative;
+}
+@media (max-width:540px){
+  .app-wrap{padding:0;}
+  .app-shell{border-radius:0; border:none; min-height:100vh;}
+}
+
+/* ---- header ---- */
+.app-header{
+  display:flex; align-items:center; gap:var(--sp-3);
+  padding:var(--sp-4) var(--sp-4) var(--sp-3);
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+  flex-shrink:0;
+}
+.brandmark{
+  width:38px; height:38px; flex-shrink:0; border-radius:50%;
+  background:var(--surface-2); display:flex; align-items:center; justify-content:center;
+  border:1px solid var(--border);
+}
+.brand-text{display:flex; flex-direction:column; line-height:1.15;}
+.brand-text .wordmark{font-family:var(--font-display); font-weight:900; font-size:19px; letter-spacing:.01em; color:var(--accent-deep); -webkit-text-stroke:.5px var(--ink); text-stroke:.5px var(--ink);}
+.brand-text .tagline{font-size:10.5px; color:var(--ink-faint); letter-spacing:.06em;}
+.header-spacer{flex:1;}
+.streak-pill{
+  display:flex; align-items:center; gap:5px;
+  background:var(--surface-2); border:1px solid var(--border);
+  border-radius:999px; padding:5px 11px 5px 9px;
+  font-family:var(--font-mono); font-size:12.5px; font-weight:700; color:var(--rust);
+}
+.avatar-btn{
+  width:38px; height:38px; border-radius:50%; overflow:hidden; flex-shrink:0;
+  border:2px solid var(--accent); background:var(--surface-2); cursor:pointer; padding:0;
+}
+.avatar-btn svg{display:block; width:100%; height:100%;}
+.icon-wrap img, .mascot-wrap img, .avatar-btn img{width:100%; height:100%; object-fit:contain; display:block;}
+
+/* ---- screens ---- */
+.screen{
+  flex:1; overflow-y:auto; padding:var(--sp-4) var(--sp-4) 100px;
+  display:flex; flex-direction:column; gap:var(--sp-5);
+  scrollbar-width:thin;
+}
+.screen[hidden]{display:none!important;}
+.screen-title{display:flex; align-items:baseline; justify-content:space-between; gap:var(--sp-3);}
+.screen-title h1{font-size:var(--fs-xl); font-weight:700; margin:0;}
+.screen-sub{color:var(--ink-soft); font-size:var(--fs-sm); margin-top:2px;}
+
+/* ---- bottom nav ---- */
+.bottom-nav{
+  position:absolute; left:0; right:0; bottom:0;
+  display:grid; grid-template-columns:repeat(4,1fr);
+  background:var(--surface); border-top:1px solid var(--border);
+  padding:8px 4px calc(8px + env(safe-area-inset-bottom,0px));
+  flex-shrink:0; z-index:5;
+}
+.nav-btn{
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  background:none; border:none; cursor:pointer; padding:6px 2px;
+  color:var(--ink-faint); border-radius:var(--radius-sm);
+  transition:color .15s ease, transform .15s ease;
+}
+.nav-btn svg{width:21px; height:21px;}
+.nav-btn span{font-size:10px; font-weight:600; letter-spacing:.01em;}
+.nav-btn[aria-current="true"]{color:var(--accent-deep);}
+.nav-btn[aria-current="true"] svg{transform:translateY(-1px);}
+.nav-btn:active{transform:scale(.92);}
+
+/* ============ Components ============ */
+.card{
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius-md); box-shadow:var(--shadow-sm);
+}
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  border-radius:999px; border:1px solid transparent; cursor:pointer;
+  font-weight:700; font-size:var(--fs-sm); padding:11px 20px;
+  transition:transform .12s ease, filter .15s ease, opacity .15s ease;
+  white-space:nowrap;
+}
+.btn:active{transform:scale(.96);}
+.btn-primary{background:var(--accent-deep); color:#FFFBF3;}
+.btn-primary:hover{filter:brightness(1.06);}
+:root[data-theme="dark"] .btn-primary, @media (prefers-color-scheme:dark){ .btn-primary{color:var(--accent-ink);} }
+.btn-ghost{background:var(--surface-2); color:var(--ink); border-color:var(--border);}
+.btn-outline{background:transparent; color:var(--accent-deep); border-color:var(--accent-deep);}
+.btn-sm{padding:7px 14px; font-size:12.5px;}
+.btn-block{width:100%;}
+.btn[disabled]{opacity:.5; cursor:default; transform:none!important;}
+.icon-btn{
+  width:34px; height:34px; border-radius:50%; border:1px solid var(--border);
+  background:var(--surface-2); display:flex; align-items:center; justify-content:center; cursor:pointer;
+}
+.icon-btn svg{width:16px; height:16px;}
+
+.chip-row{display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; margin:0 -2px;}
+.chip-row::-webkit-scrollbar{display:none;}
+.chip{
+  flex-shrink:0; display:inline-flex; align-items:center; gap:6px;
+  border:1px solid var(--border); background:var(--surface); color:var(--ink-soft);
+  border-radius:999px; padding:7px 14px; font-size:12.5px; font-weight:600; cursor:pointer;
+  transition:background .15s, color .15s, border-color .15s;
+}
+.chip[aria-pressed="true"]{background:var(--accent-deep); border-color:var(--accent-deep); color:#FFFBF3;}
+.chip:disabled{opacity:.45; cursor:default;}
+.tag{
+  display:inline-flex; align-items:center; gap:4px; border-radius:999px;
+  padding:3px 10px; font-size:11px; font-weight:700; letter-spacing:.02em;
+}
+.tag-vaccine{background:var(--sky-soft); color:var(--sky);}
+.tag-rat_poison{background:var(--alert-soft); color:var(--alert);}
+.tag-expo{background:var(--rust-soft); color:var(--rust);}
+.tag-notice{background:var(--leaf-soft); color:var(--leaf);}
+.cat-restaurant{background:var(--rust-soft); color:var(--rust);}
+.cat-shop{background:var(--sky-soft); color:var(--sky);}
+.cat-attraction{background:var(--leaf-soft); color:var(--leaf);}
+.cat-vet{background:var(--plum-soft); color:var(--plum);}
+
+.section-label{
+  font-size:11px; font-weight:700; letter-spacing:.1em; color:var(--ink-faint); text-transform:uppercase;
+}
+
+.empty-note{
+  text-align:center; color:var(--ink-faint); font-size:var(--fs-sm); padding:var(--sp-5) 0;
+}
+
+/* toast */
+.toast{
+  position:absolute; left:50%; bottom:96px; transform:translate(-50%,12px);
+  background:var(--ink); color:var(--ground); padding:10px 18px; border-radius:999px;
+  font-size:13px; font-weight:600; box-shadow:var(--shadow); z-index:60;
+  opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease;
+}
+.toast.show{opacity:1; transform:translate(-50%,0);}
+
+/* modal */
+.modal-backdrop{
+  position:absolute; inset:0; background:rgba(20,16,10,.5); backdrop-filter:blur(2px);
+  display:flex; align-items:flex-end; z-index:50;
+  opacity:0; pointer-events:none; transition:opacity .2s ease;
+}
+.modal-backdrop.show{opacity:1; pointer-events:auto;}
+.modal-sheet{
+  background:var(--surface); width:100%; max-height:88%; overflow-y:auto;
+  border-radius:22px 22px 0 0; padding:var(--sp-5) var(--sp-4) var(--sp-6);
+  transform:translateY(16px); transition:transform .22s ease;
+  border-top:1px solid var(--border);
+}
+.modal-backdrop.show .modal-sheet{transform:translateY(0);}
+.modal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--sp-4);}
+.modal-head h2{font-size:var(--fs-lg); margin:0;}
+
+.field{display:flex; flex-direction:column; gap:6px; margin-bottom:var(--sp-4);}
+.field label{font-size:12.5px; font-weight:700; color:var(--ink-soft);}
+.field input[type="text"], .field select, .field textarea{
+  border:1px solid var(--border); background:var(--surface-2); color:var(--ink);
+  border-radius:var(--radius-sm); padding:10px 12px; font-size:14px; resize:vertical;
+}
+.field input:focus, .field select:focus, .field textarea:focus{outline:2px solid var(--accent); outline-offset:1px;}
+.tagpick{display:flex; flex-wrap:wrap; gap:7px;}
+
+/* ============ Onboarding ============ */
+.onboard{
+  position:absolute; inset:0; z-index:40; background:var(--ground);
+  display:flex; flex-direction:column; padding:var(--sp-6) var(--sp-4) var(--sp-5);
+  overflow-y:auto;
+}
+.onboard-hero{text-align:center; margin-bottom:var(--sp-5);}
+.onboard-hero .mascot-wrap{width:96px; height:96px; margin:0 auto var(--sp-3); border-radius:50%; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow-sm); padding:10px;}
+.onboard-hero h1{font-size:28px; margin:0 0 6px;}
+.onboard-hero p{color:var(--ink-soft); font-size:var(--fs-sm); max-width:34ch; margin:0 auto;}
+
+.breed-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+.breed-card{
+  border:2px solid var(--border); background:var(--surface); border-radius:var(--radius-md);
+  padding:10px 6px 9px; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px;
+}
+.breed-card .icon-wrap{width:56px; height:56px; border-radius:10px; overflow:hidden; background:var(--surface-2);}
+.breed-card span{font-size:12px; font-weight:700;}
+.breed-card[aria-pressed="true"]{border-color:var(--accent-deep); background:var(--surface-2); box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);}
+
+/* ============ Home screen ============ */
+.greet-card{
+  padding:var(--sp-5); display:flex; gap:var(--sp-4); align-items:center;
+  background:linear-gradient(135deg, var(--surface-2), var(--surface));
+}
+.greet-card .icon-wrap{width:64px; height:64px; flex-shrink:0; border-radius:12px; overflow:hidden; background:var(--surface);}
+.greet-card h2{font-size:var(--fs-lg); margin:0 0 3px;}
+.greet-card p{margin:0; font-size:12.5px; color:var(--ink-soft);}
+
+.stat-row{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+.stat-tile{padding:var(--sp-3) var(--sp-2); text-align:center;}
+.stat-tile .num{font-family:var(--font-mono); font-weight:700; font-size:20px; color:var(--accent-deep);}
+.stat-tile .lbl{font-size:10.5px; color:var(--ink-faint); margin-top:2px;}
+
+.mission-list{display:flex; flex-direction:column; gap:8px;}
+.mission-item{
+  display:flex; align-items:center; gap:10px; padding:12px 14px;
+}
+.mission-check{
+  width:24px; height:24px; border-radius:50%; border:2px solid var(--border); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+}
+.mission-item.done .mission-check{background:var(--leaf); border-color:var(--leaf);}
+.mission-item.done .mission-check svg{width:13px; height:13px; stroke:#fff;}
+.mission-item .m-text{flex:1;}
+.mission-item .m-title{font-size:13.5px; font-weight:600;}
+.mission-item.done .m-title{color:var(--ink-faint); text-decoration:line-through;}
+.mission-item .m-desc{font-size:11.5px; color:var(--ink-faint);}
+.progress-bar{height:8px; border-radius:999px; background:var(--surface-3); overflow:hidden;}
+.progress-bar > div{height:100%; background:var(--accent); border-radius:999px; transition:width .4s ease;}
+
+.feed-item{display:flex; gap:10px; padding:12px 14px; align-items:center;}
+.feed-item .icon-wrap{width:38px; height:38px; flex-shrink:0; border-radius:8px; overflow:hidden; background:var(--surface-2);}
+.feed-item .f-main{flex:1; min-width:0;}
+.feed-item .f-name{font-size:13px; font-weight:700;}
+.feed-item .f-meta{font-size:11.5px; color:var(--ink-faint);}
+.feed-item .f-dist{font-family:var(--font-mono); font-weight:700; color:var(--leaf); font-size:13px;}
+
+/* ============ Walk screen ============ */
+.walk-stage{
+  display:flex; flex-direction:column; align-items:center; gap:var(--sp-4);
+  padding:var(--sp-6) var(--sp-4); text-align:center; position:relative; overflow:hidden;
+}
+.walk-timer{font-family:var(--font-mono); font-size:44px; font-weight:700; letter-spacing:.02em;}
+.walk-sub{font-size:12px; color:var(--ink-faint);}
+.walk-metrics{display:flex; gap:var(--sp-6); margin-top:var(--sp-2);}
+.walk-metrics div{display:flex; flex-direction:column; align-items:center;}
+.walk-metrics .v{font-family:var(--font-mono); font-weight:700; font-size:18px; color:var(--accent-deep);}
+.manual-dist{
+  font-family:var(--font-mono); font-weight:700; font-size:18px; color:var(--accent-deep);
+  width:74px; text-align:center; border:1px solid var(--border); border-radius:8px;
+  background:var(--surface-2); padding:3px 4px;
+}
+.manual-dist:focus{outline:2px solid var(--accent); outline-offset:1px;}
+.walk-metrics .k{font-size:10.5px; color:var(--ink-faint);}
+.walk-actions{display:flex; gap:10px; margin-top:var(--sp-3);}
+.gps-note{font-size:11px; color:var(--ink-faint); display:flex; align-items:center; gap:5px;}
+.trail-row{display:flex; gap:5px; flex-wrap:wrap; justify-content:center; margin-top:2px;}
+.trail-dot{width:18px; height:18px; display:block;}
+.trail-dot svg{width:100%; height:100%;}
+.gps-dot{width:7px; height:7px; border-radius:50%; background:var(--ink-faint); flex-shrink:0;}
+.gps-dot.live{background:var(--leaf); box-shadow:0 0 0 3px color-mix(in srgb, var(--leaf) 25%, transparent);}
+
+.badge-gallery{display:flex; gap:10px; overflow-x:auto; padding:4px 2px;}
+.badge-item{flex-shrink:0; width:76px; text-align:center;}
+.badge-item svg{width:76px; height:76px;}
+.badge-item .b-dist{font-family:var(--font-mono); font-size:11px; font-weight:700; margin-top:2px;}
+.badge-item .b-date{font-size:9.5px; color:var(--ink-faint);}
+
+/* mission complete modal content */
+.complete-wrap{text-align:center; padding:var(--sp-3) 0;}
+.complete-wrap svg.badge-big{width:150px; height:150px; margin:0 auto;}
+.complete-wrap h2{margin:var(--sp-3) 0 4px;}
+.confetti-layer{position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:70;}
+.confetti-piece{position:absolute; top:-10px; border-radius:2px; animation:fall linear forwards;}
+@keyframes fall{ to{ transform:translateY(120vh) rotate(360deg); opacity:.2; } }
+@media (prefers-reduced-motion: reduce){
+  .confetti-piece{animation:none; display:none;}
+  *{scroll-behavior:auto!important;}
+}
+
+/* ============ Discover screen ============ */
+.map-frame{
+  position:relative; border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--border);
+  aspect-ratio:1/0.95; box-shadow:var(--shadow-sm);
+}
+.map-frame svg{position:absolute; inset:0; width:100%; height:100%;}
+.map-pin{
+  position:absolute; transform:translate(-50%,-100%); width:30px; height:30px; cursor:pointer;
+  border:none; background:none; padding:0; filter:drop-shadow(0 2px 3px rgba(0,0,0,.25));
+}
+.map-pin svg{width:100%; height:100%;}
+.map-note{
+  display:flex; gap:8px; align-items:flex-start; padding:10px 12px; font-size:11.5px; color:var(--ink-soft);
+  background:var(--surface-2); border-radius:var(--radius-sm); border:1px solid var(--border);
+}
+.map-note svg{width:15px; height:15px; flex-shrink:0; margin-top:1px; color:var(--sky);}
+
+.search-box{display:flex; align-items:center; gap:8px; border:1px solid var(--border); background:var(--surface); border-radius:999px; padding:9px 14px;}
+.search-box svg{width:15px; height:15px; color:var(--ink-faint); flex-shrink:0;}
+.search-box input{border:none; background:none; flex:1; font-size:13.5px; outline:none; color:var(--ink);}
+
+.place-card{padding:13px 14px; display:flex; gap:12px;}
+.place-card .icon-wrap{width:40px; height:40px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+.place-card .icon-wrap svg{width:20px; height:20px;}
+.place-card .p-main{flex:1; min-width:0;}
+.place-card .p-name{font-weight:700; font-size:14px;}
+.place-card .p-meta{font-size:11.5px; color:var(--ink-faint); margin-top:1px;}
+.place-card .p-hours{font-size:11px; color:var(--ink-faint); margin-top:3px;}
+.place-card .p-actions{display:flex; flex-direction:column; gap:6px; align-items:stretch; flex-shrink:0;}
+
+/* ============ Friends screen ============ */
+.profile-card{padding:0; overflow:hidden;}
+.profile-card .p-head{display:flex; gap:12px; padding:14px 14px 10px; align-items:center;}
+.profile-card .icon-wrap{width:52px; height:52px; flex-shrink:0; border-radius:10px; overflow:hidden; background:var(--surface-2);}
+.profile-card .p-title{font-weight:700; font-size:15px;}
+.profile-card .p-sub{font-size:11.5px; color:var(--ink-faint);}
+.profile-card .p-bio{padding:0 14px; font-size:13px; color:var(--ink-soft);}
+.profile-card .p-tags{display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px 0;}
+.profile-card .p-foot{display:flex; align-items:center; justify-content:space-between; padding:12px 14px 14px;}
+.like-btn{
+  display:flex; align-items:center; gap:6px; border:1px solid var(--border); background:var(--surface-2);
+  border-radius:999px; padding:7px 14px; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--ink-soft);
+}
+.like-btn svg{width:15px; height:15px;}
+.like-btn[aria-pressed="true"]{background:var(--alert-soft); border-color:var(--alert); color:var(--alert);}
+.like-btn[aria-pressed="true"] svg{fill:var(--alert);}
+
+/* ============ Community screen ============ */
+.post-card{padding:14px; display:flex; flex-direction:column; gap:8px;}
+.post-card .p-top{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+.post-card .p-title{font-weight:700; font-size:14.5px;}
+.post-card .p-body{font-size:13px; color:var(--ink-soft);}
+.post-card .p-foot{display:flex; align-items:center; gap:8px; font-size:11px; color:var(--ink-faint);}
+.post-card .p-foot svg{width:12px; height:12px;}
+.fab{
+  position:absolute; right:var(--sp-4); bottom:96px; z-index:20;
+  width:52px; height:52px; border-radius:50%; background:var(--accent-deep); color:#FFFBF3;
+  border:none; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); cursor:pointer;
+}
+.fab svg{width:22px; height:22px;}
+
+.scroll-x{overflow-x:auto;}
+#gmapCanvas{width:100%; height:100%;}
+</style>
+</head>
+<body>
+
+<div class="scene" aria-hidden="true" id="sceneWrap"></div>
+
+<div class="app-wrap">
+  <div class="app-shell" id="appShell">
+
+    <header class="app-header">
+      <button class="avatar-btn" id="avatarBtn" title="編輯毛孩檔案" aria-label="編輯毛孩檔案"></button>
+      <div class="brand-text">
+        <span class="wordmark">汪汪日記</span>
+        <span class="tagline">DOG OWNER'S DIARY</span>
+      </div>
+      <div class="header-spacer"></div>
+      <div class="streak-pill" id="streakPill" title="連續完成任務天數"></div>
+    </header>
+
+    <!-- HOME -->
+    <section class="screen" data-screen="home" id="screenHome"></section>
+
+    <!-- WALK -->
+    <section class="screen" data-screen="walk" id="screenWalk" hidden></section>
+
+    <!-- DISCOVER -->
+    <section class="screen" data-screen="discover" id="screenDiscover" hidden></section>
+
+    <!-- FRIENDS -->
+    <section class="screen" data-screen="friends" id="screenFriends" hidden></section>
+
+    <!-- COMMUNITY -->
+    <section class="screen" data-screen="community" id="screenCommunity" hidden></section>
+
+    <nav class="bottom-nav" id="bottomNav">
+      <button class="nav-btn" data-nav="home"><span class="ic"></span><span>首頁</span></button>
+      <button class="nav-btn" data-nav="walk"><span class="ic"></span><span>散步打卡</span></button>
+      <button class="nav-btn" data-nav="discover"><span class="ic"></span><span>地圖</span></button>
+      <button class="nav-btn" data-nav="community"><span class="ic"></span><span>情報</span></button>
+    </nav>
+
+    <div class="toast" id="toast"></div>
+    <div class="modal-backdrop" id="modalBackdrop"><div class="modal-sheet" id="modalSheet"></div></div>
+    <div class="onboard" id="onboardScreen" hidden></div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   ICONS
+============================================================ */
+function svgWrap(inner, vb){ return '<svg viewBox="'+(vb||'0 0 24 24')+'" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg>'; }
+
+const NAV_ICONS = {
+  home: '<path d="M4 11.5 12 4l8 7.5V20a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-5h-4v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V11.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>',
+  walk: '<circle cx="12" cy="14.5" r="4" fill="currentColor"/><ellipse cx="6" cy="7.6" rx="1.9" ry="2.6" fill="currentColor"/><ellipse cx="11.2" cy="5" rx="1.9" ry="2.6" fill="currentColor"/><ellipse cx="16.7" cy="7" rx="1.9" ry="2.6" fill="currentColor"/>',
+  discover: '<path d="M12 21s7-7.4 7-12.4A7 7 0 1 0 5 8.6C5 13.6 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="8.6" r="2.5" fill="currentColor"/>',
+  friends: '<path d="M12 20.2s-7.6-4.6-9.9-9.3A5.6 5.6 0 0 1 12 5.3a5.6 5.6 0 0 1 9.9 5.6c-2.3 4.7-9.9 9.3-9.9 9.3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>',
+  community: '<path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9.5L5 20.5V16.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="8.2" cy="10.8" r=".9" fill="currentColor"/><circle cx="12" cy="10.8" r=".9" fill="currentColor"/><circle cx="15.8" cy="10.8" r=".9" fill="currentColor"/>'
+};
+const CAT_ICONS = {
+  restaurant:'<path d="M6 2.5v7a1.6 1.6 0 0 0 1.6 1.6V21m-1.6-11.9V2.5M8.4 9.6V2.5m-2.4 0V2.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.5 2.5c-1.4.4-2.4 2.1-2.4 4.1 0 1.8.8 3.3 2 3.9V21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>',
+  shop:'<path d="M6.2 8V6.2a3.8 3.8 0 0 1 7.6 0V8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M4.5 8h11l-.9 12.2a1 1 0 0 1-1 .8H6.4a1 1 0 0 1-1-.8L4.5 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>',
+  attraction:'<path d="M12 3 6.5 11h2.8l-3.6 6.3h5.1V21h2.4v-3.7h5.1L14.7 11h2.8L12 3Z" fill="currentColor"/>',
+  vet:'<circle cx="12" cy="12" r="8.7" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>'
+};
+function iconMarkup(name, cls){
+  return svgWrap(NAV_ICONS[name]||'', '0 0 24 24').replace('<svg ', '<svg class="'+(cls||'')+'" ');
+}
+function catIcon(cat){ return svgWrap(CAT_ICONS[cat]||CAT_ICONS.attraction); }
+const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6"/></svg>';
+const ICON_HEART_SM = svgWrap('<path d="M12 20.2s-7.6-4.6-9.9-9.3A5.6 5.6 0 0 1 12 5.3a5.6 5.6 0 0 1 9.9 5.6c-2.3 4.7-9.9 9.3-9.9 9.3Z" fill="none" stroke="currentColor" stroke-width="2"/>');
+const ICON_INFO = svgWrap('<circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="8" r="1" fill="currentColor"/>');
+const ICON_SEARCH = svgWrap('<circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M15.3 15.3 20 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>');
+const ICON_PLUS = svgWrap('<path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>');
+const ICON_X = svgWrap('<path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>');
+const ICON_PIN_SM = svgWrap('<path d="M10 1.5C6 1.5 3 4.6 3 8.3 3 12.9 10 18.5 10 18.5s7-5.6 7-10.2c0-3.7-3-6.8-7-6.8Z" fill="currentColor"/><circle cx="10" cy="8.1" r="2.6" fill="var(--surface)"/>', '0 0 20 20');
+const ICON_MAP_EXT = svgWrap('<path d="M9 6H5.5A1.5 1.5 0 0 0 4 7.5v11A1.5 1.5 0 0 0 5.5 20h11a1.5 1.5 0 0 0 1.5-1.5V15M14 4h6v6M20 4 11 13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>');
+const ICON_FLAME = svgWrap('<path d="M12 21c4 0 6.5-2.6 6.5-6.2 0-2.9-1.7-4.7-2.6-6.6-.5 1.6-1.4 2.4-2.1 2-1-.6-.6-2.6-1.5-4.7C11 3.8 8.5 5.8 8.5 9c0 1-.5 1.6-1.1 2.2C6.4 12.2 5.5 13.4 5.5 15c0 3.6 2.5 6 6.5 6Z" fill="currentColor"/>');
+
+/* ============================================================
+   BREED ART  — flat, geometric mascot icons
+============================================================ */
+const BREEDS = [
+  {id:'shiba', name:'柴犬', nick:'小柴', fur:'#E3A458', furShade:'#C97F3B', muzzle:'#FBF3E4', ear:'perk'},
+  {id:'frenchie', name:'法國鬥牛犬', nick:'阿鬥', fur:'#D9A468', furShade:'#B37F45', muzzle:'#3C312A', ear:'bat', mask:true},
+  {id:'corgi', name:'柯基', nick:'短腿', fur:'#E2963C', furShade:'#BD7526', muzzle:'#FCF6E9', ear:'perk', blaze:true},
+  {id:'golden', name:'黃金獵犬', nick:'金金', fur:'#F0C36D', furShade:'#D6A24A', muzzle:'#FBEBC7', ear:'floppy'},
+  {id:'poodle', name:'貴賓犬', nick:'捲捲', fur:'#E8B77E', furShade:'#C9955A', muzzle:'#FBEFDB', ear:'floppy', curly:true},
+  {id:'mixed', name:'米克斯', nick:'幸運', fur:'#C98A52', furShade:'#A46B3B', muzzle:'#FBF3E4', ear:'mixed', patch:true}
+];
+function breedById(id){ return BREEDS.find(b=>b.id===id) || BREEDS[0]; }
+
+/* real illustrated mascots (uploaded artifact assets), one per breed */
+const BREED_IMG = {
+  shiba:    'images/shiba.png',
+  frenchie: 'images/frenchie.png',
+  corgi:    'images/corgi.png',
+  golden:   'images/golden.png',
+  poodle:   'images/poodle.png',
+  mixed:    'images/mixed.png'
+};
+function dogSVG(breedId){
+  const b = breedById(breedId);
+  const src = BREED_IMG[breedId] || BREED_IMG.shiba;
+  return '<img src="'+src+'" alt="'+b.name+'" loading="lazy">';
+}
+
+/* ============================================================
+   BADGE ART — procedurally generated walk-route badge
+============================================================ */
+function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function badgeTier(km){ if(km>=3.5) return {name:'盛開', color:'#C9A227', ring:'#C9A227'}; if(km>=1.5) return {name:'半開', color:'#7C8B96', ring:'#7C8B96'}; return {name:'花苞', color:'#A9784C', ring:'#A9784C'}; }
+function flowerPetals(cx,cy,count,r,color,rot){
+  let s='';
+  for(let i=0;i<count;i++){
+    const a = rot + (i/count)*Math.PI*2;
+    const px = cx+Math.cos(a)*r, py = cy+Math.sin(a)*r;
+    s += '<ellipse cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" rx="'+(r*0.6).toFixed(1)+'" ry="'+(r*0.36).toFixed(1)+'" fill="'+color+'" transform="rotate('+(a*180/Math.PI).toFixed(1)+' '+px.toFixed(1)+' '+py.toFixed(1)+')"/>';
+  }
+  return s;
+}
+function routeBadgeSVG(seed, km, big){
+  const rnd = mulberry32(seed);
+  const tier = badgeTier(km);
+  const pts = [];
+  const n = 6;
+  for(let i=0;i<n;i++){
+    const ang = (i/n)*Math.PI*2 + rnd()*0.8;
+    const r = 20 + rnd()*13;
+    pts.push([50+Math.cos(ang)*r, 62+Math.sin(ang)*r*0.7]);
+  }
+  let d = 'M '+pts[0][0].toFixed(1)+' '+pts[0][1].toFixed(1)+' ';
+  for(let i=1;i<pts.length;i++){ d += 'Q '+(pts[i][0]+ (rnd()-.5)*8).toFixed(1)+' '+(pts[i][1]+(rnd()-.5)*8).toFixed(1)+' '+pts[i][0].toFixed(1)+' '+pts[i][1].toFixed(1)+' '; }
+  const petalCount = tier.name==='盛開'?8:(tier.name==='半開'?6:4);
+  const petalR = tier.name==='盛開'?15:(tier.name==='半開'?12:8.5);
+  const rot = rnd()*Math.PI*2;
+  const sz = big? 150:76;
+  return '<svg viewBox="0 0 100 100" width="'+sz+'" height="'+sz+'" xmlns="http://www.w3.org/2000/svg">'+
+    '<circle cx="50" cy="50" r="46" fill="var(--surface-2)" stroke="'+tier.ring+'" stroke-width="3"/>'+
+    '<path d="'+d+'" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity=".45"/>'+
+    '<path d="M42 46 L42 30" stroke="var(--leaf)" stroke-width="2.4" stroke-linecap="round"/>'+
+    '<path d="M42 38 Q34 36 32 42" stroke="var(--leaf)" stroke-width="1.8" fill="none" stroke-linecap="round"/>'+
+    flowerPetals(42,30,petalCount,petalR,tier.color,rot)+
+    '<circle cx="42" cy="30" r="'+(petalR*0.4).toFixed(1)+'" fill="var(--surface)" stroke="'+tier.color+'" stroke-width="1.4"/>'+
+    '<circle cx="42" cy="30" r="'+(petalR*0.2).toFixed(1)+'" fill="'+tier.ring+'"/>'+
+    '<text x="52" y="90" text-anchor="middle" font-size="9" font-weight="700" fill="var(--ink-soft)" font-family="JetBrains Mono, monospace">'+km.toFixed(1)+' KM</text>'+
+  '</svg>';
+}
+
+/* ============================================================
+   BACKDROP SCENE
+============================================================ */
+function renderScene(){
+  const pines = [];
+  for(let i=0;i<6;i++){ const x = 20+i*70+((i%2)*20); pines.push('<path d="M'+x+' 300 L'+(x-16)+' 340 h9 l-13 22 h36 l-13-22 h9 Z" fill="var(--leaf-soft)"/>'); }
+  const flowers = [];
+  for(let i=0;i<7;i++){ const x = 8+i*68+((i%2)*24), y = 344+((i%3)*3); flowers.push('<circle cx="'+x+'" cy="'+y+'" r="2.6" fill="var(--rust)" opacity=".55"/>'); }
+  document.getElementById('sceneWrap').innerHTML =
+    '<svg viewBox="0 0 480 360" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">'+
+      '<path d="M-10 190 L60 120 L130 200 L200 90 L280 190 L350 110 L430 195 L490 150 V360 H-10 Z" fill="var(--surface-3)" opacity=".45"/>'+
+      '<path d="M0 260 Q120 210 240 250 T480 240 V360 H0 Z" fill="var(--surface-3)" opacity=".55"/>'+
+      pines.join('')+
+      '<path d="M0 300 Q120 270 240 296 T480 288 V360 H0 Z" fill="var(--surface-2)" opacity=".7"/>'+
+      flowers.join('')+
+    '</svg>';
+}
+
+/* ============================================================
+   STATE & STORAGE
+============================================================ */
+const todayStr = ()=> new Date().toISOString().slice(0,10);
+function loadJSON(k, fallback){ try{ const v = localStorage.getItem(k); return v? JSON.parse(v) : fallback; }catch(e){ return fallback; } }
+function saveJSON(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+let profile = loadJSON('ww_profile', null);
+if(profile && !profile.id){ profile.id = 'owner-'+Math.random().toString(36).slice(2,10); saveJSON('ww_profile', profile); }
+
+const DISTRICTS = ['蘆洲區','三重區','新莊區','五股區','士林區','北投區'];
+const TAG_OPTIONS = ['晨型犬','夜貓子','愛玩球','怕打雷','過動兒','愛游泳','社牛','怕生','吃貨','愛乾淨','穩重','小心機','護家','愛睡覺','怕熱'];
+
+const SEED_POSTS = [
+  {id:'post-1', category:'vaccine', title:'狂犬病疫苗接種提醒', location:'蘆洲區', author:'小柴的拔拔', breed:'shiba', content:'蘆洲區公所本週六在蘆洲防汛公園設站,補打狂犬病疫苗只要100元,記得帶預防注射證明卡。', createdAt:'2026-09-11T09:00:00.000Z'},
+  {id:'post-2', category:'rat_poison', title:'堤外車道驚見滅鼠餌盒,請牽繩留意', location:'蘆洲區', author:'金爸', breed:'golden', content:'今早遛金金時發現得意堤外自行車道旁草叢有里辦公室新放的滅鼠餌盒,綠色小方塊,這幾天請避開該草叢並牽繩通過。', createdAt:'2026-09-11T02:30:00.000Z'},
+  {id:'post-3', category:'expo', title:'秋季寵物用品展開跑,同行門票65折', location:'三重區', author:'捲毛控', breed:'poodle', content:'重新橋下這週五到日有寵物用品展,現場試用飼料、洗澡體驗都有,帶毛孩同行出示本篇貼文結帳再折65折(店家限定攤位)。', createdAt:'2026-09-10T06:00:00.000Z'},
+  {id:'post-4', category:'notice', title:'社區揪團:每週三夜間慢走團', location:'蘆洲區', author:'幸運麻', breed:'mixed', content:'蘆洲防汛公園河堤集合,晚上7點,全程約3公里,適合怕熱的狗狗跟怕曬的人類,歡迎新朋友加入。', createdAt:'2026-09-09T11:15:00.000Z'},
+  {id:'post-5', category:'vaccine', title:'心絲蟲預防別忘記,夏末蚊子仍多', location:'新莊區', author:'短腿爸', breed:'corgi', content:'獸醫院提醒這幾個月仍是心絲蟲高風險期,每月一次的預防藥別漏吃,忘記吃記得回診跟醫生說。', createdAt:'2026-09-08T04:45:00.000Z'},
+  {id:'post-6', category:'rat_poison', title:'社區花圃疑似有毒餌,已通報里長', location:'蘆洲區', author:'鬥牛士', breed:'frenchie', content:'樓下花圃這兩天看到不明粉紅色顆粒,已經跟里長反應請人移除,大家遛彎先繞道。', createdAt:'2026-09-07T10:00:00.000Z'}
+];
+const SEED_PROFILES = [
+  {id:'profile-1', dogName:'小柴', breed:'shiba', district:'蘆洲區', tags:['晨型犬','愛玩球','怕打雷'], bio:'每天六點半準時出門巡邏地盤,喜歡交朋友但看到吸塵器會逃跑。', ownerAlias:'柴語者', likes:12, createdAt:'2026-09-05T00:00:00.000Z'},
+  {id:'profile-2', dogName:'阿鬥', breed:'frenchie', district:'三重區', tags:['夜貓子','怕熱','愛睡覺'], bio:'打呼比人還大聲,散步走十分鐘就想被抱,徵求同款懶散系毛孩。', ownerAlias:'鬥牛士', likes:8, createdAt:'2026-09-05T01:00:00.000Z'},
+  {id:'profile-3', dogName:'短腿', breed:'corgi', district:'新莊區', tags:['過動兒','愛追車','吃貨'], bio:'腿短心不短,公園追飛盤紀錄保持者,零食面前什麼都能學會。', ownerAlias:'腿控', likes:15, createdAt:'2026-09-05T02:00:00.000Z'},
+  {id:'profile-4', dogName:'金金', breed:'golden', district:'蘆洲區', tags:['社牛','愛游泳','愛乾淨'], bio:'看到任何生物都想打招呼,河邊看到水就自動下水,毛巾常備。', ownerAlias:'金爸', likes:21, createdAt:'2026-09-05T03:00:00.000Z'},
+  {id:'profile-5', dogName:'捲捲', breed:'poodle', district:'三重區', tags:['聰明','愛乾淨','小心機'], bio:'會自己開門討摸摸,不喜歡淋濕,雨天散步要穿雨衣才願意出門。', ownerAlias:'捲毛控', likes:9, createdAt:'2026-09-05T04:00:00.000Z'},
+  {id:'profile-6', dogName:'幸運', breed:'mixed', district:'五股區', tags:['穩重','護家','愛游泳'], bio:'收容所回來的孩子,個性穩定親人,最愛長距離健走路線。', ownerAlias:'幸運麻', likes:17, createdAt:'2026-09-05T05:00:00.000Z'}
+];
+const SEED_CHECKINS = [
+  {id:'checkin-1', ownerId:'seed-owner-1', dogName:'小柴', breed:'shiba', distanceKm:2.3, durationMin:28, note:'公園繞三圈,遇到兩隻柯基', createdAt:'2026-09-12T22:10:00.000Z'},
+  {id:'checkin-2', ownerId:'seed-owner-2', dogName:'金金', breed:'golden', distanceKm:4.1, durationMin:52, note:'河濱長征,回家秒睡', createdAt:'2026-09-12T10:20:00.000Z'},
+  {id:'checkin-3', ownerId:'seed-owner-3', dogName:'短腿', breed:'corgi', distanceKm:1.8, durationMin:20, note:'追飛盤累壞了', createdAt:'2026-09-11T23:40:00.000Z'},
+  {id:'checkin-4', ownerId:'seed-owner-4', dogName:'幸運', breed:'mixed', distanceKm:3.5, durationMin:40, note:'夜間慢走團初體驗', createdAt:'2026-09-11T11:05:00.000Z'},
+  {id:'checkin-5', ownerId:'seed-owner-5', dogName:'阿鬥', breed:'frenchie', distanceKm:0.9, durationMin:15, note:'天氣太熱,提早收工', createdAt:'2026-09-10T09:50:00.000Z'}
+];
+
+const PLACES = [
+  {id:'p1', name:'蘆堤咖啡', cat:'restaurant', district:'蘆洲區', tag:'緊鄰河堤自行車道、戶外座位可帶毛孩', hours:'11:00–21:00(週二休)', x:30,y:58, lat:25.0880,lng:121.4690},
+  {id:'p2', name:'蘆洲寵物工坊', cat:'shop', district:'蘆洲區', tag:'鮮食、玩具、寵物保健品', hours:'10:00–20:00', x:58,y:36, lat:25.0865,lng:121.4700},
+  {id:'p3', name:'蘆洲防汛公園', cat:'attraction', district:'蘆洲區', tag:'大草坪視野開闊、適合放繩散步', hours:'全天開放', x:44,y:16, lat:25.0900,lng:121.4660},
+  {id:'p4', name:'蘆洲康寧動物醫院', cat:'vet', district:'蘆洲區', tag:'24小時急診、可線上預約', hours:'24小時營業', x:74,y:64, lat:25.0820,lng:121.4750},
+  {id:'p5', name:'鮮食巷弄餐桌', cat:'restaurant', district:'三重區', tag:'人寵共食、低鈉餐點', hours:'11:30–20:30', x:68,y:88, lat:25.0650,lng:121.4790},
+  {id:'p6', name:'得意堤外自行車道', cat:'attraction', district:'蘆洲區', tag:'沿淡水河堤外車道健走遛狗熱點', hours:'全天開放', x:12,y:80, lat:25.0950,lng:121.4610},
+  {id:'p7', name:'毛起來寵物美容', cat:'shop', district:'三重區', tag:'洗澡部、剪毛預約制', hours:'10:30–20:00', x:34,y:32, lat:25.0640,lng:121.4850},
+  {id:'p8', name:'蘆洲仁愛動物醫院', cat:'vet', district:'蘆洲區', tag:'內科、皮膚科專長', hours:'09:00–21:00', x:20,y:44, lat:25.0845,lng:121.4680}
+];
+const CAT_LABEL = {restaurant:'寵物友善餐廳', shop:'寵物用品店', attraction:'景點 / 公園', vet:'獸醫院'};
+const POST_CAT_LABEL = {vaccine:'疫苗提醒', rat_poison:'鼠藥警示', expo:'展覽優惠', notice:'社區公告'};
+
+const ROUTES = [
+  {id:'r1', name:'蘆堤河濱步道', km:3.0, area:'蘆洲區', level:'輕鬆', note:'沿淡水河堤外車道,平坦好走,適合每天例行散步。', sx:15,sy:68,ex:58,ey:52, lat1:25.0910,lng1:121.4640, lat2:25.0770,lng2:121.4700},
+  {id:'r2', name:'成功國小→蘆洲捷運站', km:2.6, area:'蘆洲區', level:'中等', note:'從長安街的成功國小走到三民路的蘆洲捷運站,沿途店家多,適合順便辦點事。', sx:22,sy:28,ex:82,ey:44, lat1:25.0855,lng1:121.4690, lat2:25.0915,lng2:121.4645},
+  {id:'r3', name:'蘆洲防汛公園環繞', km:1.5, area:'蘆洲區', level:'新手', note:'公園內環繞,適合幼犬或剛開始運動的毛孩。', sx:46,sy:20, loop:true, lat1:25.0900,lng1:121.4660, lat2:25.0900,lng2:121.4660},
+  {id:'r4', name:'得意堤外自行車道全程', km:6.2, area:'蘆洲/三重', level:'挑戰', note:'河濱長征路線,建議帶水壺,適合體力好的大型犬。', sx:10,sy:88,ex:72,ey:58, lat1:25.0950,lng1:121.4600, lat2:25.0650,lng2:121.4750},
+  {id:'r5', name:'湧蓮寺廟口夜市周邊散策', km:1.8, area:'蘆洲區', level:'輕鬆', note:'以百年古廟湧蓮寺為中心繞得勝街、成功路一圈,晚間人潮多,建議牽繩並留意炸物香氣的誘惑。', sx:52,sy:60, loop:true, lat1:25.0834,lng1:121.4712, lat2:25.0834,lng2:121.4712},
+  {id:'r6', name:'三重河濱→蘆洲底', km:4.0, area:'三重/蘆洲', level:'中等', note:'跨區長距離路線,沿途風景多變化。', sx:78,sy:82,ex:24,ey:34, lat1:25.0610,lng1:121.4870, lat2:25.0870,lng2:121.4650},
+  {id:'r7', name:'蘆洲捷運站→湧蓮寺廟口', km:1.3, area:'蘆洲區', level:'新手', note:'從捷運蘆洲站走到百年古廟湧蓮寺,沿路能順便逛廟口小吃,適合傍晚散步。', sx:66,sy:24,ex:52,ey:58, lat1:25.0915,lng1:121.4645, lat2:25.0834,lng2:121.4712},
+  {id:'r8', name:'成功國小周邊街廓巡邏', km:1.0, area:'蘆洲區', level:'新手', note:'長安街一帶的社區小繞圈,距離短、路平,適合早晚各遛一次。', sx:24,sy:22, loop:true, lat1:25.0855,lng1:121.4690, lat2:25.0855,lng2:121.4690},
+  {id:'r9', name:'二重疏洪親水公園段', km:5.5, area:'三重/蘆洲/五股', level:'挑戰', note:'走進橫跨三重、蘆洲、五股、新莊的二重疏洪道,腹地寬闊、有大草坪,假日很多毛孩在這裡放風。', sx:6,sy:48,ex:52,ey:92, lat1:25.0760,lng1:121.4560, lat2:25.0580,lng2:121.4650}
+];
+function routeById(id){ return ROUTES.find(r=>r.id===id) || null; }
+
+let state = {
+  posts: SEED_POSTS.slice(),
+  profiles: SEED_PROFILES.slice(),
+  checkins: SEED_CHECKINS.slice(),
+  discoverCat: 'all',
+  discoverQuery: '',
+  friendsCat: 'all',
+  communityCat: 'all',
+  activeTab: 'home'
+};
+
+const likedSet = new Set(loadJSON('ww_liked_profiles', []));
+function saveLikedSet(){ saveJSON('ww_liked_profiles', Array.from(likedSet)); }
+const likedPostsSet = new Set(loadJSON('ww_liked_posts', []));
+function saveLikedPostsSet(){ saveJSON('ww_liked_posts', Array.from(likedPostsSet)); }
+let placeCheckins = loadJSON('ww_place_checkins', {date:todayStr(), ids:[]});
+if(placeCheckins.date !== todayStr()) placeCheckins = {date:todayStr(), ids:[]};
+function savePlaceCheckins(){ saveJSON('ww_place_checkins', placeCheckins); }
+
+let lastLikeDate = localStorage.getItem('ww_last_like_date') || '';
+let streak = parseInt(localStorage.getItem('ww_streak')||'0', 10);
+let lastStreakDate = localStorage.getItem('ww_last_streak_date') || '';
+
+/* ============================================================
+   DB WIRING
+============================================================ */
+let db = null;
+async function initDb(){
+  try{
+    if(!window.firebase || !firebaseConfig || firebaseConfig.apiKey==='YOUR_API_KEY'){
+      showConfigBanner('尚未設定 Firebase,目前資料只存在這台裝置(本機示範模式)。設定方法見 README-deploy.md。');
+      return;
+    }
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+  }catch(e){ db = null; showConfigBanner('Firebase 連線失敗,目前資料只存在這台裝置。'); }
+  if(!db) return;
+  subscribe('posts');
+  subscribe('profiles');
+  subscribe('checkins');
+}
+function showConfigBanner(text){
+  const b = document.createElement('div');
+  b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;background:#2E5233;color:#F3EFDC;font-size:11.5px;line-height:1.5;padding:9px 16px;text-align:center;z-index:999;';
+  b.textContent = text;
+  document.body.appendChild(b);
+}
+
+/* ============================================================
+   GOOGLE MAPS — lazily loaded only once a real API key is set
+============================================================ */
+let gmapsState = 'idle'; // idle | loading | ready | unavailable
+function loadGoogleMaps(cb){
+  if(window.google && window.google.maps){ gmapsState='ready'; cb(window.google); return; }
+  if(!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY'){ gmapsState='unavailable'; cb(null); return; }
+  if(gmapsState==='loading'){ setTimeout(function(){ loadGoogleMaps(cb); }, 250); return; }
+  gmapsState = 'loading';
+  const s = document.createElement('script');
+  window.__onGmapsReady = function(){ gmapsState='ready'; cb(window.google); };
+  s.src = 'https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(GOOGLE_MAPS_API_KEY)+'&loading=async&callback=__onGmapsReady';
+  s.async = true;
+  s.onerror = function(){ gmapsState='unavailable'; cb(null); };
+  document.head.appendChild(s);
+}
+function subscribe(name){
+  try{
+    db.collection(name).orderBy('createdAt','desc').limit(60).onSnapshot(function(snap){
+      if(!snap.empty){
+        state[name] = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+        renderActive();
+      }
+    }, function(err){ /* keep local fallback */ });
+  }catch(e){}
+}
+function dbAdd(coll, id, data){
+  if(!db) return Promise.resolve(false);
+  try{ return db.collection(coll).doc(id).set(data).then(()=>true).catch(()=>false); }
+  catch(e){ return Promise.resolve(false); }
+}
+function dbUpdate(coll, id, data){
+  if(!db) return Promise.resolve(false);
+  try{ return db.collection(coll).doc(id).update(data).then(()=>true).catch(()=>false); }
+  catch(e){ return Promise.resolve(false); }
+}
+
+/* ============================================================
+   MISSIONS / STREAK
+============================================================ */
+function ownCheckinsToday(){
+  if(!profile) return [];
+  const t = todayStr();
+  return state.checkins.filter(c=> c.ownerId===profile.id && (c.createdAt||'').slice(0,10)===t);
+}
+function missionsStatus(){
+  return {
+    walk: ownCheckinsToday().length>0,
+    checkin: placeCheckins.ids.length>0,
+    like: lastLikeDate===todayStr()
+  };
+}
+function updateStreakIfComplete(){
+  const m = missionsStatus();
+  const t = todayStr();
+  if(m.walk && m.checkin && m.like && lastStreakDate!==t){
+    const yest = new Date(Date.now()-86400000).toISOString().slice(0,10);
+    streak = (lastStreakDate===yest) ? streak+1 : 1;
+    lastStreakDate = t;
+    localStorage.setItem('ww_streak', String(streak));
+    localStorage.setItem('ww_last_streak_date', lastStreakDate);
+  }
+}
+
+/* ============================================================
+   UTIL
+============================================================ */
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=> el.classList.remove('show'), 2200);
+}
+function timeAgo(iso){
+  const diff = Date.now() - new Date(iso).getTime();
+  const h = Math.floor(diff/3600000);
+  if(h<1) return Math.max(1,Math.floor(diff/60000))+' 分鐘前';
+  if(h<24) return h+' 小時前';
+  return Math.floor(h/24)+' 天前';
+}
+function fmtDate(iso){ const d = new Date(iso); return (d.getMonth()+1)+'/'+d.getDate(); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function confetti(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const layer = document.createElement('div');
+  layer.className = 'confetti-layer';
+  const colors = ['#3F6B45','#8A9A3E','#4C7A93','#B5652F','#C9A227'];
+  for(let i=0;i<26;i++){
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    const w = 5+Math.random()*5;
+    p.style.width = w+'px'; p.style.height = (w*1.6)+'px';
+    p.style.left = (Math.random()*100)+'%';
+    p.style.background = colors[i%colors.length];
+    p.style.animationDuration = (1.6+Math.random()*1.2)+'s';
+    p.style.animationDelay = (Math.random()*.4)+'s';
+    layer.appendChild(p);
+  }
+  document.getElementById('appShell').appendChild(layer);
+  setTimeout(()=> layer.remove(), 3200);
+}
+
+/* ============================================================
+   RENDER: HOME
+============================================================ */
+function renderHome(){
+  const el = document.getElementById('screenHome');
+  const b = breedById(profile.breed);
+  const m = missionsStatus();
+  const doneCount = (m.walk?1:0)+(m.checkin?1:0)+(m.like?1:0);
+  const weekKm = state.checkins.filter(c=>c.ownerId===profile.id && (Date.now()-new Date(c.createdAt).getTime())<7*86400000)
+    .reduce((s,c)=>s+(c.distanceKm||0),0);
+  const myBadges = state.checkins.filter(c=>c.ownerId===profile.id).length;
+  const hour = new Date().getHours();
+  const greet = hour<11?'早安':hour<18?'午安':'晚安';
+
+  const missions = [
+    {key:'walk', title:'完成一次散步紀錄', desc:'到「散步打卡」開始今日路線', done:m.walk},
+    {key:'checkin', title:'打卡一個毛孩友善地點', desc:'到「地圖」探索附近店家', done:m.checkin},
+    {key:'like', title:'在社群情報按一個讚', desc:'到「情報」給鄰居的貼文加油', done:m.like}
+  ];
+
+  const feedItems = state.checkins.slice(0,5).map(c=>{
+    const cb = breedById(c.breed);
+    return '<div class="feed-item card"><div class="icon-wrap">'+dogSVG(c.breed)+'</div>'+
+      '<div class="f-main"><div class="f-name">'+esc(c.dogName)+' 的散步紀錄</div>'+
+      '<div class="f-meta">'+esc(c.note||'')+' · '+timeAgo(c.createdAt)+'</div></div>'+
+      '<div class="f-dist">'+ (c.distanceKm||0).toFixed(1) +'<span style="font-size:10px;color:var(--ink-faint)"> km</span></div></div>';
+  }).join('') || '<div class="empty-note">還沒有散步紀錄,快去打卡第一筆吧!</div>';
+
+  el.innerHTML =
+    '<div class="screen-title"><h1>'+greet+','+esc(profile.ownerAlias||'')+'</h1></div>'+
+    '<div class="card greet-card"><div class="icon-wrap">'+dogSVG(profile.breed)+'</div>'+
+      '<div><h2>'+esc(profile.dogName)+' 在等你出門囉</h2><p>今天已完成 '+doneCount+' / 3 項任務,保持每日習慣累積徽章!</p></div></div>'+
+    '<div class="stat-row">'+
+      '<div class="card stat-tile"><div class="num">'+streak+'</div><div class="lbl">連續天數</div></div>'+
+      '<div class="card stat-tile"><div class="num">'+weekKm.toFixed(1)+'</div><div class="lbl">本週公里</div></div>'+
+      '<div class="card stat-tile"><div class="num">'+myBadges+'</div><div class="lbl">花朵徽章</div></div>'+
+    '</div>'+
+    '<div><div class="section-label" style="margin-bottom:8px;">今日任務</div>'+
+      '<div class="progress-bar" style="margin-bottom:10px;"><div style="width:'+(doneCount/3*100)+'%"></div></div>'+
+      '<div class="mission-list">'+missions.map(function(mi){
+        return '<div class="card mission-item'+(mi.done?' done':'')+'"><div class="mission-check">'+(mi.done?ICON_CHECK:'')+'</div>'+
+          '<div class="m-text"><div class="m-title">'+mi.title+'</div><div class="m-desc">'+mi.desc+'</div></div></div>';
+      }).join('')+
+      '</div></div>'+
+    '<div><div class="section-label" style="margin-bottom:8px;">社群散步動態</div><div style="display:flex;flex-direction:column;gap:8px;">'+feedItems+'</div></div>';
+}
+
+/* ============================================================
+   RENDER: WALK
+============================================================ */
+let walkTimerState = { active:false, startTime:null, distanceKm:0, gpsLive:false, lastPos:null, watchId:null, routeId:null };
+function completedRouteIds(){
+  const s = new Set();
+  state.checkins.forEach(function(c){ if(c.ownerId===profile.id && c.completed && c.routeId) s.add(c.routeId); });
+  return s;
+}
+
+function haversineKm(a,b){
+  const R=6371, toRad=d=>d*Math.PI/180;
+  const dLat=toRad(b.lat-a.lat), dLon=toRad(b.lon-a.lon);
+  const s = Math.sin(dLat/2)**2 + Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(s), Math.sqrt(1-s));
+}
+function tryGeolocation(){
+  if(!navigator.geolocation) return;
+  try{
+    walkTimerState.watchId = navigator.geolocation.watchPosition(function(pos){
+      walkTimerState.gpsLive = true;
+      const cur = {lat:pos.coords.latitude, lon:pos.coords.longitude};
+      if(walkTimerState.lastPos){
+        const d = haversineKm(walkTimerState.lastPos, cur);
+        if(d>0.001 && d<0.3) walkTimerState.distanceKm += d;
+      }
+      walkTimerState.lastPos = cur;
+      if(walkTimerState.active) renderWalk();
+    }, function(){ walkTimerState.gpsLive = false; if(walkTimerState.active) renderWalk(); }, {enableHighAccuracy:true, maximumAge:4000, timeout:8000});
+  }catch(e){}
+}
+function stopGeolocation(){
+  if(walkTimerState.watchId!=null && navigator.geolocation){ try{ navigator.geolocation.clearWatch(walkTimerState.watchId); }catch(e){} }
+  walkTimerState.watchId=null; walkTimerState.lastPos=null; walkTimerState.gpsLive=false;
+}
+function routeChipsHTML(){
+  const w = walkTimerState;
+  const locked = w.active;
+  const done = completedRouteIds();
+  let s = '<div class="chip-row">';
+  s += '<button class="chip" data-route="" aria-pressed="'+(!w.routeId)+'" '+(locked?'disabled':'')+'>自由散步</button>';
+  ROUTES.forEach(function(r){
+    s += '<button class="chip" data-route="'+r.id+'" aria-pressed="'+(w.routeId===r.id)+'" '+(locked?'disabled':'')+'>'+esc(r.name)+' · '+r.km.toFixed(1)+'km'+(done.has(r.id)?' ✓':'')+'</button>';
+  });
+  s += '</div>';
+  return s;
+}
+function routeMapSVG(route){
+  const bg = '<rect width="100" height="100" fill="var(--surface-2)"/>'+
+    '<path d="M-5 70 Q30 55 55 68 T110 60" stroke="var(--sky-soft)" stroke-width="9" fill="none" opacity=".9"/>'+
+    '<circle cx="46" cy="20" r="14" fill="var(--leaf-soft)"/><circle cx="14" cy="82" r="16" fill="var(--leaf-soft)"/>';
+  let path;
+  if(route.loop){
+    path = '<circle cx="'+route.sx+'" cy="'+route.sy+'" r="16" fill="none" stroke="var(--accent-deep)" stroke-width="2" stroke-dasharray="4 3"/>';
+  } else {
+    const mx = (route.sx+route.ex)/2 + (route.sy-route.ey)*0.25;
+    const my = (route.sy+route.ey)/2 + (route.ex-route.sx)*0.25;
+    path = '<path d="M'+route.sx+' '+route.sy+' Q'+mx+' '+my+' '+route.ex+' '+route.ey+'" fill="none" stroke="var(--accent-deep)" stroke-width="2" stroke-dasharray="4 3"/>';
+  }
+  const startPin = '<circle cx="'+route.sx+'" cy="'+route.sy+'" r="4.2" fill="var(--leaf)" stroke="var(--surface)" stroke-width="1.4"/>';
+  const endPin = route.loop ? '' : '<circle cx="'+route.ex+'" cy="'+route.ey+'" r="4.2" fill="var(--rust)" stroke="var(--surface)" stroke-width="1.4"/>';
+  return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+bg+path+startPin+endPin+'</svg>';
+}
+function renderWalk(){
+  const el = document.getElementById('screenWalk');
+  const w = walkTimerState;
+  const tier = badgeTier(w.distanceKm);
+  const route = routeById(w.routeId);
+  const target = route ? route.km : 3.5;
+  const gpsLabel = !w.active ? '準備開始' : (w.gpsLive ? '定位追蹤中,走完後回來按「完成打卡」' : '尚未取得定位,走完後可手動輸入距離');
+  const recent = state.checkins.filter(c=>c.ownerId===profile.id).slice(0,8);
+  const subText = w.active ? (route ? '「'+esc(route.name)+'」進行中…' : '散步進行中…') : (route ? '準備挑戰「'+esc(route.name)+'」,目標 '+route.km.toFixed(1)+' 公里' : '按下開始,帶'+esc(profile.dogName)+'出門吧');
+  const distField = (w.active && !w.gpsLive)
+    ? '<input type="number" id="manualDist" class="manual-dist" min="0" step="0.1" placeholder="0.0" value="'+(w.distanceKm>0? w.distanceKm.toFixed(1):'')+'">'
+    : '<div class="v" id="walkDistV">'+w.distanceKm.toFixed(2)+'</div>';
+  el.innerHTML =
+    '<div class="screen-title"><h1>散步打卡</h1></div>'+
+    '<div><div class="section-label" style="margin-bottom:8px;">選擇路線任務</div>'+routeChipsHTML()+
+      (route ? '<div class="map-note" style="margin-top:8px;">'+ICON_INFO+'<span><strong>'+esc(route.name)+'</strong> · '+route.area+' · 難度:'+route.level+'<br>'+esc(route.note)+'</span></div>'+
+        '<div class="map-frame card" id="routeMapFrame" style="aspect-ratio:16/10; margin-top:8px;">'+routeMapSVG(route)+'</div>' : '')+
+    '</div>'+
+    '<div class="card walk-stage">'+
+      '<div class="walk-sub">'+subText+'</div>'+
+      '<div class="walk-metrics">'+
+        '<div>'+distField+'<div class="k">公里'+(route?(' / '+route.km.toFixed(1)):'')+'</div></div>'+
+        '<div><div class="v" style="color:'+tier.color+'">'+tier.name+'</div><div class="k">目前等級</div></div>'+
+      '</div>'+
+      (route ? '<div style="width:100%;"><div class="progress-bar"><div id="routeProgressBar" style="width:'+Math.min(100,(w.distanceKm/target*100))+'%"></div></div>'+
+        '<div class="walk-sub" id="routeProgressText" style="margin-top:5px;">'+(w.distanceKm>=target? '已達成目標距離,完成打卡收下徽章吧!' : '距離終點還有 '+Math.max(0,target-w.distanceKm).toFixed(2)+' 公里')+'</div></div>' : '')+
+      '<div class="gps-note"><span class="gps-dot'+(w.gpsLive?' live':'')+'"></span>'+gpsLabel+'</div>'+
+      '<div class="trail-row" id="walkTrail" title="每走一段路就會開出一朵花">'+trailDotsHTML(w.distanceKm, target)+'</div>'+
+      '<div class="walk-actions" id="walkActions"></div>'+
+    '</div>'+
+    '<div><div class="section-label" style="margin-bottom:8px;">我的花園小徑</div>'+
+      '<div class="badge-gallery">'+ (recent.length? recent.map(c=> '<div class="badge-item">'+routeBadgeSVG(seedFromId(c.id), c.distanceKm||0)+'<div class="b-dist">'+(c.distanceKm||0).toFixed(1)+' km</div><div class="b-date">'+fmtDate(c.createdAt)+'</div></div>').join('') : '<div class="empty-note">完成第一次散步就能種出第一朵花</div>') +
+      '</div></div>';
+  el.querySelectorAll('[data-route]').forEach(function(btn){
+    btn.onclick = function(){
+      if(walkTimerState.active){ toast('先完成或取消目前的散步'); return; }
+      walkTimerState.routeId = btn.dataset.route || null;
+      renderWalk();
+    };
+  });
+  const manualInput = document.getElementById('manualDist');
+  if(manualInput){
+    manualInput.oninput = function(){
+      const v = parseFloat(manualInput.value);
+      walkTimerState.distanceKm = isNaN(v) || v<0 ? 0 : v;
+      const trail = document.getElementById('walkTrail');
+      if(trail) trail.innerHTML = trailDotsHTML(walkTimerState.distanceKm, target);
+      const bar = document.getElementById('routeProgressBar'), ptext = document.getElementById('routeProgressText');
+      if(bar){
+        bar.style.width = Math.min(100, (walkTimerState.distanceKm/target*100))+'%';
+        ptext.textContent = walkTimerState.distanceKm>=target ? '已達成目標距離,完成打卡收下徽章吧!' : '距離終點還有 '+Math.max(0,target-walkTimerState.distanceKm).toFixed(2)+' 公里';
+      }
+    };
+  }
+  renderWalkActions();
+  if(route){
+    loadGoogleMaps(function(g){
+      const frame = document.getElementById('routeMapFrame');
+      if(!g || !frame) return;
+      frame.innerHTML = '<div id="gmapCanvas"></div>';
+      const map = new g.maps.Map(document.getElementById('gmapCanvas'), {
+        center: {lat:route.lat1, lng:route.lng1}, zoom: 15, disableDefaultUI:true, zoomControl:true, streetViewControl:false
+      });
+      const start = {lat:route.lat1, lng:route.lng1}, end = {lat:route.lat2, lng:route.lng2};
+      new g.maps.Marker({position:start, map:map, label:'起', title:route.name+' 起點'});
+      if(!route.loop){
+        new g.maps.Marker({position:end, map:map, label:'終', title:route.name+' 終點'});
+        new g.maps.Polyline({path:[start,end], map:map, strokeColor:'#2E5233', strokeWeight:4, strokeOpacity:.85});
+        const bounds = new g.maps.LatLngBounds(); bounds.extend(start); bounds.extend(end); map.fitBounds(bounds, 48);
+      } else {
+        new g.maps.Circle({center:start, radius:180, map:map, strokeColor:'#2E5233', strokeWeight:3, fillColor:'#2E5233', fillOpacity:.08});
+      }
+    });
+  }
+}
+function trailDotsHTML(km, target){
+  target = target || 3.5;
+  const N = 10, filled = Math.min(N, Math.round((km/target)*N));
+  let s='';
+  for(let i=0;i<N;i++){ s += '<span class="trail-dot">'+flowerDotSVG(i<filled)+'</span>'; }
+  return s;
+}
+function flowerDotSVG(bloom){
+  if(bloom){
+    return '<svg viewBox="0 0 20 20"><circle cx="10" cy="6.2" r="3" fill="var(--rust)"/><circle cx="13.8" cy="8.8" r="3" fill="var(--rust)"/><circle cx="12.2" cy="13.4" r="3" fill="var(--rust)"/><circle cx="7.8" cy="13.4" r="3" fill="var(--rust)"/><circle cx="6.2" cy="8.8" r="3" fill="var(--rust)"/><circle cx="10" cy="10" r="2.4" fill="var(--accent-deep)"/></svg>';
+  }
+  return '<svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="2.8" fill="none" stroke="var(--border)" stroke-width="1.6"/></svg>';
+}
+function seedFromId(id){ let h=0; for(let i=0;i<id.length;i++){ h = (h*31 + id.charCodeAt(i))|0; } return h; }
+
+function renderWalkActions(){
+  const wrap = document.getElementById('walkActions');
+  const w = walkTimerState;
+  if(!w.active){
+    const route = routeById(w.routeId);
+    wrap.innerHTML = '<button class="btn btn-primary" id="btnStart">'+(route? '開始這條路線':'開始自由散步')+'</button>';
+    document.getElementById('btnStart').onclick = startWalk;
+  } else {
+    wrap.innerHTML = '<button class="btn btn-ghost" id="btnCancel">取消</button><button class="btn btn-primary" id="btnFinish">完成打卡</button>';
+    document.getElementById('btnFinish').onclick = finishWalk;
+    document.getElementById('btnCancel').onclick = cancelWalk;
+  }
+}
+function startWalk(){
+  walkTimerState.active = true;
+  walkTimerState.startTime = Date.now();
+  walkTimerState.distanceKm = 0;
+  tryGeolocation();
+  renderWalk();
+}
+function cancelWalk(){
+  stopGeolocation();
+  walkTimerState = { active:false, startTime:null, distanceKm:0, gpsLive:false, lastPos:null, watchId:null, routeId:null };
+  renderWalk();
+}
+function finishWalk(){
+  const manualInput = document.getElementById('manualDist');
+  if(manualInput){ const v = parseFloat(manualInput.value); walkTimerState.distanceKm = isNaN(v)?0:v; }
+  stopGeolocation();
+  const route = routeById(walkTimerState.routeId);
+  if(walkTimerState.distanceKm<=0){ toast('請開啟定位或輸入這次走了幾公里'); return; }
+  const distanceKm = +walkTimerState.distanceKm.toFixed(2);
+  const durationMin = Math.max(1, Math.round((Date.now()-walkTimerState.startTime)/60000));
+  const completed = route ? distanceKm >= route.km : true;
+  const id = 'checkin-'+profile.id+'-'+Date.now();
+  const rec = {id, ownerId:profile.id, dogName:profile.dogName, breed:profile.breed, distanceKm, durationMin,
+    routeId: route ? route.id : null, routeName: route ? route.name : null, routeKm: route ? route.km : null, completed,
+    note: route ? (completed ? '完成路線任務:'+route.name : '挑戰路線:'+route.name+'(未達目標)') : '今日散步打卡',
+    createdAt:new Date().toISOString()};
+  state.checkins.unshift(rec);
+  dbAdd('checkins', id, {ownerId:rec.ownerId, dogName:rec.dogName, breed:rec.breed, distanceKm:rec.distanceKm, durationMin:rec.durationMin,
+    routeId:rec.routeId, routeName:rec.routeName, routeKm:rec.routeKm, completed:rec.completed, note:rec.note, createdAt:rec.createdAt});
+  updateStreakIfComplete();
+  walkTimerState = { active:false, startTime:null, distanceKm:0, gpsLive:false, lastPos:null, watchId:null, routeId:null };
+  openCompleteModal(rec);
+  renderHeaderStreak();
+}
+function openCompleteModal(rec){
+  const tier = badgeTier(rec.distanceKm);
+  let message;
+  if(rec.routeName && rec.completed){
+    message = esc(rec.dogName)+' 完成了「'+esc(rec.routeName)+'」路線任務!走了 '+rec.distanceKm.toFixed(2)+' 公里,耗時 '+rec.durationMin+' 分鐘,小徑上開出一朵<strong style="color:'+tier.color+'">「'+tier.name+'」</strong>等級的花朵徽章。';
+  } else if(rec.routeName){
+    message = esc(rec.dogName)+' 這次走了 '+rec.distanceKm.toFixed(2)+' 公里(「'+esc(rec.routeName)+'」目標 '+rec.routeKm.toFixed(1)+' 公里),下次再挑戰完成整條路線吧!仍開出一朵<strong style="color:'+tier.color+'">「'+tier.name+'」</strong>等級的花朵徽章。';
+  } else {
+    message = esc(rec.dogName)+' 走了 '+rec.distanceKm.toFixed(2)+' 公里,耗時 '+rec.durationMin+' 分鐘,小徑上開出一朵<strong style="color:'+tier.color+'">「'+tier.name+'」</strong>等級的花朵徽章。';
+  }
+  showModal('<div class="complete-wrap">'+
+    '<div class="badge-big">'+routeBadgeSVG(seedFromId(rec.id), rec.distanceKm, true)+'</div>'+
+    '<h2>'+(rec.routeName && !rec.completed ? '再接再厲!' : '任務完成!')+'</h2>'+
+    '<p style="color:var(--ink-soft);font-size:13.5px;">'+message+'</p>'+
+    '<button class="btn btn-primary btn-block" id="btnCloseComplete" style="margin-top:14px;">太棒了</button>'+
+  '</div>');
+  document.getElementById('btnCloseComplete').onclick = closeModal;
+  confetti();
+  renderActive();
+}
+
+/* ============================================================
+   RENDER: DISCOVER
+============================================================ */
+function placeMapsUrl(p){
+  return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent('新北市 '+p.district+' '+p.name);
+}
+function renderDiscover(){
+  const el = document.getElementById('screenDiscover');
+  const cats = [['all','全部'],['restaurant','餐廳'],['shop','用品店'],['attraction','景點'],['vet','獸醫院']];
+  const filtered = PLACES.filter(p=>{
+    if(state.discoverCat!=='all' && p.cat!==state.discoverCat) return false;
+    if(state.discoverQuery && !(p.name+p.tag+p.district).includes(state.discoverQuery)) return false;
+    return true;
+  });
+  const pins = PLACES.map(p=>{
+    const on = state.discoverCat==='all' || p.cat===state.discoverCat;
+    return '<button class="map-pin" data-pin="'+p.id+'" style="left:'+p.x+'%; top:'+p.y+'%; opacity:'+(on?1:.28)+';" title="'+esc(p.name)+'" data-fill="'+catColorVar(p.cat)+'">'+pinSVG(p.cat)+'</button>';
+  }).join('');
+
+  el.innerHTML =
+    '<div class="screen-title"><h1>地圖探索</h1></div>'+
+    '<div class="map-note" id="discoverMapNote">'+ICON_INFO+'<span>示意插畫地圖(尚未設定 Google Maps API 金鑰)。設定方法見 README-deploy.md;點選店卡可先用「在 Google 地圖開啟」查看實際地圖。</span></div>'+
+    '<div class="search-box">'+ICON_SEARCH+'<input type="text" placeholder="搜尋店家、地點或標籤" id="discoverSearch" value="'+esc(state.discoverQuery)+'"></div>'+
+    '<div class="chip-row">'+cats.map(function(c){ return '<button class="chip" data-cat="'+c[0]+'" aria-pressed="'+(state.discoverCat===c[0])+'">'+c[1]+'</button>'; }).join('')+'</div>'+
+    '<div class="map-frame card" id="discoverMapFrame">'+mapBackgroundSVG()+pins+'</div>'+
+    '<div style="display:flex;flex-direction:column;gap:10px;">'+
+      (filtered.length? filtered.map(placeCardHTML).join('') : '<div class="empty-note">找不到符合的地點</div>')+
+    '</div>';
+
+  document.getElementById('discoverSearch').oninput = function(e){ state.discoverQuery = e.target.value; renderDiscover(); };
+  el.querySelectorAll('[data-cat]').forEach(function(btn){ btn.onclick = function(){ state.discoverCat = btn.dataset.cat; renderDiscover(); }; });
+  el.querySelectorAll('[data-pin]').forEach(function(btn){ btn.onclick = function(){ const p = PLACES.find(x=>x.id===btn.dataset.pin); if(p){ document.getElementById('place-'+p.id).scrollIntoView({behavior:'smooth', block:'center'}); } }; });
+  el.querySelectorAll('[data-checkin-place]').forEach(function(btn){ btn.onclick = function(){ checkinPlace(btn.dataset.checkinPlace); }; });
+
+  loadGoogleMaps(function(g){
+    const frame = document.getElementById('discoverMapFrame');
+    const note = document.getElementById('discoverMapNote');
+    if(!g || !frame) return;
+    if(note) note.style.display = 'none';
+    frame.innerHTML = '<div id="gmapCanvas"></div>';
+    const map = new g.maps.Map(document.getElementById('gmapCanvas'), {
+      center: {lat:25.0863, lng:121.4737}, zoom: 14, disableDefaultUI:true, zoomControl:true, streetViewControl:false
+    });
+    filtered.forEach(function(p){
+      if(p.lat==null) return;
+      const marker = new g.maps.Marker({position:{lat:p.lat,lng:p.lng}, map:map, title:p.name});
+      const info = new g.maps.InfoWindow({content:'<strong>'+p.name+'</strong><br>'+CAT_LABEL[p.cat]+' · '+p.district});
+      marker.addListener('click', function(){ info.open(map, marker); });
+    });
+  });
+}
+function catColorVar(cat){ return {restaurant:'var(--accent-deep)', shop:'var(--sky)', attraction:'var(--leaf)', vet:'var(--plum)'}[cat] || 'var(--accent-deep)'; }
+function pinSVG(cat){
+  return '<svg viewBox="0 0 30 34" xmlns="http://www.w3.org/2000/svg"><path d="M15 1.5C7.8 1.5 2.5 7 2.5 14c0 9.8 12.5 18.5 12.5 18.5S27.5 23.8 27.5 14C27.5 7 22.2 1.5 15 1.5Z" fill="'+catColorVar(cat)+'"/><circle cx="15" cy="13.5" r="8.5" fill="var(--surface)"/><g transform="translate(9.2,7.8) scale(0.9)" fill="'+catColorVar(cat)+'">'+CAT_ICONS[cat]+'</g></svg>';
+}
+function placeCardHTML(p){
+  const checked = placeCheckins.ids.indexOf(p.id)>=0;
+  return '<div class="card place-card" id="place-'+p.id+'">'+
+    '<div class="icon-wrap cat-'+p.cat+'">'+catIcon(p.cat)+'</div>'+
+    '<div class="p-main"><div class="p-name">'+esc(p.name)+'</div>'+
+      '<div class="p-meta">'+CAT_LABEL[p.cat]+' · '+p.district+' · '+esc(p.tag)+'</div>'+
+      '<div class="p-hours">營業時間 '+p.hours+'</div></div>'+
+    '<div class="p-actions">'+
+      '<a class="btn btn-outline btn-sm" href="'+placeMapsUrl(p)+'" target="_blank" rel="noopener">'+ICON_MAP_EXT+' 開啟地圖</a>'+
+      '<button class="btn btn-sm '+(checked?'btn-ghost':'btn-primary')+'" data-checkin-place="'+p.id+'" '+(checked?'disabled':'')+'>'+(checked?'✓ 已打卡':'打卡')+'</button>'+
+    '</div></div>';
+}
+function checkinPlace(id){
+  if(placeCheckins.ids.indexOf(id)>=0) return;
+  placeCheckins.ids.push(id);
+  savePlaceCheckins();
+  updateStreakIfComplete();
+  toast('打卡成功!今日任務 +1');
+  renderActive();
+  renderHeaderStreak();
+}
+function mapBackgroundSVG(){
+  return '<svg viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'+
+    '<rect width="100" height="100" fill="var(--surface-2)"/>'+
+    '<path d="M-5 70 Q30 55 55 68 T110 60" stroke="var(--sky-soft)" stroke-width="9" fill="none" opacity=".9"/>'+
+    '<path d="M-5 70 Q30 55 55 68 T110 60" stroke="var(--sky)" stroke-width="1.4" fill="none" opacity=".55"/>'+
+    '<circle cx="46" cy="20" r="14" fill="var(--leaf-soft)"/>'+
+    '<circle cx="14" cy="82" r="16" fill="var(--leaf-soft)"/>'+
+    '<g opacity=".5" fill="var(--surface-3)">'+
+      '<rect x="65" y="10" width="10" height="14" rx="1.5"/><rect x="78" y="16" width="9" height="12" rx="1.5"/>'+
+      '<rect x="8" y="16" width="9" height="11" rx="1.5"/><rect x="60" y="72" width="11" height="15" rx="1.5"/>'+
+      '<rect x="78" y="76" width="9" height="10" rx="1.5"/>'+
+    '</g>'+
+    '<path d="M20 5 Q40 40 60 50 T90 95" stroke="var(--border)" stroke-width="2.2" fill="none" stroke-dasharray="1 5" stroke-linecap="round"/>'+
+  '</svg>';
+}
+
+/* ============================================================
+   RENDER: FRIENDS
+============================================================ */
+function renderFriends(){
+  const el = document.getElementById('screenFriends');
+  const cats = [['all','全部']].concat(DISTRICTS.map(d=>[d,d]));
+  const filtered = state.profiles.filter(p=> state.friendsCat==='all' || p.district===state.friendsCat);
+  el.innerHTML =
+    '<div class="screen-title"><h1>毛孩交友</h1><button class="btn btn-primary btn-sm" id="btnNewProfile">建立我的檔案</button></div>'+
+    '<div class="screen-sub">依社區認識附近狗友,一起揪散步或聚會</div>'+
+    '<div class="chip-row">'+cats.map(function(c){ return '<button class="chip" data-fcat="'+c[0]+'" aria-pressed="'+(state.friendsCat===c[0])+'">'+c[1]+'</button>'; }).join('')+'</div>'+
+    '<div style="display:flex;flex-direction:column;gap:12px;">'+
+      (filtered.length? filtered.map(profileCardHTML).join('') : '<div class="empty-note">這個地區還沒有毛孩檔案,當第一個吧!</div>')+
+    '</div>';
+  el.querySelectorAll('[data-fcat]').forEach(function(b){ b.onclick=function(){ state.friendsCat=b.dataset.fcat; renderFriends(); }; });
+  document.getElementById('btnNewProfile').onclick = openProfileForm;
+  el.querySelectorAll('[data-like]').forEach(function(b){ b.onclick=function(){ likeProfile(b.dataset.like); }; });
+}
+function profileCardHTML(p){
+  const liked = likedSet.has(p.id);
+  return '<div class="card profile-card">'+
+    '<div class="p-head"><div class="icon-wrap">'+dogSVG(p.breed)+'</div>'+
+      '<div><div class="p-title">'+esc(p.dogName)+' · '+breedById(p.breed).name+'</div>'+
+      '<div class="p-sub">'+p.district+' · 飼主：'+esc(p.ownerAlias)+'</div></div></div>'+
+    '<div class="p-bio">'+esc(p.bio)+'</div>'+
+    '<div class="p-tags">'+(p.tags||[]).map(t=>'<span class="tag" style="background:var(--surface-2);color:var(--ink-soft);">'+esc(t)+'</span>').join('')+'</div>'+
+    '<div class="p-foot"><span style="font-size:11.5px;color:var(--ink-faint);">'+timeAgo(p.createdAt)+'加入</span>'+
+      '<button class="like-btn" data-like="'+p.id+'" aria-pressed="'+liked+'" '+(liked?'disabled':'')+'>'+ICON_HEART_SM+' '+(p.likes||0)+'</button></div>'+
+  '</div>';
+}
+function likeProfile(id){
+  if(likedSet.has(id)) return;
+  const p = state.profiles.find(x=>x.id===id);
+  if(!p) return;
+  likedSet.add(id); saveLikedSet();
+  p.likes = (p.likes||0)+1;
+  dbUpdate('profiles', id, {likes:p.likes});
+  lastLikeDate = todayStr();
+  localStorage.setItem('ww_last_like_date', lastLikeDate);
+  updateStreakIfComplete();
+  toast('已送出邀約!今日任務 +1');
+  renderActive();
+  renderHeaderStreak();
+}
+function openProfileForm(){
+  showModal(
+    '<div class="modal-head"><h2>建立我的檔案</h2><button class="icon-btn" id="mClose">'+ICON_X+'</button></div>'+
+    '<div class="field"><label>毛孩名字</label><input type="text" id="fDogName" value="'+esc(profile.dogName)+'"></div>'+
+    '<div class="field"><label>所在地區</label><select id="fDistrict">'+DISTRICTS.map(d=>'<option '+(d===profile.district?'selected':'')+'>'+d+'</option>').join('')+'</select></div>'+
+    '<div class="field"><label>個性標籤(最多選4個)</label><div class="tagpick" id="fTags">'+TAG_OPTIONS.map(t=>'<button type="button" class="chip" data-tag="'+t+'" aria-pressed="false">'+t+'</button>').join('')+'</div></div>'+
+    '<div class="field"><label>自我介紹</label><textarea id="fBio" rows="3" placeholder="介紹一下'+esc(profile.dogName)+'的個性、喜好…"></textarea></div>'+
+    '<button class="btn btn-primary btn-block" id="fSubmit">發布檔案</button>'
+  );
+  document.getElementById('mClose').onclick = closeModal;
+  const picked = new Set();
+  document.querySelectorAll('#fTags [data-tag]').forEach(function(b){
+    b.onclick = function(){
+      if(picked.has(b.dataset.tag)){ picked.delete(b.dataset.tag); b.setAttribute('aria-pressed','false'); }
+      else if(picked.size<4){ picked.add(b.dataset.tag); b.setAttribute('aria-pressed','true'); }
+    };
+  });
+  document.getElementById('fSubmit').onclick = function(){
+    const dogName = document.getElementById('fDogName').value.trim() || profile.dogName;
+    const district = document.getElementById('fDistrict').value;
+    const bio = document.getElementById('fBio').value.trim() || '這位毛孩還很神秘,等你來認識。';
+    const id = 'profile-'+profile.id;
+    const rec = {id, dogName, breed:profile.breed, district, tags:Array.from(picked), bio, ownerAlias:profile.ownerAlias, likes:0, createdAt:new Date().toISOString()};
+    state.profiles = state.profiles.filter(p=>p.id!==id);
+    state.profiles.unshift(rec);
+    dbAdd('profiles', id, rec);
+    toast('檔案已發布!');
+    closeModal();
+    renderActive();
+  };
+}
+
+/* ============================================================
+   RENDER: COMMUNITY
+============================================================ */
+function renderCommunity(){
+  const el = document.getElementById('screenCommunity');
+  const cats = [['all','全部'],['vaccine','疫苗提醒'],['rat_poison','鼠藥警示'],['expo','展覽優惠'],['notice','社區公告']];
+  const filtered = state.posts.filter(p=> state.communityCat==='all' || p.category===state.communityCat);
+  el.innerHTML =
+    '<div class="screen-title"><h1>社群情報</h1></div>'+
+    '<div class="screen-sub">疫苗提醒、危險警示、展覽優惠,狗友之間互相照應</div>'+
+    '<div class="chip-row">'+cats.map(function(c){ return '<button class="chip" data-ccat="'+c[0]+'" aria-pressed="'+(state.communityCat===c[0])+'">'+c[1]+'</button>'; }).join('')+'</div>'+
+    '<div style="display:flex;flex-direction:column;gap:10px;">'+
+      (filtered.length? filtered.map(postCardHTML).join('') : '<div class="empty-note">目前沒有這個分類的情報</div>')+
+    '</div>';
+  el.querySelectorAll('[data-ccat]').forEach(function(b){ b.onclick=function(){ state.communityCat=b.dataset.ccat; renderCommunity(); }; });
+  el.querySelectorAll('[data-like-post]').forEach(function(b){ b.onclick=function(){ likePost(b.dataset.likePost); }; });
+}
+function postCardHTML(p){
+  const liked = likedPostsSet.has(p.id);
+  return '<div class="card post-card">'+
+    '<div class="p-top"><span class="tag tag-'+p.category+'">'+POST_CAT_LABEL[p.category]+'</span><span style="font-size:11px;color:var(--ink-faint);">'+p.location+'</span></div>'+
+    '<div class="p-title">'+esc(p.title)+'</div>'+
+    '<div class="p-body">'+esc(p.content)+'</div>'+
+    '<div class="p-foot">'+ICON_PIN_SM+'<span>'+esc(p.author)+' · '+breedById(p.breed).name+'</span><span style="margin-left:auto;">'+timeAgo(p.createdAt)+'</span>'+
+      '<button class="like-btn" style="margin-left:8px; padding:4px 10px;" data-like-post="'+p.id+'" aria-pressed="'+liked+'">'+ICON_HEART_SM+' '+(p.likes||0)+'</button>'+
+    '</div>'+
+  '</div>';
+}
+function likePost(id){
+  if(likedPostsSet.has(id)) return;
+  const p = state.posts.find(x=>x.id===id);
+  if(!p) return;
+  likedPostsSet.add(id); saveLikedPostsSet();
+  p.likes = (p.likes||0)+1;
+  dbUpdate('posts', id, {likes:p.likes});
+  lastLikeDate = todayStr();
+  localStorage.setItem('ww_last_like_date', lastLikeDate);
+  updateStreakIfComplete();
+  toast('已按讚!今日任務 +1');
+  renderActive();
+  renderHeaderStreak();
+}
+function openPostForm(){
+  showModal(
+    '<div class="modal-head"><h2>發布情報</h2><button class="icon-btn" id="mClose">'+ICON_X+'</button></div>'+
+    '<div class="field"><label>分類</label><select id="pCat"><option value="vaccine">疫苗提醒</option><option value="rat_poison">鼠藥警示</option><option value="expo">展覽優惠</option><option value="notice">社區公告</option></select></div>'+
+    '<div class="field"><label>地區</label><select id="pLoc">'+DISTRICTS.map(d=>'<option '+(d===profile.district?'selected':'')+'>'+d+'</option>').join('')+'</select></div>'+
+    '<div class="field"><label>標題</label><input type="text" id="pTitle" placeholder="例如:狂犬病疫苗補打站開放"></div>'+
+    '<div class="field"><label>內容</label><textarea id="pBody" rows="4" placeholder="說明時間、地點與細節,幫助更多狗友"></textarea></div>'+
+    '<button class="btn btn-primary btn-block" id="pSubmit">發布</button>'
+  );
+  document.getElementById('mClose').onclick = closeModal;
+  document.getElementById('pSubmit').onclick = function(){
+    const title = document.getElementById('pTitle').value.trim();
+    const content = document.getElementById('pBody').value.trim();
+    if(!title || !content){ toast('請填寫標題與內容'); return; }
+    const id = 'post-'+profile.id+'-'+Date.now();
+    const rec = {id, category:document.getElementById('pCat').value, title, location:document.getElementById('pLoc').value, author:profile.ownerAlias, breed:profile.breed, content, createdAt:new Date().toISOString()};
+    state.posts.unshift(rec);
+    dbAdd('posts', id, rec);
+    toast('情報已發布,感謝分享!');
+    closeModal();
+    renderActive();
+  };
+}
+
+/* ============================================================
+   MODAL / TOAST helpers
+============================================================ */
+function showModal(html){
+  document.getElementById('modalSheet').innerHTML = html;
+  document.getElementById('modalBackdrop').classList.add('show');
+}
+function closeModal(){ document.getElementById('modalBackdrop').classList.remove('show'); }
+document.getElementById('modalBackdrop').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+
+/* ============================================================
+   NAV / HEADER
+============================================================ */
+function renderHeaderStreak(){
+  document.getElementById('streakPill').innerHTML = ICON_FLAME + ' ' + streak;
+}
+function setActiveTab(tab){
+  state.activeTab = tab;
+  ['home','walk','discover','community'].forEach(function(t){
+    document.getElementById('screen'+t.charAt(0).toUpperCase()+t.slice(1)).hidden = (t!==tab);
+  });
+  document.querySelectorAll('.nav-btn').forEach(function(b){ b.setAttribute('aria-current', b.dataset.nav===tab ? 'true':'false'); });
+  const fab = document.getElementById('fabBtn');
+  if(fab) fab.remove();
+  if(tab==='community'){
+    const btn = document.createElement('button');
+    btn.className='fab'; btn.id='fabBtn'; btn.innerHTML = ICON_PLUS; btn.title='發布情報';
+    btn.onclick = openPostForm;
+    document.getElementById('appShell').appendChild(btn);
+  }
+  renderActive();
+}
+function renderActive(){
+  if(!profile) return;
+  ({home:renderHome, walk:renderWalk, discover:renderDiscover, community:renderCommunity})[state.activeTab]();
+}
+document.querySelectorAll('.nav-btn').forEach(function(b, i){
+  const names = ['home','walk','discover','community'];
+  b.querySelector('.ic').innerHTML = iconMarkup(names[i]);
+  b.onclick = function(){ setActiveTab(b.dataset.nav); };
+});
+
+/* ============================================================
+   ONBOARDING
+============================================================ */
+function renderOnboard(prefill){
+  const el = document.getElementById('onboardScreen');
+  const p = prefill || {};
+  let chosenBreed = p.breed || null;
+  el.innerHTML =
+    '<div class="onboard-hero"><div class="mascot-wrap" id="obMascot"></div>'+
+      '<h1>'+(prefill?'編輯毛孩檔案':'歡迎加入汪汪日記')+'</h1>'+
+      '<p>選一隻最像你家毛孩的角色,開始每日散步打卡、探索友善地圖,認識附近的狗友。</p></div>'+
+    '<div class="section-label" style="margin-bottom:8px;">選擇品種</div>'+
+    '<div class="breed-grid" id="obBreedGrid">'+BREEDS.map(function(b){
+      return '<button type="button" class="breed-card" data-breed="'+b.id+'" aria-pressed="'+(b.id===chosenBreed)+'"><div class="icon-wrap">'+dogSVG(b.id)+'</div><span>'+b.name+'</span></button>';
+    }).join('')+'</div>'+
+    '<div class="field"><label>幫毛孩取名字</label><input type="text" id="obName" value="'+esc(p.dogName||'')+'" placeholder="例如：小柴"></div>'+
+    '<div class="field"><label>所在地區</label><select id="obDistrict">'+DISTRICTS.map(d=>'<option '+(d===p.district?'selected':'')+'>'+d+'</option>').join('')+'</select></div>'+
+    '<div class="field"><label>你的暱稱(交友牆顯示)</label><input type="text" id="obAlias" value="'+esc(p.ownerAlias||'')+'" placeholder="例如：柴語者"></div>'+
+    '<button class="btn btn-primary btn-block" id="obSubmit">'+(prefill?'儲存變更':'開始使用')+'</button>'+
+    (prefill? '<button class="btn btn-ghost btn-block" id="obCancel" style="margin-top:8px;">取消</button>' : '');
+
+  function paintMascot(){ document.getElementById('obMascot').innerHTML = dogSVG(chosenBreed||'shiba'); }
+  paintMascot();
+  el.querySelectorAll('[data-breed]').forEach(function(card){
+    card.onclick = function(){
+      chosenBreed = card.dataset.breed;
+      el.querySelectorAll('[data-breed]').forEach(c=>c.setAttribute('aria-pressed', c===card));
+      if(!document.getElementById('obName').value){ document.getElementById('obName').placeholder = breedById(chosenBreed).nick; }
+      paintMascot();
+    };
+  });
+  if(prefill){ document.getElementById('obCancel').onclick = function(){ el.hidden = true; }; }
+  document.getElementById('obSubmit').onclick = function(){
+    const dogName = document.getElementById('obName').value.trim() || breedById(chosenBreed||'shiba').nick;
+    if(!chosenBreed){ toast('請先選擇品種'); return; }
+    const district = document.getElementById('obDistrict').value;
+    const ownerAlias = document.getElementById('obAlias').value.trim() || (dogName+'的家人');
+    profile = Object.assign({}, profile, { id: (profile&&profile.id) || ('owner-'+Math.random().toString(36).slice(2,10)), breed:chosenBreed, dogName, district, ownerAlias });
+    saveJSON('ww_profile', profile);
+    el.hidden = true;
+    finishBoot();
+  };
+}
+
+/* ============================================================
+   BOOT
+============================================================ */
+function paintAvatar(){
+  document.getElementById('avatarBtn').innerHTML = dogSVG(profile.breed);
+  document.getElementById('avatarBtn').onclick = function(){
+    document.getElementById('onboardScreen').hidden = false;
+    renderOnboard(profile);
+  };
+}
+function finishBoot(){
+  paintAvatar();
+  renderHeaderStreak();
+  setActiveTab('home');
+}
+function boot(){
+  renderScene();
+  if(!profile){
+    document.getElementById('onboardScreen').hidden = false;
+    renderOnboard(null);
+  } else {
+    finishBoot();
+  }
+  initDb();
+}
+boot();
+
+})();
+</script>
+</body>
+</html>
