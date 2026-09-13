@@ -100,5 +100,5 @@ service cloud.firestore {
 ## 檔案說明
 
 - `index.html` — 完整網站,直接上傳即可
-- `images/` — 6 個品種的狗狗插畫(首頁、散步、情報都會用到),跟 `index.html` 放在同一層結構下即可,不要移動或改名
+- `images/` — 6 個品種的狗狗插畫(首頁、散步、日記都會用到),跟 `index.html` 放在同一層結構下即可,不要移動或改名
 - `README-deploy.md` — 就是這份說明

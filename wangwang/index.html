@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>汪汪日記</title>
-<meta name="description" content="以新北市蘆洲區為主,陪毛孩每日散步打卡、探索寵物友善地圖,認識附近狗友並掌握疫苗與寵物展情報的養狗人日記。">
+<meta name="description" content="以新北市蘆洲區為主,陪毛孩每日散步打卡、探索寵物友善地點、寫日記記錄毛孩日常的養狗人日記。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%BE%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
 <!-- Firebase (fill in firebaseConfig below — see README-deploy.md) -->
@@ -20,7 +20,7 @@
     messagingSenderId: "YOUR_SENDER_ID",
     appId: "YOUR_APP_ID"
   };
-  // TODO: paste your Google Maps Platform API key here — see README-deploy.md
+  // Google Maps Platform API key
   var GOOGLE_MAPS_API_KEY = "AIzaSyCUi0Z9xZZVKheM9lgEZDzpKO6_sZe-7IE";
 </script>
 <style>
@@ -276,6 +276,10 @@ a{color:inherit;}
 .tag-rat_poison{background:var(--alert-soft); color:var(--alert);}
 .tag-expo{background:var(--rust-soft); color:var(--rust);}
 .tag-notice{background:var(--leaf-soft); color:var(--leaf);}
+.tag-diary-health{background:var(--sky-soft); color:var(--sky);}
+.tag-diary-safety{background:var(--alert-soft); color:var(--alert);}
+.tag-diary-activity{background:var(--rust-soft); color:var(--rust);}
+.tag-diary-daily{background:var(--leaf-soft); color:var(--leaf);}
 .cat-restaurant{background:var(--rust-soft); color:var(--rust);}
 .cat-shop{background:var(--sky-soft); color:var(--sky);}
 .cat-attraction{background:var(--leaf-soft); color:var(--leaf);}
@@ -525,8 +529,8 @@ a{color:inherit;}
     <nav class="bottom-nav" id="bottomNav">
       <button class="nav-btn" data-nav="home"><span class="ic"></span><span>首頁</span></button>
       <button class="nav-btn" data-nav="walk"><span class="ic"></span><span>散步打卡</span></button>
-      <button class="nav-btn" data-nav="discover"><span class="ic"></span><span>地圖</span></button>
-      <button class="nav-btn" data-nav="community"><span class="ic"></span><span>情報</span></button>
+      <button class="nav-btn" data-nav="discover"><span class="ic"></span><span>地點</span></button>
+      <button class="nav-btn" data-nav="community"><span class="ic"></span><span>日記</span></button>
     </nav>
 
     <div class="toast" id="toast"></div>
@@ -672,14 +676,6 @@ if(profile && !profile.id){ profile.id = 'owner-'+Math.random().toString(36).sli
 const DISTRICTS = ['蘆洲區','三重區','新莊區','五股區','士林區','北投區'];
 const TAG_OPTIONS = ['晨型犬','夜貓子','愛玩球','怕打雷','過動兒','愛游泳','社牛','怕生','吃貨','愛乾淨','穩重','小心機','護家','愛睡覺','怕熱'];
 
-const SEED_POSTS = [
-  {id:'post-1', category:'vaccine', title:'狂犬病疫苗接種提醒', location:'蘆洲區', author:'小柴的拔拔', breed:'shiba', content:'蘆洲區公所本週六在蘆洲防汛公園設站,補打狂犬病疫苗只要100元,記得帶預防注射證明卡。', createdAt:'2026-09-11T09:00:00.000Z'},
-  {id:'post-2', category:'rat_poison', title:'堤外車道驚見滅鼠餌盒,請牽繩留意', location:'蘆洲區', author:'金爸', breed:'golden', content:'今早遛金金時發現得意堤外自行車道旁草叢有里辦公室新放的滅鼠餌盒,綠色小方塊,這幾天請避開該草叢並牽繩通過。', createdAt:'2026-09-11T02:30:00.000Z'},
-  {id:'post-3', category:'expo', title:'秋季寵物用品展開跑,同行門票65折', location:'三重區', author:'捲毛控', breed:'poodle', content:'重新橋下這週五到日有寵物用品展,現場試用飼料、洗澡體驗都有,帶毛孩同行出示本篇貼文結帳再折65折(店家限定攤位)。', createdAt:'2026-09-10T06:00:00.000Z'},
-  {id:'post-4', category:'notice', title:'社區揪團:每週三夜間慢走團', location:'蘆洲區', author:'幸運麻', breed:'mixed', content:'蘆洲防汛公園河堤集合,晚上7點,全程約3公里,適合怕熱的狗狗跟怕曬的人類,歡迎新朋友加入。', createdAt:'2026-09-09T11:15:00.000Z'},
-  {id:'post-5', category:'vaccine', title:'心絲蟲預防別忘記,夏末蚊子仍多', location:'新莊區', author:'短腿爸', breed:'corgi', content:'獸醫院提醒這幾個月仍是心絲蟲高風險期,每月一次的預防藥別漏吃,忘記吃記得回診跟醫生說。', createdAt:'2026-09-08T04:45:00.000Z'},
-  {id:'post-6', category:'rat_poison', title:'社區花圃疑似有毒餌,已通報里長', location:'蘆洲區', author:'鬥牛士', breed:'frenchie', content:'樓下花圃這兩天看到不明粉紅色顆粒,已經跟里長反應請人移除,大家遛彎先繞道。', createdAt:'2026-09-07T10:00:00.000Z'}
-];
 const SEED_PROFILES = [
   {id:'profile-1', dogName:'小柴', breed:'shiba', district:'蘆洲區', tags:['晨型犬','愛玩球','怕打雷'], bio:'每天六點半準時出門巡邏地盤,喜歡交朋友但看到吸塵器會逃跑。', ownerAlias:'柴語者', likes:12, createdAt:'2026-09-05T00:00:00.000Z'},
   {id:'profile-2', dogName:'阿鬥', breed:'frenchie', district:'三重區', tags:['夜貓子','怕熱','愛睡覺'], bio:'打呼比人還大聲,散步走十分鐘就想被抱,徵求同款懶散系毛孩。', ownerAlias:'鬥牛士', likes:8, createdAt:'2026-09-05T01:00:00.000Z'},
@@ -707,7 +703,7 @@ const PLACES = [
   {id:'p8', name:'蘆洲仁愛動物醫院', cat:'vet', district:'蘆洲區', tag:'內科、皮膚科專長', hours:'09:00–21:00', x:20,y:44, lat:25.0845,lng:121.4680}
 ];
 const CAT_LABEL = {restaurant:'寵物友善餐廳', shop:'寵物用品店', attraction:'景點 / 公園', vet:'獸醫院'};
-const POST_CAT_LABEL = {vaccine:'疫苗提醒', rat_poison:'鼠藥警示', expo:'展覽優惠', notice:'社區公告'};
+const DIARY_CAT_LABEL = {health:'健康提醒', safety:'安全紀錄', activity:'活動筆記', daily:'日常記事'};
 
 const ROUTES = [
   {id:'r1', name:'蘆堤河濱步道', km:3.0, area:'蘆洲區', level:'輕鬆', note:'沿淡水河堤外車道,平坦好走,適合每天例行散步。', sx:15,sy:68,ex:58,ey:52, lat1:25.0910,lng1:121.4640, lat2:25.0770,lng2:121.4700},
@@ -723,25 +719,26 @@ const ROUTES = [
 function routeById(id){ return ROUTES.find(r=>r.id===id) || null; }
 
 let state = {
-  posts: SEED_POSTS.slice(),
   profiles: SEED_PROFILES.slice(),
   checkins: SEED_CHECKINS.slice(),
   discoverCat: 'all',
   discoverQuery: '',
   friendsCat: 'all',
-  communityCat: 'all',
+  diaryCat: 'all',
   activeTab: 'home'
 };
 
 const likedSet = new Set(loadJSON('ww_liked_profiles', []));
 function saveLikedSet(){ saveJSON('ww_liked_profiles', Array.from(likedSet)); }
-const likedPostsSet = new Set(loadJSON('ww_liked_posts', []));
-function saveLikedPostsSet(){ saveJSON('ww_liked_posts', Array.from(likedPostsSet)); }
 let placeCheckins = loadJSON('ww_place_checkins', {date:todayStr(), ids:[]});
 if(placeCheckins.date !== todayStr()) placeCheckins = {date:todayStr(), ids:[]};
 function savePlaceCheckins(){ saveJSON('ww_place_checkins', placeCheckins); }
 
-let lastLikeDate = localStorage.getItem('ww_last_like_date') || '';
+/* 日記 — private, device-only notes (never shared to the db) */
+let diaryEntries = loadJSON('ww_diary_entries', []);
+function saveDiaryEntries(){ saveJSON('ww_diary_entries', diaryEntries); }
+
+let lastDiaryDate = localStorage.getItem('ww_last_diary_date') || '';
 let streak = parseInt(localStorage.getItem('ww_streak')||'0', 10);
 let lastStreakDate = localStorage.getItem('ww_last_streak_date') || '';
 
@@ -759,7 +756,6 @@ async function initDb(){
     db = firebase.firestore();
   }catch(e){ db = null; showConfigBanner('Firebase 連線失敗,目前資料只存在這台裝置。'); }
   if(!db) return;
-  subscribe('posts');
   subscribe('profiles');
   subscribe('checkins');
 }
@@ -819,13 +815,13 @@ function missionsStatus(){
   return {
     walk: ownCheckinsToday().length>0,
     checkin: placeCheckins.ids.length>0,
-    like: lastLikeDate===todayStr()
+    diary: lastDiaryDate===todayStr()
   };
 }
 function updateStreakIfComplete(){
   const m = missionsStatus();
   const t = todayStr();
-  if(m.walk && m.checkin && m.like && lastStreakDate!==t){
+  if(m.walk && m.checkin && m.diary && lastStreakDate!==t){
     const yest = new Date(Date.now()-86400000).toISOString().slice(0,10);
     streak = (lastStreakDate===yest) ? streak+1 : 1;
     lastStreakDate = t;
@@ -880,7 +876,7 @@ function renderHome(){
   const el = document.getElementById('screenHome');
   const b = breedById(profile.breed);
   const m = missionsStatus();
-  const doneCount = (m.walk?1:0)+(m.checkin?1:0)+(m.like?1:0);
+  const doneCount = (m.walk?1:0)+(m.checkin?1:0)+(m.diary?1:0);
   const weekKm = state.checkins.filter(c=>c.ownerId===profile.id && (Date.now()-new Date(c.createdAt).getTime())<7*86400000)
     .reduce((s,c)=>s+(c.distanceKm||0),0);
   const myBadges = state.checkins.filter(c=>c.ownerId===profile.id).length;
@@ -889,8 +885,8 @@ function renderHome(){
 
   const missions = [
     {key:'walk', title:'完成一次散步紀錄', desc:'到「散步打卡」開始今日路線', done:m.walk},
-    {key:'checkin', title:'打卡一個毛孩友善地點', desc:'到「地圖」探索附近店家', done:m.checkin},
-    {key:'like', title:'在社群情報按一個讚', desc:'到「情報」給鄰居的貼文加油', done:m.like}
+    {key:'checkin', title:'打卡一個毛孩友善地點', desc:'到「地點」探索附近店家', done:m.checkin},
+    {key:'diary', title:'在日記寫一篇筆記', desc:'到「日記」記錄今天的發現', done:m.diary}
   ];
 
   const feedItems = state.checkins.slice(0,5).map(c=>{
@@ -1310,69 +1306,57 @@ function openProfileForm(){
 }
 
 /* ============================================================
-   RENDER: COMMUNITY
+   RENDER: DIARY (private, device-only notes)
 ============================================================ */
 function renderCommunity(){
   const el = document.getElementById('screenCommunity');
-  const cats = [['all','全部'],['vaccine','疫苗提醒'],['rat_poison','鼠藥警示'],['expo','展覽優惠'],['notice','社區公告']];
-  const filtered = state.posts.filter(p=> state.communityCat==='all' || p.category===state.communityCat);
+  const cats = [['all','全部'],['health','健康提醒'],['safety','安全紀錄'],['activity','活動筆記'],['daily','日常記事']];
+  const filtered = diaryEntries.filter(d=> state.diaryCat==='all' || d.category===state.diaryCat);
   el.innerHTML =
-    '<div class="screen-title"><h1>社群情報</h1></div>'+
-    '<div class="screen-sub">疫苗提醒、危險警示、展覽優惠,狗友之間互相照應</div>'+
-    '<div class="chip-row">'+cats.map(function(c){ return '<button class="chip" data-ccat="'+c[0]+'" aria-pressed="'+(state.communityCat===c[0])+'">'+c[1]+'</button>'; }).join('')+'</div>'+
+    '<div class="screen-title"><h1>我的日記</h1></div>'+
+    '<div class="screen-sub">只有這台裝置看得到。可記錄提醒、發現與毛孩日常。</div>'+
+    '<div class="chip-row">'+cats.map(function(c){ return '<button class="chip" data-dcat="'+c[0]+'" aria-pressed="'+(state.diaryCat===c[0])+'">'+c[1]+'</button>'; }).join('')+'</div>'+
     '<div style="display:flex;flex-direction:column;gap:10px;">'+
-      (filtered.length? filtered.map(postCardHTML).join('') : '<div class="empty-note">目前沒有這個分類的情報</div>')+
+      (filtered.length? filtered.map(diaryCardHTML).join('') : '<div class="empty-note">還沒有筆記,按右下角的＋新增第一則。</div>')+
     '</div>';
-  el.querySelectorAll('[data-ccat]').forEach(function(b){ b.onclick=function(){ state.communityCat=b.dataset.ccat; renderCommunity(); }; });
-  el.querySelectorAll('[data-like-post]').forEach(function(b){ b.onclick=function(){ likePost(b.dataset.likePost); }; });
+  el.querySelectorAll('[data-dcat]').forEach(function(b){ b.onclick=function(){ state.diaryCat=b.dataset.dcat; renderCommunity(); }; });
+  el.querySelectorAll('[data-del-diary]').forEach(function(b){ b.onclick=function(){ deleteDiaryEntry(b.dataset.delDiary); }; });
 }
-function postCardHTML(p){
-  const liked = likedPostsSet.has(p.id);
+function diaryCardHTML(d){
   return '<div class="card post-card">'+
-    '<div class="p-top"><span class="tag tag-'+p.category+'">'+POST_CAT_LABEL[p.category]+'</span><span style="font-size:11px;color:var(--ink-faint);">'+p.location+'</span></div>'+
-    '<div class="p-title">'+esc(p.title)+'</div>'+
-    '<div class="p-body">'+esc(p.content)+'</div>'+
-    '<div class="p-foot">'+ICON_PIN_SM+'<span>'+esc(p.author)+' · '+breedById(p.breed).name+'</span><span style="margin-left:auto;">'+timeAgo(p.createdAt)+'</span>'+
-      '<button class="like-btn" style="margin-left:8px; padding:4px 10px;" data-like-post="'+p.id+'" aria-pressed="'+liked+'">'+ICON_HEART_SM+' '+(p.likes||0)+'</button>'+
-    '</div>'+
+    '<div class="p-top"><span class="tag tag-diary-'+d.category+'">'+DIARY_CAT_LABEL[d.category]+'</span>'+
+      '<button class="icon-btn" style="width:26px;height:26px;margin-left:auto;" data-del-diary="'+d.id+'" title="刪除">'+ICON_X+'</button></div>'+
+    '<div class="p-body">'+esc(d.text)+'</div>'+
+    '<div class="p-foot">'+ICON_PIN_SM+'<span>'+esc(profile.dogName)+'</span><span style="margin-left:auto;">'+timeAgo(d.createdAt)+'</span></div>'+
   '</div>';
-}
-function likePost(id){
-  if(likedPostsSet.has(id)) return;
-  const p = state.posts.find(x=>x.id===id);
-  if(!p) return;
-  likedPostsSet.add(id); saveLikedPostsSet();
-  p.likes = (p.likes||0)+1;
-  dbUpdate('posts', id, {likes:p.likes});
-  lastLikeDate = todayStr();
-  localStorage.setItem('ww_last_like_date', lastLikeDate);
-  updateStreakIfComplete();
-  toast('已按讚!今日任務 +1');
-  renderActive();
-  renderHeaderStreak();
 }
 function openPostForm(){
   showModal(
-    '<div class="modal-head"><h2>發布情報</h2><button class="icon-btn" id="mClose">'+ICON_X+'</button></div>'+
-    '<div class="field"><label>分類</label><select id="pCat"><option value="vaccine">疫苗提醒</option><option value="rat_poison">鼠藥警示</option><option value="expo">展覽優惠</option><option value="notice">社區公告</option></select></div>'+
-    '<div class="field"><label>地區</label><select id="pLoc">'+DISTRICTS.map(d=>'<option '+(d===profile.district?'selected':'')+'>'+d+'</option>').join('')+'</select></div>'+
-    '<div class="field"><label>標題</label><input type="text" id="pTitle" placeholder="例如:狂犬病疫苗補打站開放"></div>'+
-    '<div class="field"><label>內容</label><textarea id="pBody" rows="4" placeholder="說明時間、地點與細節,幫助更多狗友"></textarea></div>'+
-    '<button class="btn btn-primary btn-block" id="pSubmit">發布</button>'
+    '<div class="modal-head"><h2>新增日記</h2><button class="icon-btn" id="mClose">'+ICON_X+'</button></div>'+
+    '<div class="field"><label>分類</label><select id="pCat"><option value="health">健康提醒</option><option value="safety">安全紀錄</option><option value="activity">活動筆記</option><option value="daily">日常記事</option></select></div>'+
+    '<div class="field"><label>內容</label><textarea id="pBody" rows="4" placeholder="記下提醒、發現或今天的小插曲…"></textarea></div>'+
+    '<button class="btn btn-primary btn-block" id="pSubmit">儲存</button>'
   );
   document.getElementById('mClose').onclick = closeModal;
   document.getElementById('pSubmit').onclick = function(){
-    const title = document.getElementById('pTitle').value.trim();
-    const content = document.getElementById('pBody').value.trim();
-    if(!title || !content){ toast('請填寫標題與內容'); return; }
-    const id = 'post-'+profile.id+'-'+Date.now();
-    const rec = {id, category:document.getElementById('pCat').value, title, location:document.getElementById('pLoc').value, author:profile.ownerAlias, breed:profile.breed, content, createdAt:new Date().toISOString()};
-    state.posts.unshift(rec);
-    dbAdd('posts', id, rec);
-    toast('情報已發布,感謝分享!');
+    const text = document.getElementById('pBody').value.trim();
+    if(!text){ toast('請先寫點內容'); return; }
+    const id = 'diary-'+Date.now();
+    diaryEntries.unshift({id, category:document.getElementById('pCat').value, text, createdAt:new Date().toISOString()});
+    saveDiaryEntries();
+    lastDiaryDate = todayStr();
+    localStorage.setItem('ww_last_diary_date', lastDiaryDate);
+    updateStreakIfComplete();
+    toast('日記已儲存!今日任務 +1');
     closeModal();
     renderActive();
+    renderHeaderStreak();
   };
+}
+function deleteDiaryEntry(id){
+  diaryEntries = diaryEntries.filter(d=>d.id!==id);
+  saveDiaryEntries();
+  renderActive();
 }
 
 /* ============================================================
@@ -1401,7 +1385,7 @@ function setActiveTab(tab){
   if(fab) fab.remove();
   if(tab==='community'){
     const btn = document.createElement('button');
-    btn.className='fab'; btn.id='fabBtn'; btn.innerHTML = ICON_PLUS; btn.title='發布情報';
+    btn.className='fab'; btn.id='fabBtn'; btn.innerHTML = ICON_PLUS; btn.title='新增日記';
     btn.onclick = openPostForm;
     document.getElementById('appShell').appendChild(btn);
   }
