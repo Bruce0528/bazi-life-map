@@ -24,9 +24,9 @@
       <div class="result-choice-grid">
         <button type="button" id="land-chart"><span class="choice-icon" aria-hidden="true">☯</span><small>01 · 免費</small><b>命盤分析</b><span>五行、核心特質、人生面向與十年大運</span><em aria-hidden="true">↗</em></button>
         <button type="button" id="land-compatibility"><span class="choice-icon" aria-hidden="true">♡</span><small>02 · 免費</small><b>男女合盤分析</b><span>兩人命盤互動、生活偏好與相處建議</span><em aria-hidden="true">↗</em></button>
-        <button type="button" id="land-game"><span class="choice-icon" aria-hidden="true">✿</span><small>03 · 免費試玩</small><b>解鎖模擬人生卡牌遊戲</b><span>一隻命格獸、八個關卡、雙情境與破圈分數</span><em aria-hidden="true">↗</em></button>
-        <button type="button" id="land-palm"><span class="choice-icon" aria-hidden="true">☼</span><small>04 · 拍照體驗</small><b>手掌紋路觀察</b><span>男左手、女右手；照片只留在本機</span><em aria-hidden="true">↗</em></button>
-        <button type="button" id="land-question"><span class="choice-icon" aria-hidden="true">✧</span><small>05 · 情境推演</small><b>近期事件推演</b><span>寫下你正面對的事，結合命盤給方向建議</span><em aria-hidden="true">↗</em></button>
+        <button type="button" id="land-game"><span class="choice-icon" aria-hidden="true">✿</span><small>03 · 免費試玩</small><b>解鎖模擬人生遊戲</b><span>一隻命格獸、八個關卡、雙情境與破圈分數</span><em aria-hidden="true">↗</em></button>
+        <button type="button" id="land-palm"><span class="choice-icon" aria-hidden="true">☼</span><small>04 · 拍照體驗</small><b>掌紋觀察</b><span>男左手、女右手；照片只留在本機</span><em aria-hidden="true">↗</em></button>
+        <button type="button" id="land-question"><span class="choice-icon" aria-hidden="true">✧</span><small>05 · 情境推演</small><b>算卦</b><span>寫下你正面對的事，結合命盤給方向建議</span><em aria-hidden="true">↗</em></button>
       </div>
     </section>
     <section class="workbench" aria-labelledby="page-title">
@@ -97,9 +97,9 @@
         <div class="result-choice-grid">
           <button type="button" id="choose-chart"><span class="choice-icon" aria-hidden="true">☯</span><small>01 · 免費</small><b>命盤分析</b><span>五行、核心特質、人生面向與十年大運</span><em aria-hidden="true">↗</em></button>
           <button type="button" id="choose-compatibility"><span class="choice-icon" aria-hidden="true">♡</span><small>02 · 免費</small><b>男女合盤分析</b><span>兩人命盤互動、生活偏好與相處建議</span><em aria-hidden="true">↗</em></button>
-          <button type="button" id="choose-game"><span class="choice-icon" aria-hidden="true">✿</span><small>03 · 免費試玩</small><b>解鎖模擬人生卡牌遊戲</b><span>一隻命格獸、八個關卡、雙情境與破圈分數</span><em aria-hidden="true">↗</em></button>
-          <button type="button" id="choose-palm"><span class="choice-icon" aria-hidden="true">☼</span><small>04 · 拍照體驗</small><b>手掌紋路觀察</b><span>男左手、女右手；照片只留在本機</span><em aria-hidden="true">↗</em></button>
-          <button type="button" id="choose-question"><span class="choice-icon" aria-hidden="true">✧</span><small>05 · 情境推演</small><b>近期事件推演</b><span>寫下你正面對的事，結合命盤給方向建議</span><em aria-hidden="true">↗</em></button>
+          <button type="button" id="choose-game"><span class="choice-icon" aria-hidden="true">✿</span><small>03 · 免費試玩</small><b>解鎖模擬人生遊戲</b><span>一隻命格獸、八個關卡、雙情境與破圈分數</span><em aria-hidden="true">↗</em></button>
+          <button type="button" id="choose-palm"><span class="choice-icon" aria-hidden="true">☼</span><small>04 · 拍照體驗</small><b>掌紋觀察</b><span>男左手、女右手；照片只留在本機</span><em aria-hidden="true">↗</em></button>
+          <button type="button" id="choose-question"><span class="choice-icon" aria-hidden="true">✧</span><small>05 · 情境推演</small><b>算卦</b><span>寫下你正面對的事，結合命盤給方向建議</span><em aria-hidden="true">↗</em></button>
         </div>
       </section>
       <div class="chart-view" id="chart-view" hidden>
@@ -176,8 +176,12 @@
       </div>
       <div class="palm-view" id="palm-view" hidden>
         <button type="button" class="view-back" id="palm-back">← 返回五個選項</button>
-        <section class="palm-section"><p class="eyebrow">PALM PHOTO · LOCAL ONLY</p><h3>手掌紋路觀察</h3><p>請拍男生左手掌與女生右手掌。照片只在本機預覽、不上傳；目前沒有可信的線條辨識或「網路大數據」模型，因此請自行觀察紋路清晰度，以下只提供文化娛樂性解讀。</p>
-          <div class="palm-grid"><div class="palm-slot"><b>男生 · 左手掌</b><label>拍照或選照片<input id="palm-male" type="file" accept="image/*" capture="environment"></label><button type="button" class="palm-camera" data-side="male">開啟相機</button><video id="palm-male-video" autoplay playsinline muted hidden></video><button type="button" class="palm-snap" data-side="male" hidden>拍下左手掌</button><img id="palm-male-preview" alt="男生左手掌照片預覽" hidden></div><div class="palm-slot"><b>女生 · 右手掌</b><label>拍照或選照片<input id="palm-female" type="file" accept="image/*" capture="environment"></label><button type="button" class="palm-camera" data-side="female">開啟相機</button><video id="palm-female-video" autoplay playsinline muted hidden></video><button type="button" class="palm-snap" data-side="female" hidden>拍下右手掌</button><img id="palm-female-preview" alt="女生右手掌照片預覽" hidden></div></div><p id="palm-camera-status" role="status"></p>
+        <section class="palm-section"><p class="eyebrow">PALM PHOTO · LOCAL ONLY</p><h3>掌紋觀察</h3><p>先選性別與要觀察的手掌，再拍照或上傳照片。照片只在本機預覽、不上傳；目前沒有可信的線條辨識或「網路大數據」模型，因此請自行觀察紋路清晰度，以下只提供文化娛樂性解讀。</p>
+          <div class="palm-setup">
+            <label>性別<select id="palm-gender"><option value="male">男生</option><option value="female">女生</option></select></label>
+            <label>觀察哪一手<select id="palm-side"><option value="left">左手掌</option><option value="right">右手掌</option></select></label>
+          </div>
+          <div class="palm-grid"><div class="palm-slot"><b id="palm-slot-label">男生 · 左手掌</b><label>拍照或選照片<input id="palm-photo" type="file" accept="image/*" capture="environment"></label><button type="button" class="palm-camera" id="palm-camera-btn">開啟相機</button><video id="palm-video" autoplay playsinline muted hidden></video><button type="button" class="palm-snap" id="palm-snap-btn" hidden>拍下手掌</button><img id="palm-preview" alt="手掌照片預覽" hidden></div></div><p id="palm-camera-status" role="status"></p>
           <div class="palm-observe"><h4>對照照片，選擇你看到的紋路</h4><p>愛情線在手指下方、事業線多在掌心縱向、生命線沿拇指根部彎曲。生命線的長短不代表壽命。</p><div id="palm-questions"></div><button type="button" id="palm-analyze">產生紋路觀察筆記</button></div><div id="palm-result" hidden aria-live="polite"></div>
         </section>
       </div>
