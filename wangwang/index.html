@@ -7,11 +7,9 @@
 <meta name="description" content="以新北市蘆洲區為主,陪毛孩每日散步打卡、探索寵物友善地點、寫日記記錄毛孩日常的養狗人日記。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%BE%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
-<!-- Firebase (fill in firebaseConfig below — see README-deploy.md) -->
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script>
-  // TODO: paste your Firebase project's web config here (Firebase console → Project settings → Your apps)
   var firebaseConfig = {
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -20,7 +18,6 @@
     messagingSenderId: "YOUR_SENDER_ID",
     appId: "YOUR_APP_ID"
   };
-  // Google Maps Platform API key
   var GOOGLE_MAPS_API_KEY = "AIzaSyCUi0Z9xZZVKheM9lgEZDzpKO6_sZe-7IE";
 </script>
 <style>
@@ -268,6 +265,8 @@ a{color:inherit;}
 }
 .chip[aria-pressed="true"]{background:var(--accent-deep); border-color:var(--accent-deep); color:#FFFBF3;}
 .chip:disabled{opacity:.45; cursor:default;}
+.chip-icon{width:14px; height:14px; display:flex; flex-shrink:0;}
+.chip-icon svg{width:100%; height:100%;}
 .tag{
   display:inline-flex; align-items:center; gap:4px; border-radius:999px;
   padding:3px 10px; font-size:11px; font-weight:700; letter-spacing:.02em;
@@ -358,9 +357,27 @@ a{color:inherit;}
 .greet-card p{margin:0; font-size:12.5px; color:var(--ink-soft);}
 
 .stat-row{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
-.stat-tile{padding:var(--sp-3) var(--sp-2); text-align:center;}
+.stat-tile{padding:var(--sp-3) var(--sp-2); text-align:center; display:flex; flex-direction:column; align-items:center; gap:4px;}
+.stat-tile .stat-icon{width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:2px;}
+.stat-tile .stat-icon svg{width:18px; height:18px;}
+.stat-tile .stat-icon.rust{background:var(--rust-soft); color:var(--rust);}
+.stat-tile .stat-icon.leaf{background:var(--leaf-soft); color:var(--leaf);}
+.stat-tile .stat-icon.accent{background:var(--sky-soft); color:var(--sky);}
 .stat-tile .num{font-family:var(--font-mono); font-weight:700; font-size:20px; color:var(--accent-deep);}
 .stat-tile .lbl{font-size:10.5px; color:var(--ink-faint); margin-top:2px;}
+.data-card{padding:var(--sp-4); display:flex; gap:var(--sp-3);}
+.data-card .icon-wrap{width:44px; height:44px; border-radius:12px; background:var(--leaf-soft); color:var(--leaf); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.data-card .icon-wrap svg{width:22px; height:22px;}
+.data-card .d-body{flex:1;}
+.data-card .d-title{font-weight:700; font-size:13.5px; margin-bottom:2px;}
+.data-card .d-desc{font-size:11.5px; color:var(--ink-faint); margin-bottom:10px;}
+.data-card .d-actions{display:flex; gap:8px;}
+.bell-btn{
+  width:34px; height:34px; border-radius:50%; border:1px solid var(--border);
+  background:var(--surface-2); display:flex; align-items:center; justify-content:center; cursor:pointer;
+  color:var(--ink-soft); margin-right:6px;
+}
+.bell-btn svg{width:16px; height:16px;}
 
 .mission-list{display:flex; flex-direction:column; gap:8px;}
 .mission-item{
@@ -508,6 +525,7 @@ a{color:inherit;}
         <span class="tagline">DOG OWNER'S DIARY</span>
       </div>
       <div class="header-spacer"></div>
+      <button class="bell-btn" id="bellBtn" title="通知" aria-label="通知"></button>
       <div class="streak-pill" id="streakPill" title="連續完成任務天數"></div>
     </header>
 
@@ -565,6 +583,8 @@ function iconMarkup(name, cls){
   return svgWrap(NAV_ICONS[name]||'', '0 0 24 24').replace('<svg ', '<svg class="'+(cls||'')+'" ');
 }
 function catIcon(cat){ return svgWrap(CAT_ICONS[cat]||CAT_ICONS.attraction); }
+const ICON_ALL = svgWrap('<circle cx="6" cy="6" r="3" fill="currentColor"/><circle cx="18" cy="6" r="3" fill="currentColor"/><circle cx="6" cy="18" r="3" fill="currentColor"/><circle cx="18" cy="18" r="3" fill="currentColor"/>');
+function catChipIcon(cat){ return '<span class="chip-icon">'+(cat==='all'? ICON_ALL : catIcon(cat))+'</span>'; }
 const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6"/></svg>';
 const ICON_HEART_SM = svgWrap('<path d="M12 20.2s-7.6-4.6-9.9-9.3A5.6 5.6 0 0 1 12 5.3a5.6 5.6 0 0 1 9.9 5.6c-2.3 4.7-9.9 9.3-9.9 9.3Z" fill="none" stroke="currentColor" stroke-width="2"/>');
 const ICON_INFO = svgWrap('<circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="8" r="1" fill="currentColor"/>');
@@ -574,6 +594,11 @@ const ICON_X = svgWrap('<path d="M6 6l12 12M18 6 6 18" stroke="currentColor" str
 const ICON_PIN_SM = svgWrap('<path d="M10 1.5C6 1.5 3 4.6 3 8.3 3 12.9 10 18.5 10 18.5s7-5.6 7-10.2c0-3.7-3-6.8-7-6.8Z" fill="currentColor"/><circle cx="10" cy="8.1" r="2.6" fill="var(--surface)"/>', '0 0 20 20');
 const ICON_MAP_EXT = svgWrap('<path d="M9 6H5.5A1.5 1.5 0 0 0 4 7.5v11A1.5 1.5 0 0 0 5.5 20h11a1.5 1.5 0 0 0 1.5-1.5V15M14 4h6v6M20 4 11 13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>');
 const ICON_FLAME = svgWrap('<path d="M12 21c4 0 6.5-2.6 6.5-6.2 0-2.9-1.7-4.7-2.6-6.6-.5 1.6-1.4 2.4-2.1 2-1-.6-.6-2.6-1.5-4.7C11 3.8 8.5 5.8 8.5 9c0 1-.5 1.6-1.1 2.2C6.4 12.2 5.5 13.4 5.5 15c0 3.6 2.5 6 6.5 6Z" fill="currentColor"/>');
+const ICON_ROUTE = svgWrap('<circle cx="6" cy="6.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="18" cy="17.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.4 7.5 Q18 10 18 14.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="2.2 2.2" stroke-linecap="round"/>');
+const ICON_FLOWER = svgWrap('<circle cx="12" cy="7.2" r="3" fill="currentColor"/><circle cx="16.8" cy="12" r="3" fill="currentColor"/><circle cx="12" cy="16.8" r="3" fill="currentColor"/><circle cx="7.2" cy="12" r="3" fill="currentColor"/><circle cx="12" cy="12" r="2.6" fill="var(--surface)"/>');
+const ICON_BELL = svgWrap('<path d="M6 10.5a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 14.5 6 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 19a2.2 2.2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>');
+const ICON_DOWNLOAD = svgWrap('<path d="M12 4v11M7.5 11 12 15.5 16.5 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 19h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>');
+const ICON_UPLOAD = svgWrap('<path d="M12 15V4M7.5 8 12 3.5 16.5 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 19h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>');
 
 /* ============================================================
    BREED ART  — flat, geometric mascot icons
@@ -769,7 +794,7 @@ function showConfigBanner(text){
 /* ============================================================
    GOOGLE MAPS — lazily loaded only once a real API key is set
 ============================================================ */
-let gmapsState = 'idle'; // idle | loading | ready | unavailable
+let gmapsState = 'idle';
 function loadGoogleMaps(cb){
   if(window.google && window.google.maps){ gmapsState='ready'; cb(window.google); return; }
   if(!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY'){ gmapsState='unavailable'; cb(null); return; }
@@ -902,9 +927,16 @@ function renderHome(){
     '<div class="card greet-card"><div class="icon-wrap">'+dogSVG(profile.breed)+'</div>'+
       '<div><h2>'+esc(profile.dogName)+' 在等你出門囉</h2><p>今天已完成 '+doneCount+' / 3 項任務,保持每日習慣累積徽章!</p></div></div>'+
     '<div class="stat-row">'+
-      '<div class="card stat-tile"><div class="num">'+streak+'</div><div class="lbl">連續天數</div></div>'+
-      '<div class="card stat-tile"><div class="num">'+weekKm.toFixed(1)+'</div><div class="lbl">本週公里</div></div>'+
-      '<div class="card stat-tile"><div class="num">'+myBadges+'</div><div class="lbl">花朵徽章</div></div>'+
+      '<div class="card stat-tile"><div class="stat-icon rust">'+ICON_FLAME+'</div><div class="num">'+streak+'</div><div class="lbl">連續天數</div></div>'+
+      '<div class="card stat-tile"><div class="stat-icon accent">'+ICON_ROUTE+'</div><div class="num">'+weekKm.toFixed(1)+'</div><div class="lbl">本週公里</div></div>'+
+      '<div class="card stat-tile"><div class="stat-icon leaf">'+ICON_FLOWER+'</div><div class="num">'+myBadges+'</div><div class="lbl">花朵徽章</div></div>'+
+    '</div>'+
+    '<div class="card data-card">'+
+      '<div class="icon-wrap">'+ICON_DOWNLOAD+'</div>'+
+      '<div class="d-body"><div class="d-title">我的資料</div><div class="d-desc">紀錄只存在這個瀏覽器。建議定期匯出備份。</div>'+
+        '<div class="d-actions"><button class="btn btn-outline btn-sm" id="btnExportData">'+ICON_DOWNLOAD+' 匯出備份</button>'+
+        '<button class="btn btn-ghost btn-sm" id="btnImportData">'+ICON_UPLOAD+' 匯入備份</button>'+
+        '<input type="file" id="importFile" accept="application/json" hidden></div></div>'+
     '</div>'+
     '<div><div class="section-label" style="margin-bottom:8px;">今日任務</div>'+
       '<div class="progress-bar" style="margin-bottom:10px;"><div style="width:'+(doneCount/3*100)+'%"></div></div>'+
@@ -914,6 +946,64 @@ function renderHome(){
       }).join('')+
       '</div></div>'+
     '<div><div class="section-label" style="margin-bottom:8px;">社群散步動態</div><div style="display:flex;flex-direction:column;gap:8px;">'+feedItems+'</div></div>';
+
+  document.getElementById('btnExportData').onclick = exportBackup;
+  document.getElementById('btnImportData').onclick = function(){ document.getElementById('importFile').click(); };
+  document.getElementById('importFile').onchange = function(e){ if(e.target.files[0]) importBackup(e.target.files[0]); };
+}
+function exportBackup(){
+  const data = {
+    exportedAt: new Date().toISOString(),
+    profile: profile,
+    diaryEntries: diaryEntries,
+    checkins: state.checkins.filter(c=>c.ownerId===profile.id),
+    likedProfiles: Array.from(likedSet),
+    streak: streak,
+    lastStreakDate: lastStreakDate,
+    lastDiaryDate: lastDiaryDate
+  };
+  const filename = '汪汪日記備份-'+todayStr()+'.json';
+  const jsonStr = JSON.stringify(data, null, 2);
+  function fallbackDownload(){
+    try{
+      const blob = new Blob([jsonStr], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+      toast('已匯出備份');
+    }catch(e){ toast('匯出失敗'); }
+  }
+  if(typeof window.claude !== 'undefined' && window.claude.use){
+    window.claude.use('downloads').then(function(downloads){
+      if(downloads){ downloads.save({filename:filename, data:jsonStr}).then(function(){ toast('已匯出備份'); }).catch(fallbackDownload); }
+      else { fallbackDownload(); }
+    }).catch(fallbackDownload);
+  } else {
+    fallbackDownload();
+  }
+}
+function importBackup(file){
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const data = JSON.parse(e.target.result);
+      if(Array.isArray(data.diaryEntries)){ diaryEntries = data.diaryEntries; saveDiaryEntries(); }
+      if(Array.isArray(data.checkins)){
+        const ids = new Set(state.checkins.map(c=>c.id));
+        data.checkins.forEach(function(c){ if(!ids.has(c.id)){ state.checkins.unshift(c); ids.add(c.id); } });
+      }
+      if(Array.isArray(data.likedProfiles)){ data.likedProfiles.forEach(function(id){ likedSet.add(id); }); saveLikedSet(); }
+      if(typeof data.streak === 'number'){ streak = data.streak; localStorage.setItem('ww_streak', String(streak)); }
+      if(data.lastStreakDate){ lastStreakDate = data.lastStreakDate; localStorage.setItem('ww_last_streak_date', lastStreakDate); }
+      if(data.lastDiaryDate){ lastDiaryDate = data.lastDiaryDate; localStorage.setItem('ww_last_diary_date', lastDiaryDate); }
+      toast('備份已匯入!');
+      renderActive();
+      renderHeaderStreak();
+    }catch(err){ toast('檔案格式錯誤,匯入失敗'); }
+  };
+  reader.readAsText(file);
 }
 
 /* ============================================================
@@ -1160,7 +1250,7 @@ function renderDiscover(){
     '<div class="screen-title"><h1>地圖探索</h1></div>'+
     '<div class="map-note" id="discoverMapNote">'+ICON_INFO+'<span>示意插畫地圖(尚未設定 Google Maps API 金鑰)。設定方法見 README-deploy.md;點選店卡可先用「在 Google 地圖開啟」查看實際地圖。</span></div>'+
     '<div class="search-box">'+ICON_SEARCH+'<input type="text" placeholder="搜尋店家、地點或標籤" id="discoverSearch" value="'+esc(state.discoverQuery)+'"></div>'+
-    '<div class="chip-row">'+cats.map(function(c){ return '<button class="chip" data-cat="'+c[0]+'" aria-pressed="'+(state.discoverCat===c[0])+'">'+c[1]+'</button>'; }).join('')+'</div>'+
+    '<div class="chip-row">'+cats.map(function(c){ return '<button class="chip" data-cat="'+c[0]+'" aria-pressed="'+(state.discoverCat===c[0])+'">'+catChipIcon(c[0])+c[1]+'</button>'; }).join('')+'</div>'+
     '<div class="map-frame card" id="discoverMapFrame">'+mapBackgroundSVG()+pins+'</div>'+
     '<div style="display:flex;flex-direction:column;gap:10px;">'+
       (filtered.length? filtered.map(placeCardHTML).join('') : '<div class="empty-note">找不到符合的地點</div>')+
@@ -1374,6 +1464,22 @@ document.getElementById('modalBackdrop').addEventListener('click', function(e){ 
 ============================================================ */
 function renderHeaderStreak(){
   document.getElementById('streakPill').innerHTML = ICON_FLAME + ' ' + streak;
+  const bell = document.getElementById('bellBtn');
+  if(bell && !bell.innerHTML){ bell.innerHTML = ICON_BELL; bell.onclick = openNotifications; }
+}
+function openNotifications(){
+  const m = missionsStatus();
+  const pending = [];
+  if(!m.walk) pending.push('還沒開始今天的散步,到「散步打卡」出發吧!');
+  if(!m.checkin) pending.push('還沒打卡任何地點,到「地點」探索附近店家。');
+  if(!m.diary) pending.push('今天還沒寫日記,記錄一下毛孩的日常吧。');
+  showModal(
+    '<div class="modal-head"><h2>通知</h2><button class="icon-btn" id="mClose">'+ICON_X+'</button></div>'+
+    (pending.length
+      ? '<div style="display:flex;flex-direction:column;gap:8px;">'+pending.map(function(t){ return '<div class="card map-note">'+ICON_INFO+'<span>'+t+'</span></div>'; }).join('')+'</div>'
+      : '<div class="empty-note">今天的任務都完成了,棒!沒有新通知。</div>')
+  );
+  document.getElementById('mClose').onclick = closeModal;
 }
 function setActiveTab(tab){
   state.activeTab = tab;
