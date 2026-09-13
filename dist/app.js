@@ -426,7 +426,8 @@ function renderLifeGameStats(stats){
 function renderLifeGameStage(){
  const st=lifeGameState,beast=st.reading.beastMatch.primary.profile,stage=BaziLifeGame.stages[st.round];
  fill('#lifegame-progress','<b>第 '+(st.round+1)+'／8 關 · '+stage.name+'</b><span>目前綜合 '+BaziLifeGame.score(st.stats)+'／100</span>');
- fill('#lifegame-board',BaziLifeGame.stages.map(function(item,i){return'<div class="lg-space '+(i===st.position?'is-current':'')+'"><span class="lg-space-icon" aria-hidden="true">'+(i<st.round?'✿':'✦')+'</span><small>'+(i+1)+' · '+item.name+'</small>'+(i===st.position?'<b aria-label="目前位置">'+beast.icon+'</b>':'')+'</div>'}).join(''));
+ fill('#lifegame-board',BaziLifeGame.stages.map(function(item,i){const done=i<st.round,current=i===st.position;return'<div class="lg-space '+(current?'is-current':done?'is-done':'is-future')+'"><span class="lg-space-icon" aria-hidden="true">'+(done?'✿':'✦')+'</span><small>'+(i+1)+' · '+item.name+'</small>'+(current?'<b aria-label="目前位置">'+beast.icon+'</b>':'')+'</div>'}).join(''));
+ document.querySelector('#lifegame-board').style.setProperty('--lg-progress',(st.round/BaziLifeGame.stages.length*100)+'%');
  renderLifeGameStats(st.stats);
  if(st.phase==='roll'){
   fill('#lifegame-stage','<div class="lg-station"><span class="lg-beast-avatar" aria-hidden="true">'+beast.icon+'</span><div><small>命格獸 '+beast.name+' 陪你走這一關</small><b>'+stage.name+'</b><p>擲骰前進後，從兩張情境卡中挑一張。你會看到每張卡對四項數值的不同取捨。</p></div></div><div class="lg-dice-panel"><span class="lg-die" aria-hidden="true">⚄</span><div><b>準備擲骰</b><small>骰點 1–6，落點顯示在上方八格路線</small></div><button type="button" id="lifegame-roll">擲骰前進 →</button></div>');

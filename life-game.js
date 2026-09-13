@@ -28,7 +28,7 @@
    {title:'完成代表作',story:'只剩最後一段時間，你要把一個重要作品真正交出去。',focus:'achievement',delta:{energy:-3,relations:6,wealth:6,achievement:16},action:'訂公開日期，完成最小可交付版本'},
    {title:'和重要的人分享成果',story:'回頭看這段旅程，你想把時間與成果留給誰？',focus:'relations',delta:{energy:6,relations:16,wealth:5,achievement:7},action:'安排一次不談績效的真誠對話'}]}
  ];
- const affinity={tiger:'achievement',wolf:'achievement',fox:'wealth',eagle:'energy',bear:'energy',leopard:'achievement',rabbit:'relations',turtle:'wealth'};
+ const affinity={snowleopard:'achievement',woodbird:'relations',seaturtle:'wealth',firetiger:'energy',stonedog:'achievement',moonwolf:'energy',lightrabbit:'relations',panda:'wealth'};
  function clamp(n){return Math.max(0,Math.min(100,Math.round(n)))}
  function initialStats(c){return{energy:clamp(28+c.stability*.25),relations:clamp(28+c.social*.25),wealth:clamp(28+c.wealth*.25),achievement:clamp(28+c.action*.25)}}
  function create(reading){return{reading:reading,round:0,position:0,stats:initialStats(reading.capabilities),history:[],phase:'roll',die:null}}

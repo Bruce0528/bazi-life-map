@@ -221,12 +221,23 @@ body { background: #f7faf2; color: var(--ink); }
 .lg-rule { padding: 14px 18px; border: 1px solid #d9e8cf; border-radius: 12px; background: #f5faef; color: #42664b; font-size: .85rem; line-height: 1.65; }
 .lg-progress { display: flex; justify-content: space-between; gap: 12px; margin-top: 20px; color: #356146; font-size: .9rem; }
 .lg-progress b { font-size: 1.05rem; }
-.lg-board { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 8px; margin: 16px 0 20px; }
-.lg-space { min-height: 66px; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 8px 3px; border: 1px solid #d5e5cf; border-radius: 12px; background: #fbfdf7; color: #628266; position: relative; }
-.lg-space.is-current { border: 2px solid #e3b953; background: #fff8e3; box-shadow: 0 4px 14px rgba(184,147,57,.18); color: #3c6744; }
+.lg-board { position: relative; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 8px; margin: 22px 0 24px; padding: 16px 6px 8px; }
+.lg-board::before { content: ''; position: absolute; left: 6px; right: 6px; bottom: 8px; height: 4px; border-radius: 4px; background: linear-gradient(to right, #7fb37f 0%, #7fb37f var(--lg-progress,0%), #dde8d6 var(--lg-progress,0%), #dde8d6 100%); z-index: 0; }
+.lg-space { position: relative; z-index: 1; flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; padding: 8px 6px; border: 1px solid #d5e5cf; border-radius: 14px 14px 8px 8px; background: #fbfdf7; color: #628266; transition: transform .2s ease; }
+.lg-space:nth-child(1) { width: 56px; min-height: 50px; }
+.lg-space:nth-child(2) { width: 60px; min-height: 54px; }
+.lg-space:nth-child(3) { width: 64px; min-height: 58px; }
+.lg-space:nth-child(4) { width: 68px; min-height: 62px; }
+.lg-space:nth-child(5) { width: 72px; min-height: 66px; }
+.lg-space:nth-child(6) { width: 76px; min-height: 70px; }
+.lg-space:nth-child(7) { width: 80px; min-height: 74px; }
+.lg-space:nth-child(8) { width: 86px; min-height: 80px; }
+.lg-space.is-done { background: #eaf6e4; border-color: #a9d19f; color: #3c6744; }
+.lg-space.is-future { opacity: .62; border-style: dashed; }
+.lg-space.is-current { border: 2px solid #e3b953; background: #fff8e3; box-shadow: 0 4px 14px rgba(184,147,57,.18); color: #3c6744; transform: translateY(-5px); }
 .lg-space-icon { font-size: 1.2rem; }
-.lg-space small { font-size: .8rem; font-weight: 700; }
-.lg-space b { position: absolute; top: -11px; right: -5px; display: grid; place-items: center; width: 23px; height: 23px; border-radius: 50%; background: #e7b956; color: #294832; font-size: .7rem; box-shadow: 0 2px 6px #c4d6b9; }
+.lg-space small { font-size: .72rem; font-weight: 700; text-align: center; line-height: 1.25; }
+.lg-space b { position: absolute; top: -11px; right: -5px; display: grid; place-items: center; width: 23px; height: 23px; border-radius: 50%; background: #e7b956; color: #294832; font-size: .7rem; box-shadow: 0 2px 6px #c4d6b9; z-index: 2; }
 .lg-dice-panel,.lg-draw-head { display: flex; align-items: center; gap: 14px; border-top: 1px solid #d4e3cf; padding-top: 18px; }
 .lg-die { display: grid; place-items: center; flex: none; width: 64px; height: 64px; border-radius: 14px; background: #fffdf5; color: #557e55; font-size: 3.4rem; line-height: 1; box-shadow: 0 5px 13px rgba(64,107,67,.1); }
 .lg-dice-panel div,.lg-draw-head div { flex: 1; }

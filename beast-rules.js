@@ -2,14 +2,14 @@
 (function(root){
  'use strict';
  const profiles=[
-  {id:'tiger',name:'虎',icon:'🐯',role:'行動型',gift:'敢開局、能帶人往前',shadow:'衝太快時忽略成本',talents:['決斷','開創','帶領'],accent:'#db8754',weights:{火:.34,木:.12,比劫:.24,食傷:.12},strong:8},
-  {id:'wolf',name:'狼',icon:'🐺',role:'目標型',gift:'能把遠方的目標拆成路線',shadow:'容易把難題一個人扛',talents:['企圖心','規劃','承擔'],accent:'#827eae',weights:{火:.13,金:.16,官殺:.30,財星:.22},strong:4},
-  {id:'fox',name:'狐',icon:'🦊',role:'策略型',gift:'觀察後找到更省力的路',shadow:'算得太久會錯過試驗時機',talents:['變通','談判','判讀'],accent:'#db9b5f',weights:{水:.30,木:.08,財星:.20,食傷:.16},weak:5},
-  {id:'eagle',name:'鷹',icon:'🦅',role:'洞察型',gift:'看見長線與隱藏的連結',shadow:'可能等到全部想清楚才行動',talents:['洞察','專注','遠見'],accent:'#7e9eab',weights:{水:.24,金:.22,印星:.27,官殺:.07}},
-  {id:'bear',name:'熊',icon:'🐻',role:'穩定型',gift:'把動盪中的事情接住',shadow:'安全感被挑戰時會延後改變',talents:['耐力','照顧','落地'],accent:'#b39a72',weights:{土:.35,印星:.18,官殺:.13},balanced:8},
-  {id:'leopard',name:'豹',icon:'🐆',role:'自由型',gift:'能快速切換路線並獨立完成',shadow:'太多束縛時容易直接離開',talents:['爆發','獨立','應變'],accent:'#bd9c79',weights:{火:.20,金:.20,食傷:.23,比劫:.18},strong:4},
-  {id:'rabbit',name:'兔',icon:'🐇',role:'共感型',gift:'理解人心並建立安心的連結',shadow:'太在乎感受時難以說不',talents:['共感','協調','傾聽'],accent:'#c69bb0',weights:{木:.26,水:.10,印星:.24,食傷:.12},weak:5},
-  {id:'turtle',name:'龜',icon:'🐢',role:'累積型',gift:'用耐心換取長期複利',shadow:'可能把準備當成唯一的安全感',talents:['累積','節奏','守成'],accent:'#78a39a',weights:{土:.23,水:.22,財星:.18,印星:.17},balanced:6}
+  {id:'snowleopard',name:'雪豹',icon:'🐆',role:'決斷型',gift:'看清局勢後，能果斷做出決定並收尾',shadow:'原則守得太緊時，會少一點彈性',talents:['決斷','秩序','原則'],accent:'#8fa8c2',weights:{金:.34,木:.06,官殺:.22,比劫:.08},strong:4},
+  {id:'woodbird',name:'木鳥',icon:'🐦',role:'成長型',gift:'順著自己的節奏成長，也願意照顧身邊的人',shadow:'心太軟時，容易被別人的情緒拖著走',talents:['溫暖','成長','仁慈'],accent:'#7fae5e',weights:{木:.34,水:.06,印星:.20,食傷:.10}},
+  {id:'seaturtle',name:'海龜',icon:'🐢',role:'包容型',gift:'想得長遠，也能包容不同的意見',shadow:'太求周全時，行動會慢下來',talents:['聰明','流動','包容'],accent:'#4f97b0',weights:{水:.34,土:.08,印星:.18,財星:.10},balanced:5},
+  {id:'firetiger',name:'火虎',icon:'🐯',role:'行動型',gift:'熱情能帶動場面，也敢直接動手創造',shadow:'衝太快時，容易忽略細節',talents:['熱情','行動','創造'],accent:'#d9633f',weights:{火:.34,木:.08,食傷:.20,比劫:.10},strong:6},
+  {id:'stonedog',name:'石狗',icon:'🐕',role:'踏實型',gift:'穩定可靠，讓人放心把事情交給你',shadow:'變動來得太快時，需要多一點時間適應',talents:['穩定','踏實','信賴'],accent:'#b3946a',weights:{土:.34,金:.06,印星:.16,官殺:.10},balanced:6},
+  {id:'moonwolf',name:'月狼',icon:'🐺',role:'內斂型',gift:'安靜觀察，想得比說得更深更遠',shadow:'心事太多時，不容易主動開口求助',talents:['敏銳','直覺','深思'],accent:'#5f6699',weights:{水:.20,木:.08,印星:.22,食傷:.06},weak:8},
+  {id:'lightrabbit',name:'光兔',icon:'🐇',role:'領導型',gift:'外放的能量能感染身邊的人一起往前',shadow:'太急著表現時，容易忽略別人的步調',talents:['開朗','領導','感染力'],accent:'#e0ac3a',weights:{火:.18,金:.10,比劫:.20,官殺:.14},strong:8},
+  {id:'panda',name:'熊貓',icon:'🐼',role:'調和型',gift:'能在不同立場間找到平衡與共識',shadow:'太想面面俱到時，決定會拖比較久',talents:['平衡','整合','共生'],accent:'#4f8a63',weights:{土:.20,水:.10,印星:.16,財星:.10},balanced:8}
  ];
  const elements=['木','火','土','金','水'],gods=['比劫','食傷','財星','官殺','印星'];
  function clamp(v){return Math.min(100,Math.max(0,Math.round(v)))}
