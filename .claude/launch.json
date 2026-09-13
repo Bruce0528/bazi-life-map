@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "bazi-preview",
+      "runtimeExecutable": "powershell.exe",
+      "runtimeArgs": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\bruce.li\\AppData\\Local\\Temp\\claude\\C--Users-bruce-li-AppData-Roaming-Claude-scratch-workspaces-f819611f-757a-4d3c-a53b-4fad4e26eb48-3a457f6e-ee0f-4fe0-9ac2-721d3af17b38-scratch-2026-09-12-d594a3\\ec5d6ac6-1858-4593-9576-0cf127c86718\\scratchpad\\serve.ps1"
+      ],
+      "port": 8791
+    }
+  ]
+}

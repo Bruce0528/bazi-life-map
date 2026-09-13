@@ -42,7 +42,7 @@ function openResultView(view){
  }
  window.scrollTo({top:0,behavior:'smooth'});
 }
-function showReport(input){const result=buildReading(input);currentReading=result;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;document.querySelector('#report').hidden=false;openResultView('chart');return result}
+function showReport(input){const result=buildReading(input);currentReading=result;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;document.querySelector('#report').hidden=false;if(result.numericGua&&result.numericGua.mainGua){const guaCircle=document.querySelector('#main-gua-circle');document.querySelector('#gua-number').textContent=result.numericGua.mainGua.num;document.querySelector('#gua-label').textContent=result.numericGua.mainGua.name;guaCircle.hidden=false}openResultView('chart');return result}
 document.querySelector('#choose-game').addEventListener('click',function(){openResultView('game')});
 document.querySelector('#choose-daily').addEventListener('click',function(){renderDailyFortune();openResultView('daily')});
 document.querySelector('#daily-back').addEventListener('click',function(){openResultView('chart')});
@@ -270,7 +270,8 @@ function buildReading(input){
  fill('#risk-cards',advice('體質傾向','慣性風險',sp.risks[0])+advice('思考盲點','視角風險',sp.risks[1])+advice('本階段風險',chart.dominant+'（'+groupData[chart.dominant].label+'）用過頭',groupData[chart.dominant].risk)+advice('防護機制','事前清單','重大決定前先寫下成功標準、最大成本與退出條件，並找一位敢對你說不同意見的人。'));
  const luck=buildLuck(ps,input.date,input.time,input.gender,chart);buildBenefactor(chart.balance);
  const beastMatch=BaziBeasts.classify(chart),capabilities=BaziBeasts.capabilities(chart);
- const reading={pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,dayStemIndex:day,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:luck.currentCycle,lifeGameStations:luck.stations,character:character.profile,characterMatch:character,beastMatch:beastMatch,capabilities:capabilities,birthInput:{date:input.date,time:input.time}};
+ const ny=buildNumericYijing(input),mainGua=ny.pairs.length>0?ny.pairs[ny.pairs.length-1]:null;
+ const reading={pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,dayStemIndex:day,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:luck.currentCycle,lifeGameStations:luck.stations,character:character.profile,characterMatch:character,beastMatch:beastMatch,capabilities:capabilities,birthInput:{date:input.date,time:input.time},numericGua:{digitsStr:ny.digitsStr,mainGua:mainGua}};
  renderLifeGame(reading);
  return reading;
 }
