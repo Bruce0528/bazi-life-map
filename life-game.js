@@ -31,21 +31,19 @@
  const affinity={snowleopard:'achievement',woodbird:'relations',seaturtle:'wealth',firetiger:'energy',stonedog:'achievement',moonwolf:'energy',lightrabbit:'relations',panda:'wealth'};
  function clamp(n){return Math.max(0,Math.min(100,Math.round(n)))}
  function initialStats(c){return{energy:clamp(28+c.stability*.25),relations:clamp(28+c.social*.25),wealth:clamp(28+c.wealth*.25),achievement:clamp(28+c.action*.25)}}
- function create(reading){return{reading:reading,round:0,position:0,stats:initialStats(reading.capabilities),history:[],phase:'roll',die:null}}
- function roll(state,die){if(state.phase!=='roll'||!Number.isInteger(die)||die<1||die>6)throw Error('此回合不能擲骰');state.die=die;state.position=(state.position+die)%8;state.phase='choose';return{die:die,position:state.position,stage:stages[state.round]}}
+ function create(reading){return{reading:reading,round:0,stats:initialStats(reading.capabilities),history:[],phase:'choose'}}
  function choose(state,index){
-  if(state.phase!=='choose'||![0,1].includes(index))throw Error('請先擲骰並選擇一張情境卡');
+  if(state.phase!=='choose'||![0,1].includes(index))throw Error('請先選擇一張情境卡');
   const stage=stages[state.round],card=stage.cards[index],beast=state.reading.beastMatch.primary.profile,bonus=affinity[beast.id]===card.focus?3:0;
   const before=Object.assign({},state.stats);
   Object.entries(card.delta).forEach(function(pair){state.stats[pair[0]]=clamp(state.stats[pair[0]]+pair[1])});
-  const dieBonus=Math.ceil(state.die/2);state.stats[card.focus]=clamp(state.stats[card.focus]+dieBonus+bonus);
-  const result={round:state.round+1,stage:stage.name,card:card,index:index,die:state.die,before:before,after:Object.assign({},state.stats),dieBonus:dieBonus,resonance:bonus,average:score(state.stats)};
+  if(bonus)state.stats[card.focus]=clamp(state.stats[card.focus]+bonus);
+  const result={round:state.round+1,stage:stage.name,card:card,index:index,before:before,after:Object.assign({},state.stats),resonance:bonus,average:score(state.stats)};
   state.history.push(result);state.phase='result';return result;
  }
- function next(state){if(state.phase!=='result')throw Error('請先完成本關');state.round++;state.die=null;state.phase=state.round===8?'done':'roll';return state.phase}
+ function next(state){if(state.phase!=='result')throw Error('請先完成本關');state.round++;state.phase=state.round===8?'done':'choose';return state.phase}
  function score(stats){return Math.round(Object.values(stats).reduce(function(sum,value){return sum+value},0)/4)}
  function summary(state){if(state.phase!=='done')throw Error('尚未完成八關');return{score:score(state.stats),breakout:score(state.stats)>80,stats:Object.assign({},state.stats),history:state.history.slice()}}
- function randomDie(){if(root.crypto&&root.crypto.getRandomValues){const a=new Uint32Array(1),limit=4294967296-(4294967296%6);do{root.crypto.getRandomValues(a)}while(a[0]>=limit);return a[0]%6+1}return Math.floor(Math.random()*6)+1}
- root.BaziLifeGame={stages:stages,labels:labels,affinity:affinity,create:create,roll:roll,choose:choose,next:next,score:score,summary:summary,randomDie:randomDie};
+ root.BaziLifeGame={stages:stages,labels:labels,affinity:affinity,create:create,choose:choose,next:next,score:score,summary:summary};
  if(typeof module!=='undefined'&&module.exports)module.exports={BaziLifeGame:root.BaziLifeGame};
 })(typeof window==='undefined'?globalThis:window);

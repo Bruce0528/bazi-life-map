@@ -9,8 +9,8 @@ assert.notEqual(beasts.classify({...chart,gods:{比劫:8,食傷:0,財星:0,官�
 assert.equal(game.stages.length,8);
 assert.ok(game.stages.every(stage=>stage.cards.length===2));
 assert.equal(new Set(game.stages.flatMap(stage=>stage.cards.map(card=>card.title))).size,16);
-function play(choice,die){const state=game.create(reading);for(let i=0;i<8;i++){assert.equal(state.phase,'roll');game.roll(state,die);assert.equal(state.phase,'choose');const result=game.choose(state,choice);assert.equal(result.round,i+1);assert.ok(Object.values(state.stats).every(n=>n>=0&&n<=100));game.next(state)}assert.equal(state.phase,'done');return game.summary(state)}
-const low=play(0,1),high=play(1,6);
+function play(choice){const state=game.create(reading);assert.equal(state.phase,'choose');for(let i=0;i<8;i++){assert.equal(state.phase,'choose');const result=game.choose(state,choice);assert.equal(result.round,i+1);assert.ok(Object.values(state.stats).every(n=>n>=0&&n<=100));game.next(state)}assert.equal(state.phase,'done');return game.summary(state)}
+const low=play(0),high=play(1);
 assert.equal(low.breakout,false);
 assert.equal(high.breakout,true);
 assert.equal(low.history.length,8);

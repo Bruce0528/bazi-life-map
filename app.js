@@ -245,7 +245,7 @@ function startLifeGame(){
  document.querySelector('#lifegame-play').hidden=false;
  document.querySelector('#lifegame-stage').hidden=false;
  document.querySelector('#lifegame-result').hidden=true;
- fill('#lifegame-rule','擲骰前進，八個關卡各有兩張不同情境卡。選一張後會改變精力、關係、財富、成就。四項都要<b>明顯站穩</b>才算這一局破圈；骰點與命格獸只提供少量遊戲加分。');
+ fill('#lifegame-rule','八個關卡循序漸進，每關都有兩張不同情境卡。選一張後會改變精力、關係、財富、成就，一關接著一關累積下去；四項都要<b>明顯站穩</b>才算這一局破圈。走完八關後，會依你的命盤說明這趟旅程比較容易卡住的地方與風險。');
  fill('#lifegame-history','八字決定起始角色，接下來由你選擇。');
  renderLifeGameStage();
  document.querySelector('#lifegame-play').scrollIntoView({behavior:'smooth',block:'start'});
@@ -256,18 +256,15 @@ function renderLifeGameStats(stats){
 function renderLifeGameStage(){
  const st=lifeGameState,beast=st.reading.beastMatch.primary.profile,stage=BaziLifeGame.stages[st.round];
  fill('#lifegame-progress','<b>第 '+(st.round+1)+'／8 關 · '+stage.name+'</b><span>'+gameOverallTier(BaziLifeGame.score(st.stats))+'</span>');
- fill('#lifegame-board',BaziLifeGame.stages.map(function(item,i){const done=i<st.round,current=i===st.position;return'<div class="lg-space '+(current?'is-current':done?'is-done':'is-future')+'"><span class="lg-space-icon" aria-hidden="true">'+(done?'✿':'✦')+'</span><small>'+(i+1)+' · '+item.name+'</small>'+(current?'<b aria-label="目前位置">'+beast.icon+'</b>':'')+'</div>'}).join(''));
+ fill('#lifegame-board',BaziLifeGame.stages.map(function(item,i){const done=i<st.round,current=i===st.round;return'<div class="lg-space '+(current?'is-current':done?'is-done':'is-future')+'"><span class="lg-space-icon" aria-hidden="true">'+(done?'✿':'✦')+'</span><small>'+(i+1)+' · '+item.name+'</small>'+(current?'<b aria-label="目前位置">'+beast.icon+'</b>':'')+'</div>'}).join(''));
  document.querySelector('#lifegame-board').style.setProperty('--lg-progress',(st.round/BaziLifeGame.stages.length*100)+'%');
  renderLifeGameStats(st.stats);
- if(st.phase==='roll'){
-  fill('#lifegame-stage','<div class="lg-station"><span class="lg-beast-avatar" aria-hidden="true">'+beast.icon+'</span><div><small>命格獸 '+beast.name+' 陪你走這一關</small><b>'+stage.name+'</b><p>擲骰前進後，從兩張情境卡中挑一張。你會看到每張卡對四項數值的不同取捨。</p></div></div><div class="lg-dice-panel"><span class="lg-die" aria-hidden="true">⚄</span><div><b>準備擲骰</b><small>骰點 1–6，落點顯示在上方八格路線</small></div><button type="button" id="lifegame-roll">擲骰前進 →</button></div>');
-  document.querySelector('#lifegame-roll').addEventListener('click',function(){BaziLifeGame.roll(st,BaziLifeGame.randomDie());renderLifeGameStage()});
- }else if(st.phase==='choose'){
-  fill('#lifegame-stage','<div class="lg-draw-head"><span class="lg-die" aria-label="骰到 '+st.die+' 點">'+['','⚀','⚁','⚂','⚃','⚄','⚅'][st.die]+'</span><div><small>骰出 '+st.die+' 點 · 第 '+(st.round+1)+' 關</small><b>選一張情境卡</b></div></div><div class="lg-choices lg-two-cards">'+stage.cards.map(function(card,i){return'<button type="button" data-c="'+i+'"><small>情境 '+['A','B'][i]+'</small><b>'+card.title+'</b><span>'+card.story+'</span><small>'+gameTradeoff(card.delta)+'</small></button>'}).join('')+'</div>');
+ if(st.phase==='choose'){
+  fill('#lifegame-stage','<div class="lg-station"><span class="lg-beast-avatar" aria-hidden="true">'+beast.icon+'</span><div><small>命格獸 '+beast.name+' 陪你走這一關 · 第 '+(st.round+1)+'／8 關</small><b>'+stage.name+'</b><p>從兩張情境卡中挑一張，你會看到每張卡對四項數值的不同取捨。</p></div></div><div class="lg-choices lg-two-cards">'+stage.cards.map(function(card,i){return'<button type="button" data-c="'+i+'"><small>情境 '+['A','B'][i]+'</small><b>'+card.title+'</b><span>'+card.story+'</span><small>'+gameTradeoff(card.delta)+'</small></button>'}).join('')+'</div>');
   document.querySelectorAll('#lifegame-stage .lg-choices button').forEach(function(btn){btn.addEventListener('click',function(){BaziLifeGame.choose(st,Number(btn.dataset.c));renderLifeGameStage()})});
  }else if(st.phase==='result'){
   const last=st.history[st.history.length-1];
-  fill('#lifegame-stage','<div class="lg-outcome"><span aria-hidden="true">✿</span><small>第 '+last.round+' 關 · '+last.card.title+'</small><h4>這一步，留下了新的變化</h4><p>'+gameTradeoff(last.card.delta)+'。骰點也讓「'+lifeGameStatLabels[last.card.focus]+'」再往上推一點；'+(last.resonance?'命格獸共鳴讓它再加分。':'這張卡沒有額外共鳴。')+'</p><p>目前整體狀態：'+gameOverallTier(last.average)+'。</p><button type="button" id="lifegame-next">'+(st.round===7?'查看破圈結果':'進入下一關 →')+'</button></div>');
+  fill('#lifegame-stage','<div class="lg-outcome"><span aria-hidden="true">✿</span><small>第 '+last.round+' 關 · '+last.card.title+'</small><h4>這一步，留下了新的變化</h4><p>'+gameTradeoff(last.card.delta)+'。'+(last.resonance?'命格獸共鳴讓「'+lifeGameStatLabels[last.card.focus]+'」再加分。':'這張卡沒有額外共鳴。')+'</p><p>目前整體狀態：'+gameOverallTier(last.average)+'。</p><button type="button" id="lifegame-next">'+(st.round===7?'查看破圈結果':'進入下一關 →')+'</button></div>');
   document.querySelector('#lifegame-next').addEventListener('click',function(){BaziLifeGame.next(st);if(st.phase==='done')finishLifeGame();else renderLifeGameStage()});
  }
 }
@@ -279,7 +276,8 @@ function finishLifeGame(){
  const lowest=Object.keys(result.stats).sort(function(a,b){return result.stats[a]-result.stats[b]})[0];
  const suggestions={energy:'未來一週，先留兩段各 30 分鐘不被打擾的休息，再接新的承諾。',relations:'找一位重要的人，約 20 分鐘確認彼此期待，先聽完再給建議。',wealth:'列出目前必要支出與一個可承擔的上限，先保留緩衝再試新計畫。',achievement:'挑一個能在七天完成的小作品，訂交付日並請一人回饋。'};
  const route=result.history.map(function(item){return'<li><span>'+String(item.round).padStart(2,'0')+' · '+item.stage+'</span>'+item.card.title+'</li>'}).join('');
- fill('#lifegame-result','<div class="lg-result-head"><span class="lg-ending-icon" aria-hidden="true">'+st.reading.beastMatch.primary.profile.icon+'</span><div><small>你的命格獸：'+st.reading.beastMatch.primary.profile.name+'</small><h4>'+(result.breakout?'✿ 成功破圈！':'☘ 這一局還沒破圈')+'</h4><p>精力、關係、財富、成就四項的整體表現，決定這一局是否算破圈。</p></div></div><div class="lg-result-rules">目前相對較弱的是「'+lifeGameStatLabels[lowest]+'」。這只是遊戲設定的高低，不代表你的真實能力。</div><h5>給這局的你一個人生建議</h5><p>'+suggestions[lowest]+'</p><h5>八關選擇紀錄</h5><ol class="lg-route">'+route+'</ol><p class="lg-disclaimer">本遊戲以八字作為文化情境與初始角色，擲骰和分數只供娛樂與自我反思。</p><button type="button" id="lifegame-restart">再玩一次</button>');
+ const dom=st.reading.dominantTenGod,domRisk=groupData[dom].risk,traitRisk=st.reading.risks&&st.reading.risks[0];
+ fill('#lifegame-result','<div class="lg-result-head"><span class="lg-ending-icon" aria-hidden="true">'+st.reading.beastMatch.primary.profile.icon+'</span><div><small>你的命格獸：'+st.reading.beastMatch.primary.profile.name+'</small><h4>'+(result.breakout?'✿ 成功破圈！':'☘ 這一局還沒破圈')+'</h4><p>精力、關係、財富、成就四項的整體表現，決定這一局是否算破圈；八關循序漸進、一步接一步累積出這個結果。</p></div></div><div class="lg-result-rules">目前相對較弱的是「'+lifeGameStatLabels[lowest]+'」。這只是遊戲設定的高低，不代表你的真實能力。</div><h5>你的卡點與風險</h5><p>對照命盤，你的性格主軸是「'+dom+'（'+groupData[dom].label+'）」，用過頭時常見的卡點是：'+domRisk+'。'+(traitRisk?'再加上你的日主特質，也容易出現：'+traitRisk+'。':'')+'這趟旅程裡「'+lifeGameStatLabels[lowest]+'」比較吃緊，很可能就是這類慣性被放大的地方。</p><h5>給這局的你一個人生建議</h5><p>'+suggestions[lowest]+'</p><h5>八關選擇紀錄</h5><ol class="lg-route">'+route+'</ol><p class="lg-disclaimer">本遊戲以八字作為文化情境與初始角色，分數只供娛樂與自我反思。</p><button type="button" id="lifegame-restart">再玩一次</button>');
  document.querySelector('#lifegame-result').hidden=false;
  document.querySelector('#lifegame-restart').addEventListener('click',startLifeGame);
 }
