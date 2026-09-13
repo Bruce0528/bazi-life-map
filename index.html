@@ -81,6 +81,7 @@
         <div class="day-master-badge"><span>日主</span><strong id="day-master">乙木</strong><small id="day-trait">陰木 · 柔韌生長</small></div>
       </div>
       <nav class="report-quicknav" aria-label="其他體驗">
+        <button type="button" id="choose-daily"><span aria-hidden="true">☀</span>每日運勢</button>
         <button type="button" id="choose-compatibility"><span aria-hidden="true">♡</span>男女合盤分析</button>
         <button type="button" id="choose-game"><span aria-hidden="true">✿</span>解鎖模擬人生</button>
       </nav>
@@ -155,6 +156,13 @@
           </div>
         </section>
       </div>
+      <div class="daily-view" id="daily-view" hidden>
+        <button type="button" class="view-back" id="daily-back">← 返回命盤</button>
+        <section class="daily-section" aria-labelledby="daily-title">
+          <div class="section-heading"><div><p class="eyebrow">DAILY FORTUNE · 每日運勢</p><h3 id="daily-title">今日運勢</h3></div><p>以你的日主對照今天的干支與排盤引擎內建的黃曆資料，整理今天的宜忌、財運、貴人方位與健康提醒。每天重新打開都會依當天日期更新。</p></div>
+          <div id="daily-fortune"></div>
+        </section>
+      </div>
     </section>
 
     <section class="policy-section" id="site-info">
@@ -184,6 +192,8 @@
             <dd>本站排盤採用精確的節氣與農曆換算，排盤結果具一定準確度；但文字解讀屬於本站設計的啟發式參考，僅供文化與自我反思使用，不是命定的預言，也不能取代醫療、心理、法律或財務專業建議。</dd>
             <dt>我的出生資料會被記錄下來嗎？</dt>
             <dd>不會。命盤與男女合盤的運算完全在你的瀏覽器裡完成，我們的伺服器接觸不到你的出生資料，詳見隱私權政策。</dd>
+            <dt>「每日運勢」的星等是怎麼算的？</dt>
+            <dd>以你的日主對照當天的干支算出十神，再結合排盤引擎內建的黃曆吉凶與方位資料。同一天、同一張命盤算出來的結果固定不變，是本站設計的參考評分，不是命定的吉凶。</dd>
             <dt>我可以在手機上使用嗎？</dt>
             <dd>可以，本站已針對手機瀏覽器做過版面優化。</dd>
           </dl>

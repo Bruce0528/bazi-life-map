@@ -29,9 +29,10 @@ function buildBenefactor(weak){
 }
 let currentReading=null;
 function openResultView(view){
- document.querySelector('#report-eyebrow').textContent={chart:'命盤結果 · PERSONAL READING',game:'角色遊戲 · LIFE SIMULATION'}[view];
+ document.querySelector('#report-eyebrow').textContent={chart:'命盤結果 · PERSONAL READING',game:'角色遊戲 · LIFE SIMULATION',daily:'每日運勢 · DAILY FORTUNE'}[view];
  document.querySelector('#chart-view').hidden=view!=='chart';
  document.querySelector('#game-view').hidden=view!=='game';
+ document.querySelector('#daily-view').hidden=view!=='daily';
  if(view==='game'){
   document.querySelector('#game-picker').hidden=false;
   document.querySelector('#lifegame').hidden=true;
@@ -42,6 +43,8 @@ function openResultView(view){
 }
 function showReport(input){const result=buildReading(input);currentReading=result;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;document.querySelector('#report').hidden=false;openResultView('chart');return result}
 document.querySelector('#choose-game').addEventListener('click',function(){openResultView('game')});
+document.querySelector('#choose-daily').addEventListener('click',function(){renderDailyFortune();openResultView('daily')});
+document.querySelector('#daily-back').addEventListener('click',function(){openResultView('chart')});
 document.querySelector('#choose-compatibility').addEventListener('click',function(){document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
 document.querySelector('#nav-compatibility').addEventListener('click',function(event){event.preventDefault();document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
 document.querySelector('#compatibility-return').addEventListener('click',function(){document.querySelector('#report').hidden=false;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;openResultView('chart')});
@@ -96,6 +99,39 @@ const financeByGod={
  官殺:'穩定與制度感是你的財務優勢，適合長期、規則明確的累積方式；避免只因責任感就承擔超出能力的財務壓力或保證。',
  印星:'你習慣先研究透徹再行動，理財上不容易衝動；但也別因為想得太周全而一直觀望，分批進場比完全不進場更有累積效果。'
 };
+/* 每日運勢：用當天真實干支對照日主算出今天的十神，再套用本站既有的五組解讀；方位與吉凶取自排盤引擎內建的黃曆資料。 */
+const shengxiao=['鼠','牛','虎','兔','龍','蛇','馬','羊','猴','雞','狗','豬'];
+const dailyGoodLuckLine={順勢開展:'這類日子特別適合順勢而為，投入的努力比較容易比預期更快看到成果。',主題加倍:'今天效果容易被放大——選對方向會加速，選錯方向也會更快看到代價，重要決定前多想一步。',調整鍛鍊:'今天比較像調整期，步調放慢一點、把基本功顧好，比急著衝刺更划算。'};
+function normalizePosition(s){return String(s||'').replace(/东/g,'東')}
+function dailyStars(tianShenLuck,helpful,dayStrength){
+ let n=3;
+ n+=tianShenLuck==='吉'?1:-1;
+ n+=dayStrength==='中和'?1:(helpful?1:-1);
+ return Math.max(1,Math.min(5,n));
+}
+function buildDailyFortune(reading,now){
+ now=now||new Date();
+ const solar=Solar.fromYmd(now.getFullYear(),now.getMonth()+1,now.getDate()),lunar=solar.getLunar();
+ const dayGZ=lunar.getDayInGanZhi(),todayStemIdx=stems.indexOf(dayGZ[0]),todayBranchIdx=branches.indexOf(dayGZ[1]);
+ const god=tenGod(reading.dayStemIndex,todayStemIdx),group=godGroup(god);
+ const tianShenLuck=lunar.getDayTianShenLuck();
+ const helpful=(reading.dayStrength==='身偏弱'&&['比劫','印星'].includes(group))||(reading.dayStrength==='身偏強'&&['食傷','財星','官殺'].includes(group));
+ const tone=helpful?'順勢開展':group===reading.dominantTenGod?'主題加倍':'調整鍛鍊';
+ return{
+  dateLabel:now.getFullYear()+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+String(now.getDate()).padStart(2,'0'),
+  ganzhi:dayGZ,shengxiao:shengxiao[mod(todayBranchIdx,12)],chongAnimal:shengxiao[mod(todayBranchIdx+6,12)],
+  god:god,group:group,tone:tone,tianShenLuck:tianShenLuck,
+  caiPos:normalizePosition(lunar.getDayPositionCaiDesc()),
+  xiPos:normalizePosition(lunar.getDayPositionXiDesc()),
+  guiPos:normalizePosition(lunar.getDayPositionYangGuiDesc())+'／'+normalizePosition(lunar.getDayPositionYinGuiDesc()),
+  stars:dailyStars(tianShenLuck,helpful,reading.dayStrength)
+ };
+}
+function renderDailyFortune(){
+ if(!currentReading)return;
+ const df=buildDailyFortune(currentReading),group=df.group,stars='★'.repeat(df.stars)+'☆'.repeat(5-df.stars);
+ fill('#daily-fortune','<div class="daily-head"><div><small>'+df.dateLabel+' · '+df.ganzhi+'日</small><h3>今天對你來說，是「'+df.god+'（'+groupData[group].label+'）」的日子</h3><p>值日星判斷屬於「'+df.tianShenLuck+'」，整體走勢偏向「'+df.tone+'」。</p></div><div class="daily-stars" aria-label="今日星等 '+df.stars+' 顆星">'+stars+'</div></div>'+'<div class="advice-cards">'+advice('今日宜做什麼','把握「'+groupData[group].label+'」的節奏',luckActionByGod[group])+advice('有什麼好運','今天環繞的主題：'+luckThemeByGod[group],dailyGoodLuckLine[df.tone])+advice('身體健康須注意',groupData[group].label+'型的體質提醒',healthByGod[group].copy)+advice('事業發展需注意','避免「'+group+'」用過頭',luckWarningByGod[group]+'；'+groupData[group].risk)+advice('貴人運','貴人方位：'+df.guiPos,'今天若遇到具備「'+groupData[group].talents[0]+'」特質的人主動伸出援手，特別把握這個機會。')+advice('財運','財神方位：'+df.caiPos,financeByGod[group])+'</div>'+'<p class="daily-disclaimer">沖'+df.chongAnimal+'肖；喜神方位在'+df.xiPos+'。本頁以你的日主對照今天的干支與排盤引擎內建的黃曆資料產生，僅供文化參考與自我提醒，不是對今天的預言，也不能取代醫療、法律或財務專業建議。</p>');
+}
 const relationsByGod={
  比劫:{copy:'在關係裡，你重視「對等」勝過「浪漫」：比起被追求，你更想被當成勢均力敵的夥伴。伴侶若也能有自己的重心與空間，這段關係反而走得更穩。',cards:[['相處優勢','平等對待','不會用情緒勒索或道德綁架控制對方，也讓人感覺被尊重。'],['常見摩擦','較量心','意見不合時，先分清楚你們是在討論事情，還是在爭輸贏。'],['愛情訊號','各自留白','感情穩定不代表要隨時黏在一起，保有各自生活反而更持久。'],['邊界提醒','少比較','避免拿伴侶和別人比較來激勵對方，這容易被解讀成不被珍惜。']]},
  食傷:{copy:'你習慣用表達與行動證明在乎：一句「我幫你想了辦法」，往往比甜言蜜語更接近你的愛。但關係裡有時對方要的不是解法，而是先被聽懂。',cards:[['相處優勢','坦率真誠','你不太演，對方通常能感覺到你的情緒是真的。'],['常見摩擦','說得比聽得多','先問「你想要我聽，還是一起想辦法？」，再決定要不要給建議。'],['愛情訊號','用行動示愛','記得對方說過的小事、幫忙處理實際問題，比說「我愛你」更有份量。'],['邊界提醒','拿捏分寸','熱度上來時容易把話說得太滿，重要承諾先放一晚再說出口。']]},
@@ -193,7 +229,7 @@ function buildReading(input){
  fill('#risk-cards',advice('體質傾向','慣性風險',sp.risks[0])+advice('思考盲點','視角風險',sp.risks[1])+advice('本階段風險',chart.dominant+'（'+groupData[chart.dominant].label+'）用過頭',groupData[chart.dominant].risk)+advice('防護機制','事前清單','重大決定前先寫下成功標準、最大成本與退出條件，並找一位敢對你說不同意見的人。'));
  const luck=buildLuck(ps,input.date,input.time,input.gender,chart);buildBenefactor(chart.balance);
  const beastMatch=BaziBeasts.classify(chart),capabilities=BaziBeasts.capabilities(chart);
- const reading={pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:luck.currentCycle,lifeGameStations:luck.stations,character:character.profile,characterMatch:character,beastMatch:beastMatch,capabilities:capabilities};
+ const reading={pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,dayStemIndex:day,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:luck.currentCycle,lifeGameStations:luck.stations,character:character.profile,characterMatch:character,beastMatch:beastMatch,capabilities:capabilities};
  renderLifeGame(reading);
  return reading;
 }
