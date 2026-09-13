@@ -300,11 +300,12 @@ body { background: #f7faf2; color: var(--ink); }
 .numgua-pair small { font-size: .74rem; font-weight: 700; color: #557a5c; }
 .numgua-pair.numgua-凶 small { color: #a05a45; }
 .numgua-link { color: #a9c29e; font-size: 1rem; flex: 0 0 auto; }
-/* 隱藏建議卡片區域 */
-#numgua-fortune > div:nth-child(n+3) { display: none; }
+/* 隱藏數字易經頁面的建議卡片和免責聲明 */
+#numgua-fortune .advice-cards { display: none !important; }
+#numgua-fortune .numgua-disclaimer { display: none !important; }
 
-/* 將LINE資訊移至頂部，靠近日主圓形 */
-.numgua-service { position: absolute; top: 180px; right: 20px; width: auto; max-width: 320px; margin: 0; padding: 14px 16px; border: 2px solid #d9a74d; border-radius: 12px; background: linear-gradient(135deg, #fef9e6 0%, #fef5dd 100%); }
+/* 調整numgua-service樣式 */
+#numgua-fortune .numgua-service { margin: 0 0 24px 0; padding: 14px 16px; max-width: 100%; }
 .numgua-service p { margin: 0; color: #5d6b3a; font-weight: 600; font-size: .95rem; line-height: 1.6; }
 .numgua-service a { color: #5f7d50; text-decoration: none; font-weight: 700; }
 .numgua-service a:hover { color: #3d5531; text-decoration: underline; }
