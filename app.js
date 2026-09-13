@@ -27,9 +27,9 @@ function buildBenefactor(weak){
  const data=[['特質','<span class="element-icon" style="color:'+colors[weak]+'">'+elementIcons[weak]+'</span>'+profiles[weak].trait],['方位隱喻',dirs[weak][0]],['場域',dirs[weak][1]],['相處關鍵','主動請益']];
  fill('#benefactor-compass',data.map(function(x){return '<div class="compass-item"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>'}).join(''));
 }
-let currentReading=null;
+let currentReading=null;let pendingView=null;
 function openResultView(view){
- document.querySelector('#report-eyebrow').textContent={choice:'生辰已排好 · CHOOSE A PATH',chart:'命盤結果 · PERSONAL READING',game:'角色遊戲 · LIFE SIMULATION',palm:'手掌觀察 · PALM PHOTO',question:'問題抽卡 · THREE CARDS'}[view];
+ document.querySelector('#report-eyebrow').textContent={choice:'生辰已排好 · CHOOSE A PATH',chart:'命盤結果 · PERSONAL READING',game:'角色遊戲 · LIFE SIMULATION',palm:'手掌觀察 · PALM PHOTO',question:'情境推演 · CURRENT SITUATION'}[view];
  document.querySelector('#result-choice').hidden=view!=='choice';
  document.querySelector('#chart-view').hidden=view!=='chart';
  document.querySelector('#game-view').hidden=view!=='game';
@@ -43,12 +43,22 @@ function openResultView(view){
  }
  window.scrollTo({top:0,behavior:'smooth'});
 }
-function showReport(input){const result=buildReading(input);currentReading=result;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;document.querySelector('#report').hidden=false;openResultView('choice');return result}
+function showReport(input){const result=buildReading(input);currentReading=result;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;document.querySelector('#report').hidden=false;openResultView(pendingView||'choice');pendingView=null;return result}
 document.querySelector('#choose-chart').addEventListener('click',function(){openResultView('chart')});
 document.querySelector('#choose-game').addEventListener('click',function(){openResultView('game')});
 document.querySelector('#choose-palm').addEventListener('click',function(){openResultView('palm')});
 document.querySelector('#choose-question').addEventListener('click',function(){openResultView('question')});
 document.querySelector('#choose-compatibility').addEventListener('click',function(){document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
+/* 首頁「接下來想先走哪一條路」入口：已有命盤就直接跳頁，還沒有就先捲到生辰表單並記住目的地 */
+function goToPath(view){
+ if(currentReading){document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;document.querySelector('#report').hidden=false;openResultView(view)}
+ else{pendingView=view;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#report').hidden=true;document.querySelector('.workbench').scrollIntoView({behavior:'smooth',block:'start'})}
+}
+document.querySelector('#land-chart').addEventListener('click',function(){goToPath('chart')});
+document.querySelector('#land-game').addEventListener('click',function(){goToPath('game')});
+document.querySelector('#land-palm').addEventListener('click',function(){goToPath('palm')});
+document.querySelector('#land-question').addEventListener('click',function(){goToPath('question')});
+document.querySelector('#land-compatibility').addEventListener('click',function(){document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
 document.querySelector('#compatibility-return').addEventListener('click',function(){document.querySelector('#report').hidden=false;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;openResultView('choice')});
 document.querySelector('#chart-back').addEventListener('click',function(){openResultView('choice')});
 document.querySelector('#game-back').addEventListener('click',function(){openResultView('choice')});

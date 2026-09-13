@@ -18,6 +18,17 @@
   </header>
 
   <main id="top">
+    <section class="result-choice" id="landing-choice" aria-labelledby="landing-choice-title">
+      <p class="eyebrow">CHOOSE YOUR PATH</p><h3 id="landing-choice-title">接下來，想先走哪一條路？</h3>
+      <p>五種體驗各有自己的入口；免費項目清楚標示，尚未開通金流的項目不會扣款。</p>
+      <div class="result-choice-grid">
+        <button type="button" id="land-chart"><span class="choice-icon" aria-hidden="true">☯</span><small>01 · 免費</small><b>命盤分析</b><span>五行、核心特質、人生面向與十年大運</span><em aria-hidden="true">↗</em></button>
+        <button type="button" id="land-compatibility"><span class="choice-icon" aria-hidden="true">♡</span><small>02 · 免費</small><b>男女合盤分析</b><span>兩人命盤互動、生活偏好與相處建議</span><em aria-hidden="true">↗</em></button>
+        <button type="button" id="land-game"><span class="choice-icon" aria-hidden="true">✿</span><small>03 · 免費試玩</small><b>解鎖模擬人生卡牌遊戲</b><span>一隻命格獸、八個關卡、雙情境與破圈分數</span><em aria-hidden="true">↗</em></button>
+        <button type="button" id="land-palm"><span class="choice-icon" aria-hidden="true">☼</span><small>04 · 拍照體驗</small><b>手掌紋路觀察</b><span>男左手、女右手；照片只留在本機</span><em aria-hidden="true">↗</em></button>
+        <button type="button" id="land-question"><span class="choice-icon" aria-hidden="true">✧</span><small>05 · 情境推演</small><b>近期事件推演</b><span>寫下你正面對的事，結合命盤給方向建議</span><em aria-hidden="true">↗</em></button>
+      </div>
+    </section>
     <section class="workbench" aria-labelledby="page-title">
       <div class="intro">
         <p class="eyebrow">✿ FOUR PILLARS · LIFE MAP</p>
@@ -88,7 +99,7 @@
           <button type="button" id="choose-compatibility"><span class="choice-icon" aria-hidden="true">♡</span><small>02 · 免費</small><b>男女合盤分析</b><span>兩人命盤互動、生活偏好與相處建議</span><em aria-hidden="true">↗</em></button>
           <button type="button" id="choose-game"><span class="choice-icon" aria-hidden="true">✿</span><small>03 · 免費試玩</small><b>解鎖模擬人生卡牌遊戲</b><span>一隻命格獸、八個關卡、雙情境與破圈分數</span><em aria-hidden="true">↗</em></button>
           <button type="button" id="choose-palm"><span class="choice-icon" aria-hidden="true">☼</span><small>04 · 拍照體驗</small><b>手掌紋路觀察</b><span>男左手、女右手；照片只留在本機</span><em aria-hidden="true">↗</em></button>
-          <button type="button" id="choose-question"><span class="choice-icon" aria-hidden="true">✧</span><small>05 · 問題抽卡</small><b>解鎖問題抽卡</b><span>問一個問題，從三張覆蓋牌中選一張</span><em aria-hidden="true">↗</em></button>
+          <button type="button" id="choose-question"><span class="choice-icon" aria-hidden="true">✧</span><small>05 · 情境推演</small><b>近期事件推演</b><span>寫下你正面對的事，結合命盤給方向建議</span><em aria-hidden="true">↗</em></button>
         </div>
       </section>
       <div class="chart-view" id="chart-view" hidden>
@@ -139,45 +150,6 @@
         <div><span class="chapter">貴人線索</span><h3 id="benefactor-title"></h3><p id="benefactor-copy"></p></div>
         <div class="benefactor-compass" id="benefactor-compass"></div>
       </section>
-      <section class="divination-section" id="divination">
-        <div class="divination-intro">
-          <p class="eyebrow">CURRENT SITUATION · 情境推演</p>
-          <h3>問題抽卡（舊版推演暫停）</h3>
-          <p>寫下你最近正在面對的事情。系統會以此刻、事件內容與你的命盤特質，整理最有利的發展條件、可採取的行動與需要避開的風險。</p>
-          <p class="price-line">目前不提供付費解鎖；請使用五個選項中的「問題抽卡」試玩版。</p>
-        </div>
-        <div class="divination-action">
-          <div class="paywall" id="paywall">
-            <button type="button" id="unlock-button" disabled><span>藍新金流尚未開通</span><span aria-hidden="true">鎖</span></button>
-            <p class="payment-note" id="payment-note">藍新商店與安全付款後端尚待設定。目前不會收費，也不會產生推演結果。</p>
-          </div>
-          <form class="divination-form" id="divination-form" hidden>
-            <label>事件類型<select id="event-type"><option value="career">事業／工作</option><option value="money">金錢／投資</option><option value="love">愛情／關係</option><option value="decision">重大選擇</option><option value="other">其他</option></select></label>
-            <label>最近遇到的事情<textarea id="event-text" rows="4" minlength="8" maxlength="500" required placeholder="例：公司提出新的職務機會，但需要換到陌生團隊，我擔心發展性與適應問題……"></textarea></label>
-            <label>希望觀察的時間<select id="event-horizon"><option value="30">未來 30 天</option><option value="90">未來 3 個月</option><option value="365">未來 1 年</option></select></label>
-            <button type="submit"><span>結合命盤推演方向</span><span aria-hidden="true">→</span></button>
-          </form>
-        </div>
-        <div class="oracle-result" id="oracle-result" hidden>
-          <div class="hexagram"><small>本次卦象</small><strong id="hexagram-name"></strong><div class="hexagram-lines" id="hexagram-lines"></div><span id="hexagram-keyword"></span></div>
-          <div class="oracle-copy">
-            <span class="chapter">情境解讀</span><h3 id="oracle-title"></h3>
-            <div class="oracle-restate"><small>我理解的你的問題</small><p id="oracle-restate"></p></div>
-            <p id="oracle-summary"></p>
-            <div class="oracle-cross">
-              <small>五行性格 × 目前大運</small>
-              <p id="oracle-cross-copy"></p>
-              <div class="cross-grid" id="oracle-cross-grid"></div>
-            </div>
-            <div class="oracle-columns">
-              <div><h4>最有利的發展</h4><ul id="oracle-advantage"></ul></div>
-              <div><h4>建議採取</h4><ul id="oracle-actions"></ul></div>
-              <div><h4>避免風險</h4><ul id="oracle-risks"></ul></div>
-            </div>
-            <p class="oracle-note">卦象是用來換角度思考的提示，不是事件結果的保證；重大醫療、法律與財務決策請尋求合格專業意見。</p>
-          </div>
-        </div>
-      </section>
       <footer class="report-footer"><span>時序命盤</span><p>把命盤當成鏡子，別把它當成答案。真正改變人生的，仍是你的選擇與行動。排盤使用 <a href="https://github.com/6tail/lunar-javascript" target="_blank" rel="noopener noreferrer">lunar-javascript</a>（MIT 授權）。</p></footer>
       </div>
       <div class="game-view" id="game-view" hidden>
@@ -211,9 +183,44 @@
       </div>
       <div class="question-view" id="question-view" hidden>
         <button type="button" class="view-back" id="question-back">← 返回五個選項</button>
-        <section class="question-section"><p class="eyebrow">THREE COVERED CARDS</p><h3>解鎖問題抽卡</h3><p>寫下一個當前問題，三張覆蓋牌會出現。挑一張當作換角度思考的提示；目前提供免費試玩，不收費，也不宣稱能預測結果。</p>
-          <form id="question-card-form"><label>你現在最想問的問題<textarea id="question-card-text" minlength="8" maxlength="300" required rows="3" placeholder="例：我該接受新的工作邀約，還是先留在原團隊？"></textarea></label><label>問題類型<select id="question-card-type"><option value="career">事業</option><option value="money">金錢</option><option value="love">關係</option><option value="decision">選擇</option><option value="other">其他</option></select></label><button type="submit">洗牌，產生三張覆蓋牌 →</button></form>
-          <div class="question-card-deck" id="question-card-deck" hidden aria-live="polite"></div><div class="question-card-result" id="question-card-result" hidden aria-live="polite"></div>
+        <section class="divination-section" id="divination">
+          <div class="divination-intro">
+            <p class="eyebrow">CURRENT SITUATION · 情境推演</p>
+            <h3>近期事件推演</h3>
+            <p>寫下你最近正在面對的事情。系統會以此刻、事件內容與你的命盤特質，整理最有利的發展條件、可採取的行動與需要避開的風險。</p>
+            <p class="price-line"><strong>NT$99</strong>／解鎖 1 次推演</p>
+          </div>
+          <div class="divination-action">
+            <div class="paywall" id="paywall">
+              <button type="button" id="unlock-button" disabled><span>藍新金流尚未開通</span><span aria-hidden="true">鎖</span></button>
+              <p class="payment-note" id="payment-note">藍新商店與安全付款後端尚待設定。目前不會收費，也不會產生推演結果。</p>
+            </div>
+            <form class="divination-form" id="divination-form" hidden>
+              <label>事件類型<select id="event-type"><option value="career">事業／工作</option><option value="money">金錢／投資</option><option value="love">愛情／關係</option><option value="decision">重大選擇</option><option value="other">其他</option></select></label>
+              <label>最近遇到的事情<textarea id="event-text" rows="4" minlength="8" maxlength="500" required placeholder="例：公司提出新的職務機會，但需要換到陌生團隊，我擔心發展性與適應問題……"></textarea></label>
+              <label>希望觀察的時間<select id="event-horizon"><option value="30">未來 30 天</option><option value="90">未來 3 個月</option><option value="365">未來 1 年</option></select></label>
+              <button type="submit"><span>結合命盤推演方向</span><span aria-hidden="true">→</span></button>
+            </form>
+          </div>
+          <div class="oracle-result" id="oracle-result" hidden>
+            <div class="hexagram"><small>本次卦象</small><strong id="hexagram-name"></strong><div class="hexagram-lines" id="hexagram-lines"></div><span id="hexagram-keyword"></span></div>
+            <div class="oracle-copy">
+              <span class="chapter">情境解讀</span><h3 id="oracle-title"></h3>
+              <div class="oracle-restate"><small>我理解的你的問題</small><p id="oracle-restate"></p></div>
+              <p id="oracle-summary"></p>
+              <div class="oracle-cross">
+                <small>五行性格 × 目前大運</small>
+                <p id="oracle-cross-copy"></p>
+                <div class="cross-grid" id="oracle-cross-grid"></div>
+              </div>
+              <div class="oracle-columns">
+                <div><h4>最有利的發展</h4><ul id="oracle-advantage"></ul></div>
+                <div><h4>建議採取</h4><ul id="oracle-actions"></ul></div>
+                <div><h4>避免風險</h4><ul id="oracle-risks"></ul></div>
+              </div>
+              <p class="oracle-note">卦象是用來換角度思考的提示，不是事件結果的保證；重大醫療、法律與財務決策請尋求合格專業意見。</p>
+            </div>
+          </div>
         </section>
       </div>
     </section>
@@ -245,8 +252,8 @@
             <dd>本站排盤採用精確的節氣與農曆換算，排盤結果具一定準確度；但文字解讀屬於本站設計的啟發式參考，僅供文化與自我反思使用，不是命定的預言，也不能取代醫療、心理、法律或財務專業建議。</dd>
             <dt>我的出生資料會被記錄下來嗎？</dt>
             <dd>不會。命盤與男女合盤的運算完全在你的瀏覽器裡完成，我們的伺服器接觸不到你的出生資料，詳見隱私權政策。</dd>
-            <dt>「解鎖問題抽卡」要付費嗎？</dt>
-            <dd>目前是免費試玩。你可寫一個問題、選三張覆蓋牌之一；本站尚未開放付費金流。</dd>
+            <dt>「近期事件推演」要付費嗎？</dt>
+            <dd>規劃為 NT$99／解鎖 1 次推演，但金流尚未開通，目前不會收費，也還無法產生推演結果。</dd>
             <dt>手掌照片會上傳嗎？</dt>
             <dd>不會。照片只在本機頁面預覽；目前由你自行選擇看到的紋路，不提供自動辨識或網路大數據判讀。</dd>
             <dt>我可以在手機上使用嗎？</dt>
@@ -270,6 +277,5 @@
   <script src="app.js"></script>
   <script src="compatibility.js"></script>
   <script src="palm.js"></script>
-  <script src="question-cards.js"></script>
 </body>
 </html>
