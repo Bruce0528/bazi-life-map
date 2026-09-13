@@ -269,14 +269,14 @@ body { background: #f7faf2; color: var(--ink); }
 .back-button { color: #577961; }
 .report-title h2 { color: #2b4c3b; font-weight: 800; }
 .report-title p:last-child,.calculation-note { color: #6d806f; }
-.day-master-badge { background: transparent; border: none; display: flex; gap: 16px; align-items: center; justify-content: center; }
-.badge-circle { width: 120px; height: 120px; border-radius: 50%; background: #eff7e8; border: 2px solid #a9c29e; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
-.badge-circle span { font-size: .75rem; color: #6d8060; font-weight: 600; letter-spacing: .05em; }
-.badge-circle strong { color: #57835a; font-size: 1rem; font-weight: 800; margin-top: 4px; line-height: 1; }
-.badge-circle small { font-size: .7rem; color: #608367; margin-top: 4px; text-align: center; line-height: 1.2; }
+.day-master-badge { background: transparent; border: none; display: flex; gap: 12px; align-items: center; justify-content: flex-end; margin-left: auto; }
+.badge-circle { width: 100px; height: 100px; border-radius: 50%; background: #eff7e8; border: 2px solid #a9c29e; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+.badge-circle span { font-size: .7rem; color: #6d8060; font-weight: 600; letter-spacing: .03em; }
+.badge-circle strong { color: #57835a; font-size: .95rem; font-weight: 800; margin-top: 3px; line-height: 1; }
+.badge-circle small { font-size: .65rem; color: #608367; margin-top: 2px; text-align: center; line-height: 1.1; }
 .main-gua-circle { background: linear-gradient(135deg, #f9e5a8 0%, #f2d896 100%); border-color: #d9a74d; }
-.gua-number { font-size: 2rem; font-weight: 800; color: #5d6b3a; line-height: 1; }
-.gua-label { font-size: .75rem; color: #6d8060; font-weight: 600; margin-top: 4px; letter-spacing: .05em; }
+.gua-number { font-size: 1.8rem; font-weight: 800; color: #5d6b3a; line-height: 1; }
+.gua-label { font-size: .7rem; color: #6d8060; font-weight: 600; margin-top: 2px; letter-spacing: .03em; }
 .report-quicknav { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0 28px; }
 .report-quicknav button { display: flex; align-items: center; gap: 8px; padding: 10px 18px; border: 1px solid #cfe1c7; border-radius: 999px; background: #fbfdf7; color: #3c6744; font: 700 .85rem var(--sans); cursor: pointer; transition: transform .15s,box-shadow .15s,border-color .15s; }
 .report-quicknav button:hover,.report-quicknav button:focus-visible { transform: translateY(-2px); border-color: #86ac7c; box-shadow: 0 8px 18px rgba(70,110,72,.12); outline: none; }
