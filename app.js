@@ -158,12 +158,13 @@ function buildNumericYijing(input){
  const ly=lunar.getYear(),lm=lunar.getMonth(),ld=lunar.getDay(),leap=lm<0,rocYear=Math.abs(ly)-1911;
  const digitsStr=String(Math.abs(rocYear))+String(Math.abs(lm))+String(ld).padStart(2,'0');
  const digits=digitsStr.split('').map(Number),pairs=[];
- for(let i=0;i<digits.length-1;i++)pairs.push({a:digits[i],b:digits[i+1],key:classifyNumPair(digits[i],digits[i+1])});
+ for(let i=0;i<digits.length-1;i++)pairs.push({a:digits[i],b:digits[i+1],num:String(digits[i])+String(digits[i+1]),key:classifyNumPair(digits[i],digits[i+1])});
  const counts={};Object.keys(numGuaMeta).forEach(function(k){counts[k]=0});pairs.forEach(function(p){counts[p.key]++});
  const present=Object.keys(counts).filter(function(k){return counts[k]>0}).sort(function(x,y){return counts[y]-counts[x]});
  const goodKeys=['生氣','天醫','延年','伏位'],badKeys=['禍害','六煞','五鬼','絕命'];
  const goodCount=goodKeys.reduce(function(s,k){return s+counts[k]},0),badCount=badKeys.reduce(function(s,k){return s+counts[k]},0);
- return{lunarLabel:'農曆（民國 '+rocYear+' 年）'+Math.abs(lm)+(leap?'（閏）':'')+' 月 '+ld+' 日',digitsStr:digitsStr,digits:digits,pairs:pairs,counts:counts,present:present,goodCount:goodCount,badCount:badCount};
+ const mainGua=pairs.length>0?{num:pairs[pairs.length-1].num,name:pairs[pairs.length-1].key}:null;
+ return{lunarLabel:'農曆（民國 '+rocYear+' 年）'+Math.abs(lm)+(leap?'（閏）':'')+' 月 '+ld+' 日',digitsStr:digitsStr,digits:digits,pairs:pairs,counts:counts,present:present,goodCount:goodCount,badCount:badCount,mainGua:mainGua};
 }
 function renderNumericYijing(){
  if(!currentReading)return;
@@ -270,8 +271,8 @@ function buildReading(input){
  fill('#risk-cards',advice('體質傾向','慣性風險',sp.risks[0])+advice('思考盲點','視角風險',sp.risks[1])+advice('本階段風險',chart.dominant+'（'+groupData[chart.dominant].label+'）用過頭',groupData[chart.dominant].risk)+advice('防護機制','事前清單','重大決定前先寫下成功標準、最大成本與退出條件，並找一位敢對你說不同意見的人。'));
  const luck=buildLuck(ps,input.date,input.time,input.gender,chart);buildBenefactor(chart.balance);
  const beastMatch=BaziBeasts.classify(chart),capabilities=BaziBeasts.capabilities(chart);
- const ny=buildNumericYijing(input),mainGua=ny.pairs.length>0?ny.pairs[ny.pairs.length-1]:null;
- const reading={pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,dayStemIndex:day,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:luck.currentCycle,lifeGameStations:luck.stations,character:character.profile,characterMatch:character,beastMatch:beastMatch,capabilities:capabilities,birthInput:{date:input.date,time:input.time},numericGua:{digitsStr:ny.digitsStr,mainGua:mainGua}};
+ const ny=buildNumericYijing(input);
+ const reading={pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,dayStemIndex:day,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:luck.currentCycle,lifeGameStations:luck.stations,character:character.profile,characterMatch:character,beastMatch:beastMatch,capabilities:capabilities,birthInput:{date:input.date,time:input.time},numericGua:{digitsStr:ny.digitsStr,mainGua:ny.mainGua}};
  renderLifeGame(reading);
  return reading;
 }
