@@ -296,7 +296,7 @@ function renderLifeGameStage(){
  document.querySelector('#lifegame-board').style.setProperty('--lg-progress',(st.round/BaziLifeGame.stages.length*100)+'%');
  renderLifeGameStats(st.stats);
  if(st.phase==='choose'){
-  fill('#lifegame-stage','<div class="lg-station"><span class="lg-beast-avatar" aria-hidden="true">'+beast.icon+'</span><div><small>命格獸 '+beast.name+' 陪你走這一關 · 第 '+(st.round+1)+'／8 關</small><b>'+stage.name+'</b><p>從兩張情境卡中挑一張，你會看到每張卡對四項數值的不同取捨。</p></div></div><div class="lg-choices lg-two-cards">'+stage.cards.map(function(card,i){return'<button type="button" data-c="'+i+'"><small>情境 '+['A','B'][i]+'</small><b>'+card.title+'</b><span>'+card.story+'</span><small>'+gameTradeoff(card.delta)+'</small></button>'}).join('')+'</div>');
+  fill('#lifegame-stage','<div class="lg-station"><span class="lg-beast-avatar" aria-hidden="true">'+beast.icon+'</span><div><small>命格獸 '+beast.name+' 陪你走這一關 · 第 '+(st.round+1)+'／8 關</small><b>'+stage.name+'</b><p>'+stage.question+'</p></div></div><div class="lg-choices lg-two-cards">'+stage.cards.map(function(card,i){return'<button type="button" data-c="'+i+'"><small>回答 '+['A','B'][i]+'</small><b>'+card.title+'</b><span>'+card.story+'</span></button>'}).join('')+'</div>');
   document.querySelectorAll('#lifegame-stage .lg-choices button').forEach(function(btn){btn.addEventListener('click',function(){BaziLifeGame.choose(st,Number(btn.dataset.c));renderLifeGameStage()})});
  }else if(st.phase==='result'){
   const last=st.history[st.history.length-1];
