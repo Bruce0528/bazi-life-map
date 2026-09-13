@@ -82,6 +82,7 @@
       </div>
       <nav class="report-quicknav" aria-label="其他體驗">
         <button type="button" id="choose-daily"><span aria-hidden="true">☀</span>每日運勢</button>
+        <button type="button" id="choose-numgua"><span aria-hidden="true">卦</span>數字易經</button>
         <button type="button" id="choose-compatibility"><span aria-hidden="true">♡</span>男女合盤分析</button>
         <button type="button" id="choose-game"><span aria-hidden="true">✿</span>解鎖模擬人生</button>
       </nav>
@@ -161,6 +162,13 @@
         <section class="daily-section" aria-labelledby="daily-title">
           <div class="section-heading"><div><p class="eyebrow">DAILY FORTUNE · 每日運勢</p><h3 id="daily-title">今日運勢</h3></div><p>以你的日主對照今天的干支與排盤引擎內建的黃曆資料，整理今天的宜忌、財運、貴人方位與健康提醒。每天重新打開都會依當天日期更新。</p></div>
           <div id="daily-fortune"></div>
+        </section>
+      </div>
+      <div class="numgua-view" id="numgua-view" hidden>
+        <button type="button" class="view-back" id="numgua-back">← 返回命盤</button>
+        <section class="numgua-section" aria-labelledby="numgua-title">
+          <div class="section-heading"><div><p class="eyebrow">NUMBER YI JING · 數字易經</p><h3 id="numgua-title">數字易經</h3></div><p>先把你的國曆生辰換算成農曆日期，再把日期拆成一組數字，兩兩相鄰對照傳統「大遊年」數字磁場表：伏位、生氣、天醫、延年屬吉，禍害、六煞、五鬼、絕命屬凶。</p></div>
+          <div id="numgua-fortune"></div>
         </section>
       </div>
     </section>

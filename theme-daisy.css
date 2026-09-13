@@ -283,6 +283,20 @@ body { background: #f7faf2; color: var(--ink); }
 .daily-head p { margin: 0; color: #4d6c53; }
 .daily-stars { font-size: 1.5rem; letter-spacing: .1em; color: #e0ac3a; white-space: nowrap; }
 .daily-disclaimer { margin: 20px 0 0; padding: 13px 16px; border: 1px solid #dbe6d5; border-radius: 10px; background: #fbfdf7; color: #6a7d6d; font-size: .8rem; line-height: 1.65; }
+.numgua-head { padding: 20px 22px; margin: 18px 0 20px; border: 1px solid #d9e8cf; border-radius: 16px; background: #f5faef; }
+.numgua-head small { color: #6c916e; font-weight: 700; letter-spacing: .04em; }
+.numgua-head h3 { margin: 6px 0; color: #2b4c3b; font: 800 clamp(1.2rem,2.4vw,1.5rem) var(--serif); letter-spacing: .04em; }
+.numgua-head p { margin: 0; color: #4d6c53; }
+.numgua-trail { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 0 0 24px; }
+.numgua-pair { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 58px; padding: 12px 8px; border: 1px solid #d5e5cf; border-radius: 12px; background: #fbfdf7; }
+.numgua-pair.numgua-吉 { border-color: #a9d19f; background: #eaf6e4; }
+.numgua-pair.numgua-凶 { border-color: #e3b0a0; background: #fbf0ec; }
+.numgua-digits { font: 800 1.3rem var(--serif); color: #2b4c3b; letter-spacing: .05em; }
+.numgua-pair small { font-size: .74rem; font-weight: 700; color: #557a5c; }
+.numgua-pair.numgua-凶 small { color: #a05a45; }
+.numgua-link { color: #a9c29e; font-size: 1rem; flex: 0 0 auto; }
+.numgua-disclaimer { margin: 20px 0 0; padding: 13px 16px; border: 1px solid #dbe6d5; border-radius: 10px; background: #fbfdf7; color: #6a7d6d; font-size: .8rem; line-height: 1.65; }
+@media(max-width:650px){.numgua-link { display: none; }}
 @media(max-width:650px){.daily-head { flex-direction: column; align-items: flex-start; }}
 .pillars { border-radius: 18px; overflow: hidden; box-shadow: 0 14px 36px rgba(65,101,65,.14); }
 .pillar { background: #456d51; }

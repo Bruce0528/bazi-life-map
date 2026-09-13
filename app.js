@@ -29,10 +29,11 @@ function buildBenefactor(weak){
 }
 let currentReading=null;
 function openResultView(view){
- document.querySelector('#report-eyebrow').textContent={chart:'命盤結果 · PERSONAL READING',game:'角色遊戲 · LIFE SIMULATION',daily:'每日運勢 · DAILY FORTUNE'}[view];
+ document.querySelector('#report-eyebrow').textContent={chart:'命盤結果 · PERSONAL READING',game:'角色遊戲 · LIFE SIMULATION',daily:'每日運勢 · DAILY FORTUNE',numgua:'數字易經 · NUMBER YI JING'}[view];
  document.querySelector('#chart-view').hidden=view!=='chart';
  document.querySelector('#game-view').hidden=view!=='game';
  document.querySelector('#daily-view').hidden=view!=='daily';
+ document.querySelector('#numgua-view').hidden=view!=='numgua';
  if(view==='game'){
   document.querySelector('#game-picker').hidden=false;
   document.querySelector('#lifegame').hidden=true;
@@ -45,6 +46,8 @@ function showReport(input){const result=buildReading(input);currentReading=resul
 document.querySelector('#choose-game').addEventListener('click',function(){openResultView('game')});
 document.querySelector('#choose-daily').addEventListener('click',function(){renderDailyFortune();openResultView('daily')});
 document.querySelector('#daily-back').addEventListener('click',function(){openResultView('chart')});
+document.querySelector('#choose-numgua').addEventListener('click',function(){renderNumericYijing();openResultView('numgua')});
+document.querySelector('#numgua-back').addEventListener('click',function(){openResultView('chart')});
 document.querySelector('#choose-compatibility').addEventListener('click',function(){document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
 document.querySelector('#nav-compatibility').addEventListener('click',function(event){event.preventDefault();document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
 document.querySelector('#compatibility-return').addEventListener('click',function(){document.querySelector('#report').hidden=false;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;openResultView('chart')});
@@ -131,6 +134,44 @@ function renderDailyFortune(){
  if(!currentReading)return;
  const df=buildDailyFortune(currentReading),group=df.group,stars='★'.repeat(df.stars)+'☆'.repeat(5-df.stars);
  fill('#daily-fortune','<div class="daily-head"><div><small>'+df.dateLabel+' · '+df.ganzhi+'日</small><h3>今天對你來說，是「'+df.god+'（'+groupData[group].label+'）」的日子</h3><p>值日星判斷屬於「'+df.tianShenLuck+'」，整體走勢偏向「'+df.tone+'」。</p></div><div class="daily-stars" aria-label="今日星等 '+df.stars+' 顆星">'+stars+'</div></div>'+'<div class="advice-cards">'+advice('今日宜做什麼','把握「'+groupData[group].label+'」的節奏',luckActionByGod[group])+advice('有什麼好運','今天環繞的主題：'+luckThemeByGod[group],dailyGoodLuckLine[df.tone])+advice('身體健康須注意',groupData[group].label+'型的體質提醒',healthByGod[group].copy)+advice('事業發展需注意','避免「'+group+'」用過頭',luckWarningByGod[group]+'；'+groupData[group].risk)+advice('貴人運','貴人方位：'+df.guiPos,'今天若遇到具備「'+groupData[group].talents[0]+'」特質的人主動伸出援手，特別把握這個機會。')+advice('財運','財神方位：'+df.caiPos,financeByGod[group])+'</div>'+'<p class="daily-disclaimer">沖'+df.chongAnimal+'肖；喜神方位在'+df.xiPos+'。本頁以你的日主對照今天的干支與排盤引擎內建的黃曆資料產生，僅供文化參考與自我提醒，不是對今天的預言，也不能取代醫療、法律或財務專業建議。</p>');
+}
+/* 數字易經：先把國曆生辰換算成農曆日期，再用傳統「數字磁場／大遊年」對照表解讀每一組相鄰數字。伏位/生氣/天醫/延年為吉，禍害/六煞/五鬼/絕命為凶；0與5或相同數字一律視為伏位。 */
+const numGuaPairs={生氣:[[1,4],[6,7],[3,9],[2,8]],天醫:[[1,3],[6,8],[4,9],[2,7]],延年:[[1,9],[7,8],[3,4],[2,6]],禍害:[[1,7],[2,3],[4,6],[8,9]],六煞:[[1,6],[2,9],[3,8],[4,7]],五鬼:[[1,8],[7,9],[3,6],[2,4]],絕命:[[1,2],[3,7],[4,8],[6,9]]};
+const numGuaMeta={
+ 伏位:{luck:'中性',tag:'蓄勢待發',desc:'代表安穩與固守：事情多半照原本的步調走，不容易出大亂子，但也少有意外的驚喜，適合守成而不是躁進。'},
+ 生氣:{luck:'吉',tag:'貴人與轉機',desc:'傳統上是八組裡最活躍的一組，代表新的機會、貴人與人氣，適合主動出擊、認識新的人事物。'},
+ 天醫:{luck:'吉',tag:'健康與財富',desc:'與健康、財富和貴人資源有關，傳統上認為這組數字有助於累積與復原，也常被拿來化解其他凶星。'},
+ 延年:{luck:'吉',tag:'責任與長久',desc:'代表穩定綿長的力量，與人際關係、婚姻和事業的長期經營有關，適合需要耐心累積的事。'},
+ 禍害:{luck:'凶',tag:'口舌與衝擊',desc:'傳統上多與口舌是非、小摩擦有關，程度較輕，提醒溝通時多一分耐性。'},
+ 六煞:{luck:'凶',tag:'矛盾與反覆',desc:'代表猶豫、反覆與人際間的小矛盾，重大決定前建議多給自己一點時間確認。'},
+ 五鬼:{luck:'凶',tag:'變動與意外',desc:'與突發變動、耗財或人事紛擾有關，傳統上建議這段期間行事更謹慎、多留備案。'},
+ 絕命:{luck:'凶',tag:'波動最大',desc:'八組裡波動最大的一組，傳統上提醒健康、財務或關係要格外留意風險控管。'}
+};
+function classifyNumPair(a,b){
+ if(a===0||a===5||b===0||b===5||a===b)return'伏位';
+ const key=Object.keys(numGuaPairs).find(function(k){return numGuaPairs[k].some(function(p){return(p[0]===a&&p[1]===b)||(p[0]===b&&p[1]===a)})});
+ return key||'伏位';
+}
+function buildNumericYijing(input){
+ const a=input.date.split('-').map(Number),t=(input.time||'12:00').split(':').map(Number);
+ const solar=Solar.fromYmdHms(a[0],a[1],a[2],t[0]||0,t[1]||0,0),lunar=solar.getLunar();
+ const ly=lunar.getYear(),lm=lunar.getMonth(),ld=lunar.getDay(),leap=lm<0,rocYear=Math.abs(ly)-1911;
+ const digitsStr=String(Math.abs(rocYear))+String(Math.abs(lm))+String(ld).padStart(2,'0');
+ const digits=digitsStr.split('').map(Number),pairs=[];
+ for(let i=0;i<digits.length-1;i++)pairs.push({a:digits[i],b:digits[i+1],key:classifyNumPair(digits[i],digits[i+1])});
+ const counts={};Object.keys(numGuaMeta).forEach(function(k){counts[k]=0});pairs.forEach(function(p){counts[p.key]++});
+ const present=Object.keys(counts).filter(function(k){return counts[k]>0}).sort(function(x,y){return counts[y]-counts[x]});
+ const goodKeys=['生氣','天醫','延年','伏位'],badKeys=['禍害','六煞','五鬼','絕命'];
+ const goodCount=goodKeys.reduce(function(s,k){return s+counts[k]},0),badCount=badKeys.reduce(function(s,k){return s+counts[k]},0);
+ return{lunarLabel:'農曆（民國 '+rocYear+' 年）'+Math.abs(lm)+(leap?'（閏）':'')+' 月 '+ld+' 日',digitsStr:digitsStr,digits:digits,pairs:pairs,counts:counts,present:present,goodCount:goodCount,badCount:badCount};
+}
+function renderNumericYijing(){
+ if(!currentReading)return;
+ const input=currentReading.birthInput||{date:'',time:''};
+ const ny=buildNumericYijing(input);
+ const trail=ny.pairs.map(function(p){const meta=numGuaMeta[p.key];return'<div class="numgua-pair numgua-'+meta.luck+'"><span class="numgua-digits">'+p.a+p.b+'</span><small>'+p.key+'</small></div>'}).join('<span class="numgua-link" aria-hidden="true">→</span>');
+ const overall=ny.badCount===0?'這組數字幾乎都落在吉星，屬於比較平順、少波折的組合。':ny.goodCount>=ny.badCount*2?'吉星明顯較多，整體走向偏向平順，遇到的凶星影響也相對有限。':ny.badCount>ny.goodCount?'凶星比重不低，代表這組數字提醒你多一分謹慎，尤其在對應的面向上。':'吉凶星大致參半，好壞都要看你怎麼因應，不是單純的好或壞。';
+ fill('#numgua-fortune','<div class="numgua-head"><small>國曆 '+input.date.replaceAll('-','.')+' → '+ny.lunarLabel+'</small><h3>數字組合：'+ny.digitsStr+'</h3><p>'+overall+'</p></div>'+'<div class="numgua-trail">'+trail+'</div>'+'<div class="advice-cards">'+ny.present.map(function(k){const meta=numGuaMeta[k];return advice(k+'（'+meta.luck+'）· 出現 '+ny.counts[k]+' 次',meta.tag,meta.desc)}).join('')+'</div>'+'<p class="numgua-disclaimer">數字易經（數字磁場）是把出生農曆日期拆成相鄰兩位數字，對照傳統「大遊年」吉凶表解讀的民俗玩法：伏位、生氣、天醫、延年屬吉，禍害、六煞、五鬼、絕命屬凶；0與5或相同數字一律歸類為伏位。同一天出生換算結果固定不變，僅供文化參考與自我觀察，不是命定的吉凶判斷，也不能取代醫療、法律或財務專業建議。</p>');
 }
 const relationsByGod={
  比劫:{copy:'在關係裡，你重視「對等」勝過「浪漫」：比起被追求，你更想被當成勢均力敵的夥伴。伴侶若也能有自己的重心與空間，這段關係反而走得更穩。',cards:[['相處優勢','平等對待','不會用情緒勒索或道德綁架控制對方，也讓人感覺被尊重。'],['常見摩擦','較量心','意見不合時，先分清楚你們是在討論事情，還是在爭輸贏。'],['愛情訊號','各自留白','感情穩定不代表要隨時黏在一起，保有各自生活反而更持久。'],['邊界提醒','少比較','避免拿伴侶和別人比較來激勵對方，這容易被解讀成不被珍惜。']]},
@@ -229,7 +270,7 @@ function buildReading(input){
  fill('#risk-cards',advice('體質傾向','慣性風險',sp.risks[0])+advice('思考盲點','視角風險',sp.risks[1])+advice('本階段風險',chart.dominant+'（'+groupData[chart.dominant].label+'）用過頭',groupData[chart.dominant].risk)+advice('防護機制','事前清單','重大決定前先寫下成功標準、最大成本與退出條件，並找一位敢對你說不同意見的人。'));
  const luck=buildLuck(ps,input.date,input.time,input.gender,chart);buildBenefactor(chart.balance);
  const beastMatch=BaziBeasts.classify(chart),capabilities=BaziBeasts.capabilities(chart);
- const reading={pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,dayStemIndex:day,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:luck.currentCycle,lifeGameStations:luck.stations,character:character.profile,characterMatch:character,beastMatch:beastMatch,capabilities:capabilities};
+ const reading={pillars:ps.map(function(p){return stems[p.s]+branches[p.b]}),dayMaster:stems[day]+chart.master,dayStemIndex:day,strongElement:chart.strong,balancingElement:chart.balance,dayStrength:chart.strength,dominantTenGod:chart.dominant,skills:sp.skills,risks:sp.risks,currentCycle:luck.currentCycle,lifeGameStations:luck.stations,character:character.profile,characterMatch:character,beastMatch:beastMatch,capabilities:capabilities,birthInput:{date:input.date,time:input.time}};
  renderLifeGame(reading);
  return reading;
 }
