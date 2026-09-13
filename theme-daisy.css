@@ -269,7 +269,7 @@ body { background: #f7faf2; color: var(--ink); }
 .back-button { color: #577961; }
 .report-title h2 { color: #2b4c3b; font-weight: 800; }
 .report-title p:last-child,.calculation-note { color: #6d806f; }
-.day-master-badge { background: transparent; border: none; display: flex; gap: 12px; align-items: center; justify-content: flex-end; margin-left: auto; }
+.day-master-badge { background: transparent; border: none; display: flex; gap: 16px; align-items: center; justify-content: flex-end; margin-left: auto; flex-direction: row; }
 .badge-circle { width: 100px; height: 100px; border-radius: 50%; background: #eff7e8; border: 2px solid #a9c29e; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
 .badge-circle span { font-size: .7rem; color: #6d8060; font-weight: 600; letter-spacing: .03em; }
 .badge-circle strong { color: #57835a; font-size: .95rem; font-weight: 800; margin-top: 3px; line-height: 1; }
