@@ -18,16 +18,6 @@
   </header>
 
   <main id="top">
-    <section class="result-choice" id="landing-choice" aria-labelledby="landing-choice-title">
-      <p class="eyebrow">CHOOSE YOUR PATH</p><h3 id="landing-choice-title">接下來，想先走哪一條路？</h3>
-      <p>四種體驗各有自己的入口；免費項目清楚標示，尚未開通金流的項目不會扣款。</p>
-      <div class="result-choice-grid">
-        <button type="button" id="land-chart"><span class="choice-icon" aria-hidden="true">☯</span><small>01 · 免費</small><b>命盤分析</b><span>五行、核心特質、人生面向與十年大運</span><em aria-hidden="true">↗</em></button>
-        <button type="button" id="land-compatibility"><span class="choice-icon" aria-hidden="true">♡</span><small>02 · 免費</small><b>男女合盤分析</b><span>兩人命盤互動、生活偏好與相處建議</span><em aria-hidden="true">↗</em></button>
-        <button type="button" id="land-game"><span class="choice-icon" aria-hidden="true">✿</span><small>03 · 免費試玩</small><b>解鎖模擬人生</b><span>一隻命格獸、八個關卡、雙情境與破圈分數</span><em aria-hidden="true">↗</em></button>
-        <button type="button" id="land-palm"><span class="choice-icon" aria-hidden="true">☼</span><small>04 · 拍照體驗</small><b>手相分析</b><span>自選性別與左右手；照片只留在本機</span><em aria-hidden="true">↗</em></button>
-      </div>
-    </section>
     <section class="workbench" aria-labelledby="page-title">
       <div class="intro">
         <p class="eyebrow">✿ FOUR PILLARS · LIFE MAP</p>
@@ -90,18 +80,11 @@
         </div>
         <div class="day-master-badge"><span>日主</span><strong id="day-master">乙木</strong><small id="day-trait">陰木 · 柔韌生長</small></div>
       </div>
-      <section class="result-choice" id="result-choice" aria-labelledby="result-choice-title">
-        <p class="eyebrow">CHOOSE YOUR PATH</p><h3 id="result-choice-title">接下來，想先走哪一條路？</h3>
-        <p>四種體驗各有自己的入口；免費項目清楚標示，尚未開通金流的項目不會扣款。</p>
-        <div class="result-choice-grid">
-          <button type="button" id="choose-chart"><span class="choice-icon" aria-hidden="true">☯</span><small>01 · 免費</small><b>命盤分析</b><span>五行、核心特質、人生面向與十年大運</span><em aria-hidden="true">↗</em></button>
-          <button type="button" id="choose-compatibility"><span class="choice-icon" aria-hidden="true">♡</span><small>02 · 免費</small><b>男女合盤分析</b><span>兩人命盤互動、生活偏好與相處建議</span><em aria-hidden="true">↗</em></button>
-          <button type="button" id="choose-game"><span class="choice-icon" aria-hidden="true">✿</span><small>03 · 免費試玩</small><b>解鎖模擬人生</b><span>一隻命格獸、八個關卡、雙情境與破圈分數</span><em aria-hidden="true">↗</em></button>
-          <button type="button" id="choose-palm"><span class="choice-icon" aria-hidden="true">☼</span><small>04 · 拍照體驗</small><b>手相分析</b><span>自選性別與左右手；照片只留在本機</span><em aria-hidden="true">↗</em></button>
-        </div>
-      </section>
+      <nav class="report-quicknav" aria-label="其他體驗">
+        <button type="button" id="choose-compatibility"><span aria-hidden="true">♡</span>男女合盤分析</button>
+        <button type="button" id="choose-game"><span aria-hidden="true">✿</span>解鎖模擬人生</button>
+      </nav>
       <div class="chart-view" id="chart-view" hidden>
-      <button type="button" class="view-back" id="chart-back">← 返回四個選項</button>
       <div class="pillars" id="pillars"></div>
       <p class="calculation-note" id="calculation-note"></p>
       <div class="dashboard-grid">
@@ -151,7 +134,7 @@
       <footer class="report-footer"><span>時序命盤</span><p>把命盤當成鏡子，別把它當成答案。真正改變人生的，仍是你的選擇與行動。排盤使用 <a href="https://github.com/6tail/lunar-javascript" target="_blank" rel="noopener noreferrer">lunar-javascript</a>（MIT 授權）。</p></footer>
       </div>
       <div class="game-view" id="game-view" hidden>
-        <button type="button" class="view-back" id="game-back">← 返回四個選項</button>
+        <button type="button" class="view-back" id="game-back">← 返回命盤</button>
         <div id="game-picker">
           <section class="beast-section" aria-labelledby="beast-title">
             <div class="section-heading"><div><p class="eyebrow">YOUR GAME CHARACTER</p><h3 id="beast-title">你的八分之一命格獸</h3></div><p>輸入生辰後，系統會從八種角色選出一隻。分類參考五行、十神與強弱，不是生肖，也不是人格或命運定論。</p></div>
@@ -172,17 +155,6 @@
           </div>
         </section>
       </div>
-      <div class="palm-view" id="palm-view" hidden>
-        <button type="button" class="view-back" id="palm-back">← 返回四個選項</button>
-        <section class="palm-section"><p class="eyebrow">PALM READING · LOCAL ONLY</p><h3>手相分析</h3><p>先選性別與要觀察的手掌，再拍照或上傳照片。照片只在本機預覽、不上傳；目前沒有可信的線條辨識或「網路大數據」模型，因此請自行觀察紋路清晰度，以下只提供文化娛樂性解讀。</p>
-          <div class="palm-setup">
-            <label>性別<select id="palm-gender"><option value="male">男生</option><option value="female">女生</option></select></label>
-            <label>觀察哪一手<select id="palm-side"><option value="left">左手掌</option><option value="right">右手掌</option></select></label>
-          </div>
-          <div class="palm-grid"><div class="palm-slot"><b id="palm-slot-label">男生 · 左手掌</b><label>拍照或選照片<input id="palm-photo" type="file" accept="image/*" capture="environment"></label><button type="button" class="palm-camera" id="palm-camera-btn">開啟相機</button><video id="palm-video" autoplay playsinline muted hidden></video><button type="button" class="palm-snap" id="palm-snap-btn" hidden>拍下手掌</button><img id="palm-preview" alt="手掌照片預覽" hidden></div></div><p id="palm-camera-status" role="status"></p>
-          <div class="palm-observe"><h4>對照照片，選擇你看到的紋路</h4><p>生命線沿拇指根部彎曲、感情線在手指下方橫向延伸、智慧線橫貫掌心中段、命運線多為縱向。生命線的長短不代表壽命。</p><div id="palm-questions"></div><button type="button" id="palm-analyze">產生手相分析筆記</button></div><div id="palm-result" hidden aria-live="polite"></div>
-        </section>
-      </div>
     </section>
 
     <section class="policy-section" id="site-info">
@@ -199,7 +171,7 @@
         </article>
         <article id="privacy-policy">
           <h3>隱私權政策</h3>
-          <p><strong>本機處理。</strong>命盤、合盤與遊戲的輸入在瀏覽器中處理。手掌照片只在本機預覽；本站沒有上傳照片或將照片送到外部辨識服務。</p>
+          <p><strong>本機處理。</strong>命盤、合盤與遊戲的輸入都在你的瀏覽器中處理，本站沒有上傳或取得這些資料。</p>
           <p><strong>付款相關資料。</strong>金流尚未開通，本站目前不收費，也不會要求你輸入信用卡資訊。</p>
           <p><strong>瀏覽器儲存。</strong>舊版功能可能曾在本機 localStorage 留下技術性解鎖標記；此版不使用它來收費或解鎖新功能。</p>
           <p><strong>第三方追蹤。</strong>本站目前不使用第三方廣告或行為追蹤工具。</p>
@@ -212,8 +184,6 @@
             <dd>本站排盤採用精確的節氣與農曆換算，排盤結果具一定準確度；但文字解讀屬於本站設計的啟發式參考，僅供文化與自我反思使用，不是命定的預言，也不能取代醫療、心理、法律或財務專業建議。</dd>
             <dt>我的出生資料會被記錄下來嗎？</dt>
             <dd>不會。命盤與男女合盤的運算完全在你的瀏覽器裡完成，我們的伺服器接觸不到你的出生資料，詳見隱私權政策。</dd>
-            <dt>手掌照片會上傳嗎？</dt>
-            <dd>不會。照片只在本機頁面預覽；目前由你自行選擇看到的紋路，不提供自動辨識或網路大數據判讀。</dd>
             <dt>我可以在手機上使用嗎？</dt>
             <dd>可以，本站已針對手機瀏覽器做過版面優化。</dd>
           </dl>
@@ -234,6 +204,5 @@
   <script src="life-game.js"></script>
   <script src="app.js"></script>
   <script src="compatibility.js"></script>
-  <script src="palm.js"></script>
 </body>
 </html>

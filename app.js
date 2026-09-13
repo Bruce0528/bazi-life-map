@@ -27,13 +27,11 @@ function buildBenefactor(weak){
  const data=[['特質','<span class="element-icon" style="color:'+colors[weak]+'">'+elementIcons[weak]+'</span>'+profiles[weak].trait],['方位隱喻',dirs[weak][0]],['場域',dirs[weak][1]],['相處關鍵','主動請益']];
  fill('#benefactor-compass',data.map(function(x){return '<div class="compass-item"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>'}).join(''));
 }
-let currentReading=null;let pendingView=null;
+let currentReading=null;
 function openResultView(view){
- document.querySelector('#report-eyebrow').textContent={choice:'生辰已排好 · CHOOSE A PATH',chart:'命盤結果 · PERSONAL READING',game:'角色遊戲 · LIFE SIMULATION',palm:'手相分析 · PALM READING'}[view];
- document.querySelector('#result-choice').hidden=view!=='choice';
+ document.querySelector('#report-eyebrow').textContent={chart:'命盤結果 · PERSONAL READING',game:'角色遊戲 · LIFE SIMULATION'}[view];
  document.querySelector('#chart-view').hidden=view!=='chart';
  document.querySelector('#game-view').hidden=view!=='game';
- document.querySelector('#palm-view').hidden=view!=='palm';
  if(view==='game'){
   document.querySelector('#game-picker').hidden=false;
   document.querySelector('#lifegame').hidden=true;
@@ -42,25 +40,12 @@ function openResultView(view){
  }
  window.scrollTo({top:0,behavior:'smooth'});
 }
-function showReport(input){const result=buildReading(input);currentReading=result;document.querySelector('#landing-choice').hidden=true;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;document.querySelector('#report').hidden=false;openResultView(pendingView||'choice');pendingView=null;return result}
-document.querySelector('#choose-chart').addEventListener('click',function(){openResultView('chart')});
+function showReport(input){const result=buildReading(input);currentReading=result;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;document.querySelector('#report').hidden=false;openResultView('chart');return result}
 document.querySelector('#choose-game').addEventListener('click',function(){openResultView('game')});
-document.querySelector('#choose-palm').addEventListener('click',function(){openResultView('palm')});
-document.querySelector('#choose-compatibility').addEventListener('click',function(){document.querySelector('#landing-choice').hidden=true;document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
-/* 首頁「接下來想先走哪一條路」入口：已有命盤就直接跳頁，還沒有就先捲到生辰表單並記住目的地 */
-function goToPath(view){
- if(currentReading){document.querySelector('#landing-choice').hidden=true;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;document.querySelector('#report').hidden=false;openResultView(view)}
- else{pendingView=view;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#report').hidden=true;document.querySelector('.workbench').scrollIntoView({behavior:'smooth',block:'start'})}
-}
-document.querySelector('#land-chart').addEventListener('click',function(){goToPath('chart')});
-document.querySelector('#land-game').addEventListener('click',function(){goToPath('game')});
-document.querySelector('#land-palm').addEventListener('click',function(){goToPath('palm')});
-document.querySelector('#land-compatibility').addEventListener('click',function(){document.querySelector('#landing-choice').hidden=true;document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
-document.querySelector('#nav-compatibility').addEventListener('click',function(event){event.preventDefault();document.querySelector('#landing-choice').hidden=true;document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
-document.querySelector('#compatibility-return').addEventListener('click',function(){document.querySelector('#report').hidden=false;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;openResultView('choice')});
-document.querySelector('#chart-back').addEventListener('click',function(){openResultView('choice')});
-document.querySelector('#game-back').addEventListener('click',function(){openResultView('choice')});
-document.querySelector('#palm-back').addEventListener('click',function(){openResultView('choice')});
+document.querySelector('#choose-compatibility').addEventListener('click',function(){document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
+document.querySelector('#nav-compatibility').addEventListener('click',function(event){event.preventDefault();document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
+document.querySelector('#compatibility-return').addEventListener('click',function(){document.querySelector('#report').hidden=false;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;openResultView('chart')});
+document.querySelector('#game-back').addEventListener('click',function(){openResultView('chart')});
 const gameGallery=document.querySelector('#ip-gallery');if(gameGallery)gameGallery.addEventListener('click',function(event){
  const button=event.target.closest('button[data-ip]');
  if(!button||!currentReading)return;
@@ -70,7 +55,7 @@ const gameGallery=document.querySelector('#ip-gallery');if(gameGallery)gameGalle
  BaziIps.render(currentReading.characterMatch,chosen.id);
 });
 document.querySelector('#birth-form').addEventListener('submit',function(event){event.preventDefault();const input={name:document.querySelector('#name').value.trim(),date:document.querySelector('#birth-date').value,time:document.querySelector('#birth-time').value,gender:document.querySelector('#gender').value};if(!input.date||!input.time)return;const button=event.currentTarget.querySelector('button');button.firstElementChild.textContent='正在排列命盤…';button.disabled=true;setTimeout(function(){showReport(input);button.firstElementChild.textContent='生成我的命盤分析';button.disabled=false},550)});
-document.querySelector('#back-button').addEventListener('click',function(){document.querySelector('#landing-choice').hidden=false;document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;window.scrollTo({top:0,behavior:'smooth'})});
+document.querySelector('#back-button').addEventListener('click',function(){document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;window.scrollTo({top:0,behavior:'smooth'})});
 document.querySelectorAll('.report-tabs button').forEach(function(btn){btn.addEventListener('click',function(){document.querySelectorAll('.report-tabs button').forEach(function(x){x.classList.toggle('active',x===btn)});document.querySelectorAll('.tab-panel').forEach(function(x){x.classList.toggle('active',x.dataset.panel===btn.dataset.tab)})})});
 function registerWebMCP(){const context=document.modelContext;if(!context||!context.registerTool)return;try{Promise.resolve(context.registerTool({name:'generate_bazi_reading',title:'生成八字命盤分析',description:'使用生辰資料產生並顯示五行、特質、人生面向與十年大運的文化參考報告。',inputSchema:{type:'object',properties:{name:{type:'string'},birthDate:{type:'string',pattern:'^\\d{4}-\\d{2}-\\d{2}$'},birthTime:{type:'string',pattern:'^\\d{2}:\\d{2}$'},gender:{type:'string',enum:['female','male','other']}},required:['birthDate','birthTime','gender'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute:function(input){if(!/^\d{4}-\d{2}-\d{2}$/.test(input.birthDate)||!/^\d{2}:\d{2}$/.test(input.birthTime))throw new Error('生日或時間格式不正確');document.querySelector('#name').value=input.name||'';document.querySelector('#birth-date').value=input.birthDate;document.querySelector('#birth-time').value=input.birthTime;document.querySelector('#gender').value=input.gender;return showReport({name:input.name||'',date:input.birthDate,time:input.birthTime,gender:input.gender})}})).catch(function(){})}catch(e){}}
 registerWebMCP();
