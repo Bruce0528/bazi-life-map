@@ -292,7 +292,7 @@ function renderLifeGameStats(stats){
 function renderLifeGameStage(){
  const st=lifeGameState,beast=st.reading.beastMatch.primary.profile,stage=BaziLifeGame.stages[st.round];
  fill('#lifegame-progress','<b>第 '+(st.round+1)+'／8 關 · '+stage.name+'</b><span>'+gameOverallTier(BaziLifeGame.score(st.stats))+'</span>');
- fill('#lifegame-board',BaziLifeGame.stages.map(function(item,i){const done=i<st.round,current=i===st.round;return'<div class="lg-space '+(current?'is-current':done?'is-done':'is-future')+'"><span class="lg-space-icon" aria-hidden="true">'+(done?'✿':'✦')+'</span><small>'+(i+1)+' · '+item.name+'</small>'+(current?'<b aria-label="目前位置">'+beast.icon+'</b>':'')+'</div>'}).join(''));
+ fill('#lifegame-board',BaziLifeGame.stages.map(function(item,i){const done=i<st.round,current=i===st.round,tile='<div class="lg-space '+(current?'is-current':done?'is-done':'is-future')+'"><span class="lg-space-icon" aria-hidden="true">'+(done?'✿':'✦')+'</span><small>'+(i+1)+' · '+item.name+'</small>'+(current?'<b aria-label="目前位置">'+beast.icon+'</b>':'')+'</div>',arrow=i<BaziLifeGame.stages.length-1?'<span class="lg-arrow" aria-hidden="true">→</span>':'';return tile+arrow}).join(''));
  document.querySelector('#lifegame-board').style.setProperty('--lg-progress',(st.round/BaziLifeGame.stages.length*100)+'%');
  renderLifeGameStats(st.stats);
  if(st.phase==='choose'){
