@@ -717,15 +717,18 @@ const SEED_CHECKINS = [
   {id:'checkin-5', ownerId:'seed-owner-5', dogName:'阿鬥', breed:'frenchie', distanceKm:0.9, durationMin:15, note:'天氣太熱,提早收工', createdAt:'2026-09-10T09:50:00.000Z'}
 ];
 
+/* 真實店家(查證自公開搜尋結果,座標為估計值,正式上線前建議對照 Google 地圖校正) */
 const PLACES = [
-  {id:'p1', name:'蘆堤咖啡', cat:'restaurant', district:'蘆洲區', tag:'緊鄰河堤自行車道、戶外座位可帶毛孩', hours:'11:00–21:00(週二休)', x:30,y:58, lat:25.0880,lng:121.4690},
-  {id:'p2', name:'蘆洲寵物工坊', cat:'shop', district:'蘆洲區', tag:'鮮食、玩具、寵物保健品', hours:'10:00–20:00', x:58,y:36, lat:25.0865,lng:121.4700},
+  {id:'p1', name:'蒙古紅蘆洲店', cat:'restaurant', district:'蘆洲區', tag:'寵物友善蒙古火鍋吃到飽,近捷運蘆洲站(長榮路694號)', hours:'11:00–22:00(週一公休)', x:34,y:62, lat:25.0812,lng:121.4625},
+  {id:'p2', name:'貓男 貓咪中途咖啡廳', cat:'restaurant', district:'蘆洲區', tag:'貓咪中途咖啡廳,近徐匯中學站(中山一路61巷11號)', hours:'12:00–22:00(週二公休)', x:70,y:70, lat:25.0805,lng:121.4760},
   {id:'p3', name:'蘆洲防汛公園', cat:'attraction', district:'蘆洲區', tag:'大草坪視野開闊、適合放繩散步', hours:'全天開放', x:44,y:16, lat:25.0900,lng:121.4660},
-  {id:'p4', name:'蘆洲康寧動物醫院', cat:'vet', district:'蘆洲區', tag:'24小時急診、可線上預約', hours:'24小時營業', x:74,y:64, lat:25.0820,lng:121.4750},
-  {id:'p5', name:'鮮食巷弄餐桌', cat:'restaurant', district:'三重區', tag:'人寵共食、低鈉餐點', hours:'11:30–20:30', x:68,y:88, lat:25.0650,lng:121.4790},
-  {id:'p6', name:'得意堤外自行車道', cat:'attraction', district:'蘆洲區', tag:'沿淡水河堤外車道健走遛狗熱點', hours:'全天開放', x:12,y:80, lat:25.0950,lng:121.4610},
-  {id:'p7', name:'毛起來寵物美容', cat:'shop', district:'三重區', tag:'洗澡部、剪毛預約制', hours:'10:30–20:00', x:34,y:32, lat:25.0640,lng:121.4850},
-  {id:'p8', name:'蘆洲仁愛動物醫院', cat:'vet', district:'蘆洲區', tag:'內科、皮膚科專長', hours:'09:00–21:00', x:20,y:44, lat:25.0845,lng:121.4680}
+  {id:'p4', name:'得意堤外自行車道', cat:'attraction', district:'蘆洲區', tag:'沿淡水河堤外車道健走遛狗熱點', hours:'全天開放', x:12,y:80, lat:25.0950,lng:121.4610},
+  {id:'p5', name:'維雅斯寵物精品店', cat:'shop', district:'蘆洲區', tag:'寵物精品用品(復興路180號)', hours:'詳情請電洽 (02)2289-0610', x:20,y:40, lat:25.0900,lng:121.4630},
+  {id:'p6', name:'寵物公園–蘆洲店', cat:'shop', district:'蘆洲區', tag:'寵物用品連鎖店(長榮路71號)', hours:'詳情請電洽 (02)2283-3600', x:56,y:44, lat:25.0870,lng:121.4680},
+  {id:'p7', name:'寵物公園–蘆洲集賢店', cat:'shop', district:'蘆洲區', tag:'寵物用品連鎖店(集賢路222-2號)', hours:'詳情請電洽 (02)2282-8079', x:16,y:24, lat:25.0940,lng:121.4600},
+  {id:'p8', name:'培菓寵物蘆洲店', cat:'shop', district:'蘆洲區', tag:'鮮食、寵物用品(復興路127號)', hours:'詳情請電洽 (02)8282-5161', x:26,y:36, lat:25.0895,lng:121.4635},
+  {id:'p9', name:'欣欣動物醫院', cat:'vet', district:'蘆洲區', tag:'一般內外科、心臟專科、腫瘤外科(中山一路160號)', hours:'09:00–12:00、13:00–17:00、18:00–21:00', x:60,y:56, lat:25.0860,lng:121.4715},
+  {id:'p10', name:'德興動物醫院', cat:'vet', district:'蘆洲區', tag:'一般內外科(長安街62號)', hours:'詳情請電洽 (02)2848-0240', x:24,y:22, lat:25.0850,lng:121.4685}
 ];
 const CAT_LABEL = {restaurant:'寵物友善餐廳', shop:'寵物用品店', attraction:'景點 / 公園', vet:'獸醫院'};
 const DIARY_CAT_LABEL = {health:'健康提醒', safety:'安全紀錄', activity:'活動筆記', daily:'日常記事'};
