@@ -365,7 +365,7 @@ body { background: #f7faf2; color: var(--ink); }
 .btn-primary:hover { background: #426f4b; }
 .btn-line { display: inline-flex; align-items: center; gap: 8px; padding: 13px 18px; background: #00b900; color: #fff; border: none; border-radius: 12px; font-weight: 700; text-decoration: none; cursor: pointer; transition: background .2s; }
 .btn-line:hover { background: #008c00; }
-.btn-line span::before { content: 'LINE '; }
+.btn-line span::before { content: none; }
 
 @media(max-width:900px) {
   .consult-container { grid-template-columns: 1fr; gap: 24px; }
