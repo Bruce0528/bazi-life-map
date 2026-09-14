@@ -54,13 +54,17 @@ document.querySelectorAll('.tag-btn').forEach(function(btn){
 });
 document.querySelector('#consult-form').addEventListener('submit',function(e){
  e.preventDefault();
- const name=document.querySelector('#consult-name').value;
- const question=document.querySelector('#consult-question').value;
+ const name=document.querySelector('#consult-name').value.trim();
+ const question=document.querySelector('#consult-question').value.trim();
  const type=document.querySelector('#consult-type').value;
- const line=document.querySelector('#consult-line').value;
+ const line=document.querySelector('#consult-line').value.trim();
  if(!name||!question||!type||!line){alert('請填寫所有必填欄位');return}
- console.log({name:name,question:question,type:type,line:line});
- alert('感謝提交！老師會透過 LINE 回覆您的問題。');
+ const input=currentReading&&currentReading.birthInput||{};
+ const payload={name:name,birthDate:input.date||'',birthTime:input.time||'',dayMaster:currentReading&&currentReading.dayMaster||'',numberCombo:currentReading&&currentReading.numericGua&&currentReading.numericGua.digitsStr||'',questionType:type,question:question,line:line,submittedAt:new Date().toISOString()};
+ const status=document.querySelector('#consult-status'),button=e.currentTarget.querySelector('button[type="submit"]'),endpoint=window.GOOGLE_FORM_ENDPOINT||'';
+ if(!endpoint){status.textContent='目前尚未設定 Google 表單接收網址；請先直接加入 LINE，老師會協助你。';status.className='consult-status is-warning';return}
+ button.disabled=true;button.textContent='送出中…';status.textContent='正在將問題送給老師…';
+ fetch(endpoint,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}).then(function(){status.textContent='已收到你的問題！請加入 LINE，老師會依序回覆。';status.className='consult-status is-success';e.currentTarget.reset();document.querySelectorAll('.tag-btn').forEach(function(b){b.classList.remove('active')})}).catch(function(){status.textContent='送出時遇到問題，請直接加入 LINE 聯絡老師。';status.className='consult-status is-error'}).finally(function(){button.disabled=false;button.textContent='免費請老師選一題 →'});
 });
 
 document.querySelector('#choose-game').addEventListener('click',function(){openResultView('game')});

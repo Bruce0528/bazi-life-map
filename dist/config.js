@@ -8,3 +8,4 @@
 // Once ready, set it to your deployed Worker URL or custom domain, e.g.:
 //   window.PAYMENT_API_BASE = 'https://bazi-payments-api.<your-subdomain>.workers.dev';
 window.PAYMENT_API_BASE = '';
+window.GOOGLE_FORM_ENDPOINT = '';

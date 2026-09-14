@@ -342,6 +342,9 @@ body { background: #f7faf2; color: var(--ink); }
 
 /* 表單樣式 */
 .consult-form { background: #fbfdf7; border: 1px solid #e3ecd9; border-radius: 16px; padding: 28px; }
+.consult-status { min-height: 1.4em; margin: 12px 0 0; color: #688575; font-size: .82rem; line-height: 1.55; }
+.consult-status.is-success { color: #3e7d4b; }
+.consult-status.is-warning,.consult-status.is-error { color: #a06143; }
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; color: #2b4c3b; font-weight: 600; margin-bottom: 8px; font-size: .95rem; }
 .required { color: #d17a6b; }
