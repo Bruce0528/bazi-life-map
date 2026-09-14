@@ -192,7 +192,7 @@ function renderNumericYijing(){
  const ny=buildNumericYijing(input);
  const trail=ny.pairs.map(function(p){const meta=numGuaMeta[p.key];return'<div class="numgua-pair numgua-'+meta.luck+'"><span class="numgua-digits">'+p.a+p.b+'</span><small>'+p.key+'</small></div>'}).join('<span class="numgua-link" aria-hidden="true">→</span>');
  const overall=ny.badCount===0?'這組數字幾乎都落在吉星，屬於比較平順、少波折的組合。':ny.goodCount>=ny.badCount*2?'吉星明顯較多，整體走向偏向平順，遇到的凶星影響也相對有限。':ny.badCount>ny.goodCount?'凶星比重不低，代表這組數字提醒你多一分謹慎，尤其在對應的面向上。':'吉凶星大致參半，好壞都要看你怎麼因應，不是單純的好或壞。';
- fill('#numgua-fortune','<div class="numgua-head"><small>國曆 '+input.date.replaceAll('-','.')+' → '+ny.lunarLabel+'</small><h3>數字組合：'+ny.digitsStr+'</h3><p>'+overall+'</p></div>'+'<div class="numgua-trail">'+trail+'</div>'+'<div class="numgua-service"><p>想得到免費命理解說，請加官方 LINE 中詢問：<a href="https://lin.ee/YmmzSpA" target="_blank" rel="noopener">https://lin.ee/YmmzSpA</a></p></div>');
+ fill('#numgua-fortune','<div class="numgua-head"><small>國曆 '+input.date.replaceAll('-','.')+' → '+ny.lunarLabel+'</small><h3>數字組合：'+ny.digitsStr+'</h3><p>'+overall+'</p></div>'+'<div class="numgua-trail">'+trail+'</div>');
 }
 const relationsByGod={
  比劫:{copy:'在關係裡，你重視「對等」勝過「浪漫」：比起被追求，你更想被當成勢均力敵的夥伴。伴侶若也能有自己的重心與空間，這段關係反而走得更穩。',cards:[['相處優勢','平等對待','不會用情緒勒索或道德綁架控制對方，也讓人感覺被尊重。'],['常見摩擦','較量心','意見不合時，先分清楚你們是在討論事情，還是在爭輸贏。'],['愛情訊號','各自留白','感情穩定不代表要隨時黏在一起，保有各自生活反而更持久。'],['邊界提醒','少比較','避免拿伴侶和別人比較來激勵對方，這容易被解讀成不被珍惜。']]},
