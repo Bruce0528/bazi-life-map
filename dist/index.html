@@ -178,6 +178,83 @@
           <div class="section-heading"><div><p class="eyebrow">NUMBER YI JING · 數字易經</p><h3 id="numgua-title">數字易經</h3></div><p>先把你的國曆生辰換算成農曆日期，再把日期拆成一組數字，兩兩相鄰對照傳統「大遊年」數字磁場表：伏位、生氣、天醫、延年屬吉，禍害、六煞、五鬼、絕命屬凶。</p></div>
           <div id="numgua-fortune"></div>
         </section>
+
+        <!-- 新增：免費勘房表單區域 -->
+        <section class="consult-section" aria-labelledby="consult-title">
+          <div class="consult-container">
+            <!-- 左側：說明區 -->
+            <div class="consult-info">
+              <div class="consult-highlight">
+                <span class="highlight-badge">🎁 首次免費勘房 1 個近期問題</span>
+              </div>
+              <h3 id="consult-title">這件事，你想聽聽真人老師怎麼看嗎？</h3>
+              <p class="consult-description">系統可以先幫你看過結構，但真正困惑的，往往是現在這一個事該怎麼選。留下你此期想想的一個問題，我會把你的命盤與數字結果給老師進一步判斷。</p>
+
+              <ul class="consult-benefits">
+                <li><span class="check-icon">✓</span>適合諮詢間：感情、工作、財選、家庭、人生選擇</li>
+                <li><span class="check-icon">✓</span>不需要一次問很多，先就下最在意的那一題</li>
+                <li><span class="check-icon">✓</span>老師會透過 LINE 回覆第一次初步解析</li>
+              </ul>
+
+              <!-- 流程步驟 -->
+              <div class="consult-flow">
+                <div class="flow-step">
+                  <div class="flow-number">01</div>
+                  <div class="flow-label">填寫問題</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                  <div class="flow-number">02</div>
+                  <div class="flow-label">加入 LINE</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                  <div class="flow-number">03</div>
+                  <div class="flow-label">老師回覆</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 右側：表單區 -->
+            <form class="consult-form" id="consult-form">
+              <div class="form-group">
+                <label for="consult-name">怎麼稱呼您？<span class="required">*</span></label>
+                <input type="text" id="consult-name" name="name" placeholder="例如：Bruce" required>
+              </div>
+
+              <div class="form-group">
+                <label for="consult-question">你最其是哪間的一件事？<span class="required">*</span></label>
+                <textarea id="consult-question" name="question" placeholder="例如：最近新的工作機會與目前穩定工作，但水木不齒，我該合作工作嗎？" rows="4" required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>問題類型<span class="required">*</span></label>
+                <div class="form-tags">
+                  <button type="button" class="tag-btn" data-type="work">工作 / 轉職</button>
+                  <button type="button" class="tag-btn" data-type="love">感情 / 婚姻</button>
+                  <button type="button" class="tag-btn" data-type="wealth">財運 / 投資</button>
+                  <button type="button" class="tag-btn" data-type="family">家庭</button>
+                  <button type="button" class="tag-btn" data-type="life">人生課題</button>
+                </div>
+                <input type="hidden" id="consult-type" name="type" required>
+              </div>
+
+              <div class="form-group">
+                <label for="consult-line">LINE 顯示名稱 / LINE ID<span class="required">*</span></label>
+                <input type="text" id="consult-line" name="line" placeholder="方便老師後續聯繫識別" required>
+              </div>
+
+              <p class="form-note">✓ 會應重上述資料和諸詢詢隱隱隱隱隱隱隱隱隱隱隱隱隱隱隱隱隱隱隱。提供內容不會儲存於此平台。</p>
+
+              <div class="form-actions">
+                <button type="submit" class="btn-primary">免費請老師選一題 →</button>
+                <a href="https://lin.ee/YmmzSpA" target="_blank" rel="noopener" class="btn-line">
+                  <span>LINE 加好友</span>
+                </a>
+              </div>
+            </form>
+          </div>
+        </section>
       </div>
     </section>
 

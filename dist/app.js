@@ -43,6 +43,26 @@ function openResultView(view){
  window.scrollTo({top:0,behavior:'smooth'});
 }
 function showReport(input){const result=buildReading(input);currentReading=result;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;document.querySelector('#report').hidden=false;if(result.numericGua&&result.numericGua.mainGua){const guaCircle=document.querySelector('#main-gua-circle');document.querySelector('#gua-number').textContent=result.numericGua.mainGua.num;document.querySelector('#gua-label').textContent=result.numericGua.mainGua.name;guaCircle.hidden=false}openResultView('chart');return result}
+/* 勘房表單事件 */
+document.querySelectorAll('.tag-btn').forEach(function(btn){
+ btn.addEventListener('click',function(e){
+  e.preventDefault();
+  document.querySelectorAll('.tag-btn').forEach(function(b){b.classList.remove('active')});
+  this.classList.add('active');
+  document.querySelector('#consult-type').value=this.dataset.type;
+ });
+});
+document.querySelector('#consult-form').addEventListener('submit',function(e){
+ e.preventDefault();
+ const name=document.querySelector('#consult-name').value;
+ const question=document.querySelector('#consult-question').value;
+ const type=document.querySelector('#consult-type').value;
+ const line=document.querySelector('#consult-line').value;
+ if(!name||!question||!type||!line){alert('請填寫所有必填欄位');return}
+ console.log({name:name,question:question,type:type,line:line});
+ alert('感謝提交！老師會透過 LINE 回覆您的問題。');
+});
+
 document.querySelector('#choose-game').addEventListener('click',function(){openResultView('game')});
 document.querySelector('#choose-daily').addEventListener('click',function(){renderDailyFortune();openResultView('daily')});
 document.querySelector('#daily-back').addEventListener('click',function(){openResultView('chart')});
