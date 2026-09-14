@@ -324,21 +324,21 @@ body { background: #f7faf2; color: var(--ink); }
 
 /* 勘房表單區域 */
 .consult-section { margin: 40px 0; padding: 0; }
-.consult-container { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
-.consult-info { }
+.consult-container { display: block; }
+.consult-info { margin-bottom: 32px; }
 .consult-highlight { background: linear-gradient(135deg, #fff9e6 0%, #fef5dd 100%); border: 2px solid #d9a74d; border-radius: 12px; padding: 14px 16px; margin-bottom: 24px; }
 .highlight-badge { display: inline-block; color: #5d6b3a; font-weight: 700; font-size: .9rem; }
-.consult-info h3 { color: #2b4c3b; font: 800 1.6rem var(--serif); margin: 0 0 16px; line-height: 1.3; }
+.consult-info h3 { color: #2b4c3b; font: 800 1.4rem var(--serif); margin: 0 0 16px; line-height: 1.3; }
 .consult-description { color: #4d6c53; margin: 0 0 20px; line-height: 1.65; font-size: .95rem; }
 .consult-benefits { list-style: none; margin: 0 0 28px; padding: 0; }
 .consult-benefits li { display: flex; align-items: flex-start; gap: 12px; color: #557a5c; margin-bottom: 12px; font-size: .9rem; line-height: 1.5; }
 .check-icon { color: #5f8b62; font-weight: 800; flex-shrink: 0; }
 
-.consult-flow { display: flex; align-items: center; justify-content: flex-start; gap: 16px; margin-top: 32px; }
-.flow-step { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.flow-number { width: 56px; height: 56px; border-radius: 50%; background: #e8f1df; border: 2px solid #a9c29e; display: flex; align-items: center; justify-content: center; color: #5f8b62; font-weight: 800; font-size: 1.1rem; }
-.flow-label { font-size: .8rem; color: #6d8060; font-weight: 600; text-align: center; }
-.flow-arrow { color: #a9c29e; font-size: 1.4rem; margin-bottom: 32px; }
+.consult-flow { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 28px; margin-bottom: 32px; flex-wrap: wrap; }
+.flow-step { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.flow-number { width: 50px; height: 50px; border-radius: 50%; background: #e8f1df; border: 2px solid #a9c29e; display: flex; align-items: center; justify-content: center; color: #5f8b62; font-weight: 800; font-size: 1rem; }
+.flow-label { font-size: .75rem; color: #6d8060; font-weight: 600; text-align: center; }
+.flow-arrow { color: #a9c29e; font-size: 1.2rem; margin: 0; }
 
 /* 表單樣式 */
 .consult-form { background: #fbfdf7; border: 1px solid #e3ecd9; border-radius: 16px; padding: 28px; }
