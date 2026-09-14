@@ -8,4 +8,5 @@
 // Once ready, set it to your deployed Worker URL or custom domain, e.g.:
 //   window.PAYMENT_API_BASE = 'https://bazi-payments-api.<your-subdomain>.workers.dev';
 window.PAYMENT_API_BASE = '';
-window.GOOGLE_FORM_ENDPOINT = '';
+// Public Apps Script receiver: anyone may submit; the connected Sheet remains private.
+window.GOOGLE_FORM_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwQays7VXDfBcezyhTaNSZOu9rnLautHD_edsp-HoyFv9yCGR5wQxqxIunbpq_tVQgh/exec';
