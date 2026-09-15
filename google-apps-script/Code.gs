@@ -5,6 +5,20 @@
  * 3. Put the /exec URL in config.js as window.GOOGLE_FORM_ENDPOINT.
  */
 const SHEET_NAME = '問題收件';
+const FILE_NAME = '八字人生問題收件';
+
+function getSheet_() {
+  const props = PropertiesService.getScriptProperties();
+  let id = props.getProperty('SHEET_ID');
+  let ss;
+  if (id) {
+    ss = SpreadsheetApp.openById(id);
+  } else {
+    ss = SpreadsheetApp.create(FILE_NAME);
+    props.setProperty('SHEET_ID', ss.getId());
+  }
+  return ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
+}
 
 function doGet() {
   return ContentService.createTextOutput(JSON.stringify({ ok: true, service: 'bazi-consult' }))
@@ -13,8 +27,7 @@ function doGet() {
 
 function doPost(e) {
   const data = JSON.parse((e.postData && e.postData.contents) || '{}');
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME)
-    || SpreadsheetApp.getActiveSpreadsheet().insertSheet(SHEET_NAME);
+  const sheet = getSheet_();
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(['姓名', '出生日期', '出生時間', '日主', '數字組合', '問題類型', '想問的問題', 'LINE', '送出時間']);
   }
