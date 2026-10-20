@@ -412,6 +412,7 @@ body { background: #f7faf2; color: var(--ink); }
 .benefactor-compass,.compass-item { border-color: #c5dfbc; }
 .compass-item b { color: #437b4c; }
 .divination-section { background: #fffefa; border-color: #dbe6d5; border-radius: 20px; }
+.free-reading-note { margin-top: 18px; padding: 11px 14px; border: 1px solid #b9d6ae; border-radius: 999px; background: #eef7e8; color: #3f7048 !important; font-weight: 800; text-align: center; }
 .divination-form select,.divination-form textarea { background: #f2f7ec; border-color: #c9dec2; border-radius: 10px; }
 .divination-form button:disabled { background: #a6b8a7; }
 .price-line { color: #597f52; }

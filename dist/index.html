@@ -8,7 +8,7 @@
   <meta name="description" content="輸入生辰資料，閱讀五行結構、優勢、風險與人生機會。">
   <link rel="icon" type="image/svg+xml" href="daisy.svg">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="theme-daisy.css?v=20260914-1">
+  <link rel="stylesheet" href="theme-daisy.css?v=20261020-1">
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
@@ -91,6 +91,7 @@
       <nav class="report-quicknav" aria-label="其他體驗">
         <button type="button" id="choose-daily"><span aria-hidden="true">☀</span>每日運勢</button>
         <button type="button" id="choose-numgua"><span aria-hidden="true">卦</span>數字易經</button>
+        <button type="button" id="choose-divination"><span aria-hidden="true">✧</span>免費算卦</button>
         <button type="button" id="choose-compatibility"><span aria-hidden="true">♡</span>男女合盤分析</button>
         <button type="button" id="choose-game"><span aria-hidden="true">✿</span>解鎖模擬人生</button>
       </nav>
@@ -255,6 +256,38 @@
           </div>
         </section>
       </div>
+      <div class="divination-view" id="divination-view" hidden>
+        <button type="button" class="view-back" id="divination-back">← 返回命盤</button>
+        <section class="divination-section" id="divination" aria-labelledby="divination-title">
+          <div class="divination-intro">
+            <p class="eyebrow">CURRENT SITUATION · 免費算卦</p>
+            <h3 id="divination-title">近期事件推演</h3>
+            <p>寫下你最近正在面對的事情。系統會結合事件內容、當日卦象與你的命盤特質，整理較有利的條件、可採取的行動，以及需要避開的風險。</p>
+            <p class="free-reading-note">免費開放，不需要付款或輸入信用卡資料。</p>
+          </div>
+          <form class="divination-form" id="divination-form">
+            <label>事件類型<select id="event-type"><option value="career">事業／工作</option><option value="money">金錢／投資</option><option value="love">愛情／關係</option><option value="decision">重大選擇</option><option value="other">其他</option></select></label>
+            <label>最近遇到的事情<textarea id="event-text" rows="4" minlength="8" maxlength="500" required placeholder="例：公司提出新的職務機會，但需要換到陌生團隊，我擔心發展性與適應問題……"></textarea></label>
+            <label>希望觀察的時間<select id="event-horizon"><option value="30">未來 30 天</option><option value="90">未來 3 個月</option><option value="365">未來 1 年</option></select></label>
+            <button type="submit"><span>結合命盤推演方向</span><span aria-hidden="true">→</span></button>
+          </form>
+          <div class="oracle-result" id="oracle-result" hidden>
+            <div class="hexagram"><small>本次卦象</small><strong id="hexagram-name"></strong><div class="hexagram-lines" id="hexagram-lines"></div><span id="hexagram-keyword"></span></div>
+            <div class="oracle-copy">
+              <span class="chapter">情境解讀</span><h3 id="oracle-title"></h3>
+              <div class="oracle-restate"><small>我理解的你的問題</small><p id="oracle-restate"></p></div>
+              <p id="oracle-summary"></p>
+              <div class="oracle-cross"><small>五行性格 × 目前大運</small><p id="oracle-cross-copy"></p><div class="cross-grid" id="oracle-cross-grid"></div></div>
+              <div class="oracle-columns">
+                <div><h4>較有利的發展</h4><ul id="oracle-advantage"></ul></div>
+                <div><h4>建議採取</h4><ul id="oracle-actions"></ul></div>
+                <div><h4>避免風險</h4><ul id="oracle-risks"></ul></div>
+              </div>
+              <p class="oracle-note">卦象是換角度思考的提示，不是事件結果的保證；重大醫療、法律與財務決策請尋求合格專業意見。</p>
+            </div>
+          </div>
+        </section>
+      </div>
     </section>
 
     <section class="policy-section" id="site-info">
@@ -271,9 +304,9 @@
         </article>
         <article id="privacy-policy">
           <h3>隱私權政策</h3>
-          <p><strong>本機處理。</strong>命盤、合盤與遊戲的輸入都在你的瀏覽器中處理，本站沒有上傳或取得這些資料。</p>
-          <p><strong>付款相關資料。</strong>金流尚未開通，本站目前不收費，也不會要求你輸入信用卡資訊。</p>
-          <p><strong>瀏覽器儲存。</strong>舊版功能可能曾在本機 localStorage 留下技術性解鎖標記；此版不使用它來收費或解鎖新功能。</p>
+          <p><strong>本機處理。</strong>命盤、合盤、遊戲與免費算卦的輸入都在你的瀏覽器中處理，本站不會把算卦問題送往金流或外部分析服務。</p>
+          <p><strong>付款相關資料。</strong>本站目前所有可操作功能皆免費，不會要求你輸入信用卡資訊。</p>
+          <p><strong>瀏覽器儲存。</strong>網站只在需要維持介面狀態時使用瀏覽器儲存，不以此判斷付款或鎖定算卦功能。</p>
           <p><strong>第三方追蹤。</strong>本站目前不使用第三方廣告或行為追蹤工具。</p>
           <p>若對本政策有任何疑問，歡迎來信 <a href="mailto:a00168201@gmail.com">a00168201@gmail.com</a>。</p>
         </article>
@@ -286,6 +319,8 @@
             <dd>不會。命盤與男女合盤的運算完全在你的瀏覽器裡完成，我們的伺服器接觸不到你的出生資料，詳見隱私權政策。</dd>
             <dt>「每日運勢」的星等是怎麼算的？</dt>
             <dd>以你的日主對照當天的干支算出十神，再結合排盤引擎內建的黃曆吉凶與方位資料。同一天、同一張命盤算出來的結果固定不變，是本站設計的參考評分，不是命定的吉凶。</dd>
+            <dt>「免費算卦」需要付款嗎？</dt>
+            <dd>不需要。輸入生辰生成命盤後，點選「免費算卦」即可直接使用；不會轉往藍新金流，也不會要求信用卡資料。</dd>
             <dt>我可以在手機上使用嗎？</dt>
             <dd>可以，本站已針對手機瀏覽器做過版面優化。</dd>
           </dl>
@@ -304,7 +339,7 @@
   <script src="archetypes.js?v=1"></script>
   <script src="beast-rules.js?v=1"></script>
   <script src="life-game.js?v=20250913"></script>
-  <script src="app.js?v=20260914-1"></script>
+  <script src="app.js?v=20261020-1"></script>
   <script src="compatibility.js?v=1"></script>
 </body>
 </html>

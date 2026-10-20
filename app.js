@@ -29,11 +29,12 @@ function buildBenefactor(weak){
 }
 let currentReading=null;
 function openResultView(view){
- document.querySelector('#report-eyebrow').textContent={chart:'命盤結果 · PERSONAL READING',game:'角色遊戲 · LIFE SIMULATION',daily:'每日運勢 · DAILY FORTUNE',numgua:'數字易經 · NUMBER YI JING'}[view];
+ document.querySelector('#report-eyebrow').textContent={chart:'命盤結果 · PERSONAL READING',game:'角色遊戲 · LIFE SIMULATION',daily:'每日運勢 · DAILY FORTUNE',numgua:'數字易經 · NUMBER YI JING',divination:'免費算卦 · CURRENT SITUATION'}[view];
  document.querySelector('#chart-view').hidden=view!=='chart';
  document.querySelector('#game-view').hidden=view!=='game';
  document.querySelector('#daily-view').hidden=view!=='daily';
  document.querySelector('#numgua-view').hidden=view!=='numgua';
+ document.querySelector('#divination-view').hidden=view!=='divination';
  if(view==='game'){
   document.querySelector('#game-picker').hidden=false;
   document.querySelector('#lifegame').hidden=true;
@@ -72,6 +73,8 @@ document.querySelector('#choose-daily').addEventListener('click',function(){rend
 document.querySelector('#daily-back').addEventListener('click',function(){openResultView('chart')});
 document.querySelector('#choose-numgua').addEventListener('click',function(){renderNumericYijing();openResultView('numgua')});
 document.querySelector('#numgua-back').addEventListener('click',function(){openResultView('chart')});
+document.querySelector('#choose-divination').addEventListener('click',function(){openResultView('divination')});
+document.querySelector('#divination-back').addEventListener('click',function(){openResultView('chart')});
 document.querySelector('#choose-compatibility').addEventListener('click',function(){document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
 document.querySelector('#nav-compatibility').addEventListener('click',function(event){event.preventDefault();document.querySelector('#report').hidden=true;document.querySelector('.workbench').hidden=false;document.querySelector('.preview-strip').hidden=false;document.querySelector('#compatibility').hidden=false;document.querySelector('#compatibility-return').hidden=false;document.querySelector('#compatibility').scrollIntoView({behavior:'smooth',block:'start'})});
 document.querySelector('#compatibility-return').addEventListener('click',function(){document.querySelector('#report').hidden=false;document.querySelector('.workbench').hidden=true;document.querySelector('.preview-strip').hidden=true;document.querySelector('#compatibility').hidden=true;openResultView('chart')});
@@ -89,6 +92,42 @@ document.querySelector('#back-button').addEventListener('click',function(){docum
 document.querySelectorAll('.report-tabs button').forEach(function(btn){btn.addEventListener('click',function(){document.querySelectorAll('.report-tabs button').forEach(function(x){x.classList.toggle('active',x===btn)});document.querySelectorAll('.tab-panel').forEach(function(x){x.classList.toggle('active',x.dataset.panel===btn.dataset.tab)})})});
 function registerWebMCP(){const context=document.modelContext;if(!context||!context.registerTool)return;try{Promise.resolve(context.registerTool({name:'generate_bazi_reading',title:'生成八字命盤分析',description:'使用生辰資料產生並顯示五行、特質、人生面向與十年大運的文化參考報告。',inputSchema:{type:'object',properties:{name:{type:'string'},birthDate:{type:'string',pattern:'^\\d{4}-\\d{2}-\\d{2}$'},birthTime:{type:'string',pattern:'^\\d{2}:\\d{2}$'},gender:{type:'string',enum:['female','male','other']}},required:['birthDate','birthTime','gender'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute:function(input){if(!/^\d{4}-\d{2}-\d{2}$/.test(input.birthDate)||!/^\d{2}:\d{2}$/.test(input.birthTime))throw new Error('生日或時間格式不正確');document.querySelector('#name').value=input.name||'';document.querySelector('#birth-date').value=input.birthDate;document.querySelector('#birth-time').value=input.birthTime;document.querySelector('#gender').value=input.gender;return showReport({name:input.name||'',date:input.birthDate,time:input.birthTime,gender:input.gender})}})).catch(function(){})}catch(e){}}
 registerWebMCP();
+
+/* 免費近期事件算卦：在本機把事件內容、命盤結構與固定卦象規則交叉整理。 */
+const situationGua=[
+ {name:'乾為天',key:'主動 · 開創',summary:'局勢需要清楚主導，但有利的不是硬推，而是先確立原則與可承擔的責任。',lines:[1,1,1,1,1,1]},
+ {name:'坤為地',key:'承接 · 蓄勢',summary:'眼前更適合蒐集條件、穩住基本盤，讓事情成熟後再推進。',lines:[0,0,0,0,0,0]},
+ {name:'水雷屯',key:'起步 · 排障',summary:'這是開局不順但可以逐步打通的情境。先處理最小阻礙，不必一次解決全部問題。',lines:[1,0,0,0,1,0]},
+ {name:'風山漸',key:'漸進 · 累積',summary:'優勢來自循序推進與可驗證成果。速度不是關鍵，穩定增加信任才是。',lines:[0,0,1,0,1,1]},
+ {name:'地天泰',key:'交流 · 通達',summary:'局勢偏向合作與資源交換。說清楚你能提供什麼，也要明確提出需要什麼。',lines:[1,1,1,0,0,0]},
+ {name:'水風井',key:'深耕 · 資源',summary:'答案未必在更換方向，也可能在重新整理既有專長、人脈與資源的使用方式。',lines:[0,1,1,0,1,0]},
+ {name:'水澤節',key:'邊界 · 節制',summary:'設好範圍會讓事情更順。時間、金錢與責任都需要上限，才能保留長期選擇權。',lines:[1,1,0,0,1,0]},
+ {name:'水火既濟',key:'完成 · 守成',summary:'條件已接近完整，現在的重點是收尾、驗證，並防止最後階段因鬆懈而反覆。',lines:[1,0,1,0,1,0]}
+];
+const situationGuidance={
+ career:{title:'讓能力在可見成果中發揮',adv:['能取得明確成果責任的方案','可累積作品、經驗或決策權的位置','有可信任夥伴支援的漸進改變'],act:['把選項拆成三個可比較條件','先談清楚權責、資源與檢核日期','用一次小型試行驗證適配度'],risk:['只被頭銜或短期薪資吸引','責任增加但權限與資源不變','未確認成功標準就匆忙承諾']},
+ money:{title:'先保留選擇權，再追求成長',adv:['資訊透明且能理解的方案','最壞情境仍在可承擔範圍內','能分批驗證而非一次投入'],act:['先寫下最大損失與退出條件','核對至少兩個獨立資訊來源','把決策分成觀察、試行、加碼三階段'],risk:['把卦象當成投資依據','用借貸或高槓桿放大不確定性','因害怕錯過而跳過查證']},
+ love:{title:'讓真實需求有被聽見的空間',adv:['願意對話而非互相猜測的關係','行動與承諾一致的互動','彼此都保有邊界與生活重心'],act:['先描述感受，再提出具體需求','選一個情緒平穩的時間談','觀察對方是否持續用行動回應'],risk:['只看一時熱度，忽略長期一致性','替對方合理化反覆或失信','用測試或冷戰取代直接溝通']},
+ decision:{title:'把模糊選擇轉成可驗證條件',adv:['能留下長期能力與關係資產的方向','即使失敗也保有回頭路的方案','與核心價值一致而非只滿足期待'],act:['列出一年後最在意的三個結果','設定 24 小時冷靜期','找一位敢提出反對意見的人檢視'],risk:['在疲累或焦慮高峰做決定','把別人的期待誤認為自己的目標','追求零風險而無限延後']},
+ other:{title:'先定義真正要解的問題',adv:['能增加資訊與回饋的下一步','成本小但學習價值高的嘗試','讓你接近關鍵人物或資源的行動'],act:['用一句話重寫問題','區分可控制與不可控制項目','在七天內完成一個最小行動'],risk:['同時處理太多層次的問題','期待一次行動消除所有不確定','只在腦中推演而缺少真實回饋']}
+};
+function situationHash(value){let h=2166136261;for(let i=0;i<value.length;i++){h^=value.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function escapeSituation(value){return String(value).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function situationList(items){return items.map(function(x){return'<li>'+x+'</li>'}).join('')}
+function situationTrend(cycle,horizon){const span=horizon==='30'?'這 30 天':horizon==='90'?'這 3 個月':'這 1 年';if(!cycle)return span+'以原本的性格慣性為主，先顧好基本盤比躁進重要。';if(cycle.tone==='順勢開展')return span+'較適合持續投入，但仍要用實際回饋確認方向。';if(cycle.tone==='主題加倍')return span+'相關課題容易被放大，選擇前值得設定檢核點與停損條件。';return span+'偏向調整期，短期未必立刻見效，先觀察磨合成本。'}
+function renderSituationReading(text,type,horizon){
+ const guide=situationGuidance[type]||situationGuidance.other,seed=situationHash(text+type+horizon+currentReading.dayMaster+new Date().toISOString().slice(0,10)),gua=situationGua[seed%situationGua.length];
+ const dom=currentReading.dominantTenGod,group=groupData[dom],cycle=currentReading.currentCycle,balance=currentReading.balancingElement;
+ fill('#hexagram-name',gua.name);fill('#hexagram-keyword',gua.key);fill('#hexagram-lines',gua.lines.slice().reverse().map(function(v){return v?'<div class="gua-line yang"></div>':'<div class="gua-line"><i></i><i></i></div>'}).join(''));
+ fill('#oracle-title',guide.title);fill('#oracle-restate','你正在處理的核心是：「'+escapeSituation(text.slice(0,80))+(text.length>80?'…':'')+'」先把可控制的條件與不可控制的結果分開，會更容易找到下一步。');fill('#oracle-summary',gua.summary);
+ fill('#oracle-cross-copy','你的命盤主要動能是「'+dom+'（'+group.label+'）」，常用的優勢是'+group.talents[0]+'。目前大運'+(cycle?'為「'+cycle.ganzhi+'」，主題是'+luckThemeByGod[cycle.god]+'，整體屬於「'+cycle.tone+'」。':'尚未形成明顯加成，先以原命盤節奏判斷。'));
+ fill('#oracle-cross-grid',[['命盤優勢',currentReading.skills[0]],['容易卡住',currentReading.risks[0]],['平衡方向',balance+' · '+profiles[balance].trait],['觀察節奏',situationTrend(cycle,horizon)]].map(function(x){return'<div class="structure-chip"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>'}).join(''));
+ fill('#oracle-advantage',situationList(guide.adv)+'<li class="chart-linked">善用你的「'+group.label+'」能力，但先用小規模行動驗證。</li>');
+ fill('#oracle-actions',situationList(guide.act)+'<li class="chart-linked">加入一個「'+balance+'」式校正：'+balancePractice[balance]+'</li>');
+ fill('#oracle-risks',situationList(guide.risk)+'<li class="chart-linked">命盤慣性用過頭時要留意：'+group.risk+'。</li>');
+ document.querySelector('#oracle-result').hidden=false;document.querySelector('#oracle-result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+document.querySelector('#divination-form').addEventListener('submit',function(event){event.preventDefault();const text=document.querySelector('#event-text').value.trim();if(text.length<8)return;renderSituationReading(text,document.querySelector('#event-type').value,document.querySelector('#event-horizon').value)});
 
 /* 精細排盤引擎：節氣月、藏干、十神、旺衰與沖合交叉判讀 */
 const hiddenStems=[[9],[5,9,7],[0,2,4],[1],[4,1,9],[2,4,6],[3,5],[5,3,1],[6,8,4],[7],[4,7,3],[8,0]];
